@@ -1,9 +1,8 @@
-Advanced Programming Project
+Advanced Programming Project 2014
 ============================
 MSc Computer Science and Networking 
 University of Pisa 
 SSSUP Sant'Anna
-(2014)
 ======================================================
 FunW@P - An Imperative-Functional Programming Language
 ======================================================
