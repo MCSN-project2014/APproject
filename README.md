@@ -1,4 +1,19 @@
 #FunW@P - An Imperative-Functional Programming Language
+
+##Slide and Other Materials
+* Our Slide:
+  * [slide Agile Teamworker](http://1drv.ms/1IUn2yB)
+  * [slide of FunW@P – The Project](http://1drv.ms/1ySTo4I)
+  * [Text of the Exercise](http://1drv.ms/1IUnygb)
+* User Guide:
+  * [C# Programming Guide](http://msdn.microsoft.com/it-it/library/67ef8sbd.aspx)
+  * [Coco/r User Manual](http://www.ssw.uni-linz.ac.at/Coco/Doc/UserManual.pdf)
+  * [F# Language Reference](http://msdn.microsoft.com/en-us/library/dd233181.aspx)
+* Tutorial:
+  * [C# Tutorial list](http://msdn.microsoft.com/en-us/library/aa288436%28v=vs.71%29.aspx)
+  * [Coco/r Tutorial](http://structured-parsing.wikidot.com/coco-r-parser-with-internal-scanner-part-1)
+  * [F# Walkthrough](http://msdn.microsoft.com/en-us/library/dd233160.aspx)
+
 ##The grammar
 ####Token
 ```
