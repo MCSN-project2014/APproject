@@ -1,8 +1,6 @@
-#Advanced Programming Project 2014
-##FunW@P - An Imperative-Functional Programming Language
-
-###The grammar
-#####Token
+#FunW@P - An Imperative-Functional Programming Language
+##The grammar
+###Token
 ```
 FUN 						= "fun"
 RET							= "return"
@@ -39,7 +37,7 @@ IDEN			    = <<[a-zA-Z][a-zA-Z0-9]*>>
 WHITESPACE                  = <<[ \t\n\x0B\f\r| \t\n\r]+>> %ignore%
 ```
 
-#####Productions
+###Productions
 ```
 Program = [FDecList] Main ;
 FDecList = FDec [FDecList] ;
