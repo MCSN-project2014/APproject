@@ -32,14 +32,14 @@ LTE 						= "<="
 GT 							= ">"
 GTE 					    = ">="
 NOT							= "!"
-NUMBER                      = <<[0-9]+>>
-IDEN			    = <<[a-zA-Z][a-zA-Z0-9]*>>
+NUMBER                      = <<([1-9][0-9]*)|0>>
+IDEN			    		= <<[a-zA-Z][a-zA-Z0-9]*>>
 WHITESPACE                  = <<[ \t\n\x0B\f\r| \t\n\r]+>> %ignore%
 ```
 
 ####Productions
 ```
-Program = [FDecList] Main ;
+Program = [FDecList] Main ; 
 FDecList = FDec [FDecList] ;
 FDec    =  "fun" Ide "(" [DParamList] ")" RType Block ;
 
@@ -51,8 +51,8 @@ Main = "fun" "main" "(" ")" Block ;
 Block = "{" [StmtList] "}"  ;
 
 
-RType = BOOLT | "int" | "fun" "(" TypeList ")" RType ;
-Type  = BOOLT | "int" | "fun" ;
+RType = "bool" | "int" | "fun" "(" TypeList ")" RType ;
+Type  = "bool" | "int" | "fun" ;
 
 
 
@@ -66,22 +66,19 @@ Stmt = "var" Ide Type  "=" AExp ";"
        | "for" Ide "=" Exp ";" Exp ";" Ide "=" Exp Block
        | "return" FExp ";" ;
 
-
-
 TypeList = Type [TypeList1];
 TypeList1 = "," Type [TypeList1];
 
 
-AExp  = FExp | "async" Block ;
-FExp  = Exp  | "fun""(" [DParamList] ")" RType Block;
+AExp  = FExp | "async" "{" "return" CFunc "}" ;
+FExp  = Exp  | "fun" "(" [DParamList] ")" RType Block;
 Exp   = Rel [Exp1];
 Exp1  = "==" Rel [Exp1] | "!=" Rel [Exp1];
-
+ 
 Rel   = Expr [Reltail]  ;
 Reltail   = "<" Expr | "<=" Expr | ">=" Expr | ">" Expr;
 Expr  = Term [Expr1];
 Expr1  = "+" Term [Expr1]  | "-" Term [Expr1];
-
 
 Term  = Unary [Term1];
 Term1  = "*" Unary [Term1] | "/" Unary [Term1];
@@ -92,7 +89,7 @@ Factor = Atom | "(" Exp ")" | CFunc ;
 
 
 Atom   = NUMBER | IDEN | BOOLV ;
-CFunc  = Ide "("[ParamList]")"";";
+CFunc  = Ide "("[ParamList]")";
 
 ParamList = FExp [ParamList1] ;
 ParamList1 = "," FExp [ParamList1] ;
