@@ -1,9 +1,9 @@
 Advanced Programming Project 2014
 ======================================================
-FunW@P - An Imperative-Functional Programming Language
-======================================================
 
-####The grammar
+##FunW@P - An Imperative-Functional Programming Language
+
+###The grammar
 #####Token
 FUN 						= "fun"
 RET							= "return"
@@ -78,7 +78,7 @@ AExp  = FExp | "async" Block ;
 FExp  = Exp  | "fun""(" [DParamList] ")" RType Block;
 Exp   = Rel [Exp1];
 Exp1  = "==" Rel [Exp1] | "!=" Rel [Exp1];
- 
+
 Rel   = Expr [Reltail]  ;
 Reltail   = "<" Expr | "<=" Expr | ">=" Expr | ">" Expr;
 Expr  = Term [Expr1];
