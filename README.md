@@ -3,8 +3,8 @@
 ##Developing Guide
 ###Study Materials
 * Our Slides:
-  * [slide Agile Teamworker](http://1drv.ms/1IUn2yB)
-  * [slide of FunW@P – The Project](http://1drv.ms/1ySTo4I)
+  * [Slides Agile Teamwork](http://1drv.ms/1IUn2yB)
+  * [Slides of FunW@P – The Project (Part 1)](http://1drv.ms/1ySTo4I)
   * [Text of the Exercise](http://1drv.ms/1IUnygb)
 * User Guides:
   * [C# Programming Guide](http://msdn.microsoft.com/it-it/library/67ef8sbd.aspx)
