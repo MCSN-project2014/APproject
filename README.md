@@ -1,5 +1,5 @@
 #FunW@P - An Imperative-Functional Programming Language
-
+![alt text](https://lh6.googleusercontent.com/Ei5TeEjTUWPfYqjK765yI9WO_sjwpIxP7xsWZJ9G0HCxSrMSd-v1Tj0whnX4KV6IhD1h5uTDjLw=w1342-h482)
 ##Developing Guide
 ###Study Materials
 * Our Slides:
