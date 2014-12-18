@@ -44,11 +44,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="codeGenerator\CodeGen.cs" />
+    <Compile Include="lib\cocor\parser\Parser.cs" />
+    <Compile Include="lib\cocor\parser\Scanner.cs" />
+    <Compile Include="symbolTable\SymTab.cs" />
+    <Compile Include="MainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Grammar\FunGram.ATG" />
+    <None Include="startCocor.bat" />
+    <None Include="lib\cocor\Parser.frame" />
+    <None Include="lib\cocor\Scanner.frame" />
+    <None Include="Test\test.fun" />
+    <None Include="Test\test1.fun" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\cocor\Coco.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
