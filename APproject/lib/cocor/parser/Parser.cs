@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 
 namespace APproject {
 
@@ -107,7 +108,7 @@ const int // types
 			RelOp(out op);
 			SimExpr(out type1);
 			if (type != type1) SemErr("incompatible types");
-			gen.Emit(op); type = boolean; 
+			type = boolean; 
 		}
 	}
 
@@ -118,8 +119,7 @@ const int // types
 			AddOp(out op);
 			Term(out type1);
 			if (type != integer || type1 != integer)
-			 SemErr("integer type expected");
-			gen.Emit(op); 
+			 SemErr("integer type expected"); 
 		}
 	}
 
@@ -142,27 +142,26 @@ const int // types
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); type = obj.type;
-			if (obj.kind == var) {
-			if (obj.level == 0) gen.Emit(Op.LOADG, obj.adr);
-			else gen.Emit(Op.LOAD, obj.adr);
-			} else SemErr("variable expected"); 
+			if (obj.kind != var) SemErr("variable expected"); 
+			
 		} else if (la.kind == 2) {
 			Get();
 			n = Convert.ToInt32(t.val);
-			gen.Emit(Op.CONST, n); type = integer; 
+			type = integer; 
 		} else if (la.kind == 4) {
 			Get();
 			Factor(out type);
 			if (type != integer) {
-			 SemErr("integer type expected"); type = integer;
+			 SemErr("integer type expected");
+			type = integer;
 			}
-			gen.Emit(Op.NEG); 
+			
 		} else if (la.kind == 5) {
 			Get();
-			gen.Emit(Op.CONST, 1); type = boolean; 
+			type = boolean; 
 		} else if (la.kind == 6) {
 			Get();
-			gen.Emit(Op.CONST, 0); type = boolean; 
+			type = boolean; 
 		} else SynErr(30);
 	}
 
@@ -204,7 +203,7 @@ const int // types
 			}
 			Expect(12);
 			Expect(13);
-			gen.Emit(Op.ENTER, 0); adr = gen.pc - 2; 
+			adr = gen.pc - 2; 
 			while (StartOf(1)) {
 				if (la.kind == 26) {
 					VarDecl();
@@ -213,8 +212,6 @@ const int // types
 				}
 			}
 			Expect(14);
-			gen.Emit(Op.LEAVE); gen.Emit(Op.RET);
-			gen.Patch(adr, tab.topScope.nextAdr);
 			tab.CloseScope(); 
 		} else if (la.kind == 15) {
 			Get();
@@ -224,7 +221,7 @@ const int // types
 			Expect(10);
 			Expect(12);
 			Expect(13);
-			gen.Emit(Op.ENTER, 0); adr = gen.pc - 2; 
+			adr = gen.pc - 2; 
 			while (StartOf(1)) {
 				if (la.kind == 26) {
 					VarDecl();
@@ -233,8 +230,6 @@ const int // types
 				}
 			}
 			Expect(14);
-			gen.Emit(Op.LEAVE); gen.Emit(Op.RET);
-			gen.Patch(adr, tab.topScope.nextAdr);
 			tab.CloseScope(); 
 		} else SynErr(32);
 	}
@@ -254,28 +249,42 @@ const int // types
 	}
 
 	void VarDecl() {
-		string name; int type; int type1; Obj obj; 
+		string name; ArrayList names = new ArrayList(); int type; int type1; Obj obj; 
 		Expect(26);
 		Ident(out name);
-		Type(out type);
-		tab.NewObj(name, var, type); 
-		if (la.kind == 20) {
+		names.Add(name); 
+		if (la.kind == 11) {
 			Get();
-		} else if (la.kind == 19) {
-			Get();
-			Expr(out type1);
+			Ident(out name);
+			names.Add(name); 
+			while (la.kind == 11) {
+				Get();
+				Ident(out name);
+				names.Add(name); 
+			}
+			Type(out type);
 			Expect(20);
-			if (type != type1) SemErr("incompatible types");
-			obj = tab.Find(name);
-			//if (obj.level == 0) gen.Emit(Op.STOG, obj.adr);
-			//else gen.Emit(Op.STO, obj.adr);
-			
-		} else SynErr(34);
+			foreach(string n in names)
+			{ tab.NewObj(n, var, type); }
+		} else if (la.kind == 9 || la.kind == 24 || la.kind == 25) {
+			Type(out type);
+			if (la.kind == 20) {
+				Get();
+				tab.NewObj((string)names[0], var, type); 
+			} else if (la.kind == 19) {
+				Get();
+				Expr(out type1);
+				Expect(20);
+				if (type != type1) SemErr("incompatible types");
+				tab.NewObj((string)names[0], var, type);
+				obj = tab.Find(name);
+			} else SynErr(34);
+		} else SynErr(35);
 	}
 
 	void Stat() {
 		int type; string name; Obj obj;
-		int adr, adr2, loopstart; 
+		int adr; 
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); 
@@ -285,43 +294,32 @@ const int // types
 				SemErr("cannot assign to procedure"); 
 				Expr(out type);
 				Expect(20);
-				if (type != obj.type) SemErr("incompatible types");
-				if (obj.level == 0) gen.Emit(Op.STOG, obj.adr);
-				else gen.Emit(Op.STO, obj.adr); 
+				if (type != obj.type) SemErr("incompatible types"); 
 			} else if (la.kind == 10) {
 				Get();
 				Expect(12);
 				Expect(20);
 				if (obj.kind != proc) SemErr("object is not a procedure");
-				
-				gen.Emit(Op.CALL, obj.adr); 
-			} else SynErr(35);
+			} else SynErr(36);
 		} else if (la.kind == 21) {
 			Get();
 			Expect(10);
 			Expr(out type);
 			Expect(12);
 			if (type != boolean) SemErr("boolean type expected");
-			gen.Emit(Op.FJMP, 0); adr = gen.pc - 2; 
+			adr = gen.pc - 2; 
 			Stat();
 			if (la.kind == 22) {
 				Get();
-				gen.Emit(Op.JMP, 0); adr2 = gen.pc - 2;
-				gen.Patch(adr, gen.pc);
-				adr = adr2; 
 				Stat();
 			}
-			gen.Patch(adr, gen.pc); 
 		} else if (la.kind == 23) {
 			Get();
-			loopstart = gen.pc; 
 			Expect(10);
 			Expr(out type);
 			Expect(12);
-			if (type != boolean) SemErr("boolean type expected");
-			gen.Emit(Op.FJMP, 0); adr = gen.pc - 2; 
+			if (type != boolean) SemErr("boolean type expected"); 
 			Stat();
-			gen.Emit(Op.JMP, loopstart); gen.Patch(adr, gen.pc); 
 		} else if (la.kind == 13) {
 			Get();
 			while (StartOf(1)) {
@@ -332,7 +330,7 @@ const int // types
 				}
 			}
 			Expect(14);
-		} else SynErr(36);
+		} else SynErr(37);
 	}
 
 	void Term(out int type) {
@@ -342,8 +340,7 @@ const int // types
 			MulOp(out op);
 			Factor(out type1);
 			if (type != integer || type1 != integer)
-			 SemErr("integer type expected");
-			gen.Emit(op); 
+			 SemErr("integer type expected"); 
 		}
 	}
 
@@ -354,7 +351,8 @@ const int // types
 			ProcDecl();
 		}
 		tab.CloseScope();
-		if (gen.progStart == -1) SemErr("main function never defined");
+		if (gen.progStart == -1) 
+		SemErr("main function never defined");
 		
 	}
 
@@ -421,8 +419,9 @@ public class Errors {
 			case 32: s = "invalid ProcDecl"; break;
 			case 33: s = "invalid Type"; break;
 			case 34: s = "invalid VarDecl"; break;
-			case 35: s = "invalid Stat"; break;
+			case 35: s = "invalid VarDecl"; break;
 			case 36: s = "invalid Stat"; break;
+			case 37: s = "invalid Stat"; break;
 
 			default: s = "error " + n; break;
 		}

@@ -58,7 +58,7 @@
     <None Include="lib\cocor\Parser.frame" />
     <None Include="lib\cocor\Scanner.frame" />
     <None Include="Test\test.fun" />
-    <None Include="Test\test1.fun" />
+    <None Include="Test\vardeclTest.fun" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
