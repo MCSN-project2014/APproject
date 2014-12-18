@@ -1,6 +1,16 @@
 #FunW@P - An Imperative-Functional Programming Language
 ![alt text](fun_logo.jpg)
+
 ##Developing Guide
+1. clone the project
+2. open the .sln to run the project into visual studio
+3. add in the project property on the section comand line argument `..\..\test\test.fun` or other test file
+4. run the project
+
+###Software to Download:
+* [Github Client](https://windows.github.com/)
+* [Visual Studio Community Edition 2013](http://go.microsoft.com/fwlink/?LinkId=517284)
+
 ###Study Materials
 * Our Slides:
   * [Slides Agile Teamwork](http://1drv.ms/1IUn2yB)
@@ -16,10 +26,6 @@
   * [Coco/r Tutorial](http://structured-parsing.wikidot.com/coco-r-parser-with-internal-scanner-part-1)
   * [F# Walkthrough](http://msdn.microsoft.com/en-us/library/dd233160.aspx)
   * [Git Interactive Tutorial](https://try.github.io/levels/1/challenges/1)
-
-###Software to Download:
-* [Github Client](https://windows.github.com/)
-* [Visual Studio Community Edition 2013](http://go.microsoft.com/fwlink/?LinkId=517284)
 
 ##The grammar
 ####Token
