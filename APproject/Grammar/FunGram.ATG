@@ -43,7 +43,7 @@ Expr<out int type>       (. int type1; Op op; .)
 Factor<out int type>     (. int n; Obj obj; string name; .)
 =                        (. type = fun; .)
   ( Ident<out name>      (. obj = tab.Find(name); type = obj.type;
-                            if (obj.kind != var) SemErr("variable expected"); 
+                            if (obj.kind != var && obj.kind != form) SemErr("variable expected"); 
 						 .)
   | number               (. n = Convert.ToInt32(t.val);
                             type = integer; .)
@@ -105,15 +105,20 @@ SimExpr<out int type>    (. int type1; Op op; .)
                               SemErr("integer type expected"); .)
 	}.
 /*------------------------------------------------------------------------*/
-Stat                     (. int type; string name; Obj obj;
+Stat                     (. int type; string name; Obj obj; Queue<int> actualTypes = new Queue<int>();
                             int adr; .)
 = Ident<out name>        (. obj = tab.Find(name); .)
   ( '='                  (. if ( !(obj.kind == var || obj.kind == form) )
 								SemErr("cannot assign to procedure"); .)
 		Expr<out type> ';'
 						 (. if (type != obj.type) SemErr("incompatible types"); .)
-	| '('  ')' ';'
-						 (. if (obj.kind != proc) SemErr("object is not a procedure");.)
+
+	| '('{ Expr<out type>      (. actualTypes.Enqueue(type); .) 
+           { ',' Expr<out type>  (. actualTypes.Enqueue(type); .)
+		  }  }')' ';'
+						 (. if (obj.kind != proc) SemErr("object is not a procedure");
+							tab.checkActualTypes(obj,actualTypes);
+						 .)
 	)
 
 | "if"
@@ -167,23 +172,5 @@ VarDecl                  (. string name; ArrayList names = new ArrayList(); int 
 															obj = tab.Find(name);.)	
 				)
 	).
-   
-   
-/*
-VarDecl                  (. string name; HashSet<string> names = new HashSet<string>(); int type; int type1; Obj obj; .)
-= "var"
-   Ident<out name>        (. names.Add(name); .)
-  { ',' Ident<out name>  	(. names.Add(name); .)
-  }
-  Type<out type> ';'      (. foreach(string n in names)
-						    						{ tab.NewObj(n, var, type);}
-						  						.)
-  | "var" Ident<out name>
-    Type<out type> '='
-	Expr<out type1> ';' (. if (type != type1) SemErr("incompatible types");
-											 tab.NewObj(name, form, type);
-											 obj = tab.Find(name);
-											 if (obj.level == 0)  .)
 
-  .*/
 END Fun.

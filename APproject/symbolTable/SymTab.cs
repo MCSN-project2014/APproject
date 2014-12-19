@@ -88,6 +88,34 @@ public class SymbolTable {
     }
 
 
+    public void checkActualTypes(Obj obj, Queue<int> actualTypes)
+    {
+
+        if (obj.formali.Count != actualTypes.Count)
+            parser.SemErr("parameter expected");
+        else
+        {
+            // Copies the entire source Queue to a new standard array.
+            Object[] ArrayofFormals = obj.formali.ToArray();
+
+            for (int i = 0; i < ArrayofFormals.Length; i++)
+            {
+                Obj formal = (Obj) ArrayofFormals[i];
+                int actType = actualTypes.Dequeue();
+                if (formal.type != actType)
+                {
+                    if (formal.type == boolean)
+                        parser.SemErr("boolean type expected");
+                    if (formal.type == integer)
+                        parser.SemErr("integer type expected");
+                    if (formal.type == fun)
+                        parser.SemErr("fun type expected");
+                }
+            }
+
+        }
+    }
+
 	// search the name in all open scopes and return its object node
 	public Obj Find (string name) {
 		Obj obj, scope;

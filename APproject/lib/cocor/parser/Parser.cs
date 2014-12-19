@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace APproject {
 
@@ -142,7 +143,7 @@ const int // types
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); type = obj.type;
-			if (obj.kind != var) SemErr("variable expected"); 
+			if (obj.kind != var && obj.kind != form) SemErr("variable expected"); 
 			
 		} else if (la.kind == 2) {
 			Get();
@@ -283,7 +284,7 @@ const int // types
 	}
 
 	void Stat() {
-		int type; string name; Obj obj;
+		int type; string name; Obj obj; Queue<int> actualTypes = new Queue<int>();
 		int adr; 
 		if (la.kind == 1) {
 			Ident(out name);
@@ -297,9 +298,20 @@ const int // types
 				if (type != obj.type) SemErr("incompatible types"); 
 			} else if (la.kind == 10) {
 				Get();
+				while (StartOf(2)) {
+					Expr(out type);
+					actualTypes.Enqueue(type); 
+					while (la.kind == 11) {
+						Get();
+						Expr(out type);
+						actualTypes.Enqueue(type); 
+					}
+				}
 				Expect(12);
 				Expect(20);
 				if (obj.kind != proc) SemErr("object is not a procedure");
+				tab.checkActualTypes(obj,actualTypes);
+				
 			} else SynErr(36);
 		} else if (la.kind == 21) {
 			Get();
@@ -323,7 +335,7 @@ const int // types
 		} else if (la.kind == 13) {
 			Get();
 			while (StartOf(1)) {
-				if (StartOf(2)) {
+				if (StartOf(3)) {
 					Stat();
 				} else {
 					VarDecl();
@@ -370,6 +382,7 @@ const int // types
 	static readonly bool[,] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,T,x,T, x,x,T,x, x},
+		{x,T,T,x, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,T,x,T, x,x,x,x, x}
 
 	};
