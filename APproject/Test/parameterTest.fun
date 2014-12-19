@@ -6,7 +6,7 @@ fun add(w int, v int){
 }
 
 fun main(){
-	var x int = 7;
+	var x int = 6;
 	var y int = 5;
 	add(x,y);
 }

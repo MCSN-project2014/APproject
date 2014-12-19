@@ -213,6 +213,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 15) {
 			Get();
 			obj = tab.NewObj("Main", Kinds.proc, Types.undef); obj.adr = gen.pc;
+			
 			gen.progStart = gen.pc;
 			tab.OpenScope(); 
 			Expect(10);

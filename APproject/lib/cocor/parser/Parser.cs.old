@@ -213,6 +213,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 15) {
 			Get();
 			obj = tab.NewObj("Main", Kinds.proc, Types.undef); obj.adr = gen.pc;
+			
 			gen.progStart = gen.pc;
 			tab.OpenScope(); 
 			Expect(10);
@@ -231,7 +232,7 @@ public SymbolTable   tab;
 		} else SynErr(32);
 	}
 
-	void Type(out Types type) {
+	void Type(out int type) {
 		type = Types.undef; 
 		if (la.kind == 9) {
 			Get();
@@ -306,7 +307,7 @@ public SymbolTable   tab;
 				Expect(12);
 				Expect(20);
 				if (obj.kind != Kinds.proc) SemErr("object is not a procedure");
-				tab.checkActualTypes(obj,actualTypes);
+				tab.checkActualFormalTypes(obj,actualTypes);
 				
 			} else SynErr(36);
 		} else if (la.kind == 21) {
