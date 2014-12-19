@@ -49,7 +49,8 @@ public class SymbolTable {
 		scop.name = ""; scop.kind = scope;
         scop.locals = null; scop.formali = formali; 
         scop.nextAdr = 0;
-		scop.next = topScope; topScope = scop; 
+		scop.next = topScope; 
+        topScope = scop; 
 		curLevel++;
 	}
 

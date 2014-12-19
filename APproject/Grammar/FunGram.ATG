@@ -84,7 +84,8 @@ ProcDecl                  (. int type; string name; Obj obj; int adr; .)
 	   }  ')'
   '{'                     (. adr = gen.pc - 2; .)
   { VarDecl | Stat }
-  '}'                     (. tab.CloseScope(); .)
+  '}' //RType<out type>     (. obj.type = type; .)
+							(. tab.CloseScope(); .)
   | "main"                (. obj = tab.NewObj("Main", proc, undef); obj.adr = gen.pc;
                             gen.progStart = gen.pc;
                             tab.OpenScope(); .)
@@ -150,6 +151,14 @@ Term<out int type>       (. int type1; Op op; .)
     Factor<out type1>    (. if (type != integer || type1 != integer)
                               SemErr("integer type expected"); .)
 	}.
+
+/*------------------------------------------------------------------------
+RType<out type>                 
+= 
+  ( "fun" '('  ')' RType<out type>   (. type = fun; .)
+  | "int"                            (. type = integer; .)
+  | "bool"                           (. type = boolean; .)
+   ).*/
 /*------------------------------------------------------------------------*/
 Type<out int type>
 = 						  (. type = undef; .)
