@@ -14,7 +14,7 @@ public class Obj {  // object describing a declared name
 	public Obj locals;		// scopes: to locally declared objects
 	public int nextAdr;		// scopes: next free address in this scope
 
-    public Queue<Obj> formali { get; set; }
+    public Queue<Obj> formalParameters { get; set; }
 }
 
 public class SymbolTable {
@@ -47,7 +47,7 @@ public class SymbolTable {
 		Obj scop = new Obj();
         Queue<Obj> formali = new Queue<Obj>();
 		scop.name = ""; scop.kind = scope;
-        scop.locals = null; scop.formali = formali; 
+        scop.locals = null; scop.formalParameters = formali; 
         scop.nextAdr = 0;
 		scop.next = topScope; 
         topScope = scop; 
@@ -77,7 +77,7 @@ public class SymbolTable {
         if (kind == form)
         {
             obj.adr = topScope.nextAdr++;
-            topScope.formali.Enqueue(obj);
+            topScope.formalParameters.Enqueue(obj);
         }
 		return obj;
 	}
@@ -85,19 +85,19 @@ public class SymbolTable {
     // set formal paramiters 
     public void setformsof(Obj obj)
     {
-        obj.formali = topScope.formali;
+        obj.formalParameters = topScope.formalParameters;
     }
 
 
     public void checkActualTypes(Obj obj, Queue<int> actualTypes)
     {
 
-        if (obj.formali.Count != actualTypes.Count)
+        if (obj.formalParameters.Count != actualTypes.Count)
             parser.SemErr("parameter expected");
         else
         {
             // Copies the entire source Queue to a new standard array.
-            Object[] ArrayofFormals = obj.formali.ToArray();
+            Object[] ArrayofFormals = obj.formalParameters.ToArray();
 
             for (int i = 0; i < ArrayofFormals.Length; i++)
             {

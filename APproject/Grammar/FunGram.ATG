@@ -153,13 +153,13 @@ Term<out int type>       (. int type1; Op op; .)
 	}.
 
 /*------------------------------------------------------------------------
-RType<out type>                 
+RType<out type> (. int type1 .)                 
 = 
-  ( "fun" '('  ')' RType<out type>   (. type = fun; .)
+  ( "fun" '('  ')' RType<out type1>   (. type = type1; .)
   | "int"                            (. type = integer; .)
   | "bool"                           (. type = boolean; .)
    ).*/
-/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/ 
 Type<out int type>
 = 						  (. type = undef; .)
   ( "fun"                 (. type = fun; .)
