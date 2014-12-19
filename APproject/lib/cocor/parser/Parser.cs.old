@@ -1,7 +1,9 @@
-
-using System;
 using System.Collections;
 using System.Collections.Generic;
+
+
+
+using System;
 
 namespace APproject {
 
@@ -24,13 +26,7 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-const int // types
-	  undef = 0, integer = 1, boolean = 2, fun = 3;
-
-	const int // object kinds
-	  var = 0, proc = 1, func = 2, form = 3, act=4;
-
-	public SymbolTable   tab;
+public SymbolTable   tab;
 	public CodeGenerator gen;
 /*--------------------------------------------------------------------------*/
 
@@ -102,24 +98,24 @@ const int // types
 		} else SynErr(28);
 	}
 
-	void Expr(out int type) {
-		int type1; Op op; 
+	void Expr(out Types type) {
+		Types type1; Op op; 
 		SimExpr(out type);
 		if (la.kind == 16 || la.kind == 17 || la.kind == 18) {
 			RelOp(out op);
 			SimExpr(out type1);
 			if (type != type1) SemErr("incompatible types");
-			type = boolean; 
+			type = Types.boolean; 
 		}
 	}
 
-	void SimExpr(out int type) {
-		int type1; Op op; 
+	void SimExpr(out Types type) {
+		Types type1; Op op; 
 		Term(out type);
 		while (la.kind == 3 || la.kind == 4) {
 			AddOp(out op);
 			Term(out type1);
-			if (type != integer || type1 != integer)
+			if (type != Types.integer || type1 != Types.integer)
 			 SemErr("integer type expected"); 
 		}
 	}
@@ -137,32 +133,32 @@ const int // types
 		} else SynErr(29);
 	}
 
-	void Factor(out int type) {
+	void Factor(out Types type) {
 		int n; Obj obj; string name; 
-		type = fun; 
+		type = Types.fun; 
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); type = obj.type;
-			if (obj.kind != var && obj.kind != form) SemErr("variable expected"); 
+			if (obj.kind != Kinds.var && obj.kind != Kinds.form) SemErr("variable expected"); 
 			
 		} else if (la.kind == 2) {
 			Get();
 			n = Convert.ToInt32(t.val);
-			type = integer; 
+			type = Types.integer; 
 		} else if (la.kind == 4) {
 			Get();
 			Factor(out type);
-			if (type != integer) {
+			if (type != Types.integer) {
 			 SemErr("integer type expected");
-			type = integer;
+			type = Types.integer;
 			}
 			
 		} else if (la.kind == 5) {
 			Get();
-			type = boolean; 
+			type = Types.boolean; 
 		} else if (la.kind == 6) {
 			Get();
-			type = boolean; 
+			type = Types.boolean; 
 		} else SynErr(30);
 	}
 
@@ -182,22 +178,22 @@ const int // types
 	}
 
 	void ProcDecl() {
-		int type; string name; Obj obj; int adr; 
+		Types type; string name; Obj obj; int adr; 
 		Expect(9);
 		if (la.kind == 1) {
 			Ident(out name);
-			obj = tab.NewObj(name, proc, undef); obj.adr = gen.pc;
+			obj = tab.NewObj(name, Kinds.proc, Types.undef); obj.adr = gen.pc;
 			tab.OpenScope(); 
 			Expect(10);
 			while (la.kind == 1) {
 				Ident(out name);
 				Type(out type);
-				tab.NewObj(name, form, type); 
+				tab.NewObj(name, Kinds.form, type); 
 				while (la.kind == 11) {
 					Get();
 					Ident(out name);
 					Type(out type);
-					tab.NewObj(name, form, type); 
+					tab.NewObj(name, Kinds.form, type); 
 				}
 				tab.setformsof(obj);
 				
@@ -216,7 +212,7 @@ const int // types
 			tab.CloseScope(); 
 		} else if (la.kind == 15) {
 			Get();
-			obj = tab.NewObj("Main", proc, undef); obj.adr = gen.pc;
+			obj = tab.NewObj("Main", Kinds.proc, Types.undef); obj.adr = gen.pc;
 			gen.progStart = gen.pc;
 			tab.OpenScope(); 
 			Expect(10);
@@ -235,22 +231,22 @@ const int // types
 		} else SynErr(32);
 	}
 
-	void Type(out int type) {
-		type = undef; 
+	void Type(out Types type) {
+		type = Types.undef; 
 		if (la.kind == 9) {
 			Get();
-			type = fun; 
+			type = Types.fun; 
 		} else if (la.kind == 24) {
 			Get();
-			type = integer; 
+			type = Types.integer; 
 		} else if (la.kind == 25) {
 			Get();
-			type = boolean; 
+			type = Types.boolean; 
 		} else SynErr(33);
 	}
 
 	void VarDecl() {
-		string name; ArrayList names = new ArrayList(); int type; int type1; Obj obj; 
+		string name; ArrayList names = new ArrayList(); Types type; Types type1; Obj obj; 
 		Expect(26);
 		Ident(out name);
 		names.Add(name); 
@@ -266,32 +262,32 @@ const int // types
 			Type(out type);
 			Expect(20);
 			foreach(string n in names)
-			{ tab.NewObj(n, var, type); }
+			{ tab.NewObj(n, Kinds.var, type); }
 		} else if (la.kind == 9 || la.kind == 24 || la.kind == 25) {
 			Type(out type);
 			if (la.kind == 20) {
 				Get();
-				tab.NewObj((string)names[0], var, type); 
+				tab.NewObj((string)names[0], Kinds.var, type); 
 			} else if (la.kind == 19) {
 				Get();
 				Expr(out type1);
 				Expect(20);
 				if (type != type1) SemErr("incompatible types");
-				tab.NewObj((string)names[0], var, type);
+				tab.NewObj((string)names[0], Kinds.var, type);
 				obj = tab.Find(name);
 			} else SynErr(34);
 		} else SynErr(35);
 	}
 
 	void Stat() {
-		int type; string name; Obj obj; Queue<int> actualTypes = new Queue<int>();
+		Types type; string name; Obj obj; Queue<Types> actualTypes = new Queue<Types>();
 		int adr; 
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); 
 			if (la.kind == 19) {
 				Get();
-				if ( !(obj.kind == var || obj.kind == form) )
+				if ( !(obj.kind == Kinds.var || obj.kind == Kinds.form) )
 				SemErr("cannot assign to procedure"); 
 				Expr(out type);
 				Expect(20);
@@ -309,7 +305,7 @@ const int // types
 				}
 				Expect(12);
 				Expect(20);
-				if (obj.kind != proc) SemErr("object is not a procedure");
+				if (obj.kind != Kinds.proc) SemErr("object is not a procedure");
 				tab.checkActualTypes(obj,actualTypes);
 				
 			} else SynErr(36);
@@ -318,7 +314,7 @@ const int // types
 			Expect(10);
 			Expr(out type);
 			Expect(12);
-			if (type != boolean) SemErr("boolean type expected");
+			if (type != Types.boolean) SemErr("boolean type expected");
 			adr = gen.pc - 2; 
 			Stat();
 			if (la.kind == 22) {
@@ -330,7 +326,7 @@ const int // types
 			Expect(10);
 			Expr(out type);
 			Expect(12);
-			if (type != boolean) SemErr("boolean type expected"); 
+			if (type != Types.boolean) SemErr("boolean type expected"); 
 			Stat();
 		} else if (la.kind == 13) {
 			Get();
@@ -345,13 +341,13 @@ const int // types
 		} else SynErr(37);
 	}
 
-	void Term(out int type) {
-		int type1; Op op; 
+	void Term(out Types type) {
+		Types type1; Op op; 
 		Factor(out type);
 		while (la.kind == 7 || la.kind == 8) {
 			MulOp(out op);
 			Factor(out type1);
-			if (type != integer || type1 != integer)
+			if (type != Types.integer || type1 != Types.integer)
 			 SemErr("integer type expected"); 
 		}
 	}

@@ -23,7 +23,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="AfterBuild" command="" pauseExternalConsole="True" />
-        <Command type="Execute" command="${ProjectDir}/bin/Debug/APproject.exe ${ProjectDir}/Test/test.fun" />
+        <Command type="Execute" command="${ProjectDir}/bin/Debug/APproject.exe ${ProjectDir}/Test/parameterTest.fun" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>

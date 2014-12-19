@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 COMPILER Fun
 
-	const int // types
+	/*const int // types
 	  undef = 0, integer = 1, boolean = 2, fun = 3;
 
 	const int // object kinds
 	  var = 0, proc = 1, func = 2, form = 3, act=4;
-
+	*/
+	
 	public SymbolTable   tab;
 	public CodeGenerator gen;
 /*--------------------------------------------------------------------------*/
@@ -36,28 +37,28 @@ AddOp<out Op op>
   | '-'                  (. op = Op.SUB; .)
   ).
 /*------------------------------------------------------------------------*/
-Expr<out int type>       (. int type1; Op op; .)
+Expr<out Types type>       (. Types type1; Op op; .)
 = SimExpr<out type>
   [ RelOp<out op>
     SimExpr<out type1>   (. if (type != type1) SemErr("incompatible types");
-                            type = boolean; .)
+                            type = Types.boolean; .)
   ].
 /*------------------------------------------------------------------------*/
-Factor<out int type>     (. int n; Obj obj; string name; .)
-=                        (. type = fun; .)
+Factor<out Types type>     (. int n; Obj obj; string name; .)
+=                        (. type = Types.fun; .)
   ( Ident<out name>      (. obj = tab.Find(name); type = obj.type;
-                            if (obj.kind != var && obj.kind != form) SemErr("variable expected"); 
+                            if (obj.kind != Kinds.var && obj.kind != Kinds.form) SemErr("variable expected"); 
 						 .)
   | number               (. n = Convert.ToInt32(t.val);
-                            type = integer; .)
+                            type = Types.integer; .)
   | '-'
-    Factor<out type>     (. if (type != integer) {
+    Factor<out type>     (. if (type != Types.integer) {
                               SemErr("integer type expected");
-							  type = integer;
+							  type = Types.integer;
                             }
 							 .)
-  | "true"               (.  type = boolean; .)
-  | "false"              (.  type = boolean; .)
+  | "true"               (.  type = Types.boolean; .)
+  | "false"              (.  type = Types.boolean; .)
   ).
 /*------------------------------------------------------------------------*/
 Ident<out string name>
@@ -69,23 +70,23 @@ MulOp<out Op op>
   | '/'                  (. op = Op.DIV; .)
   ).
 /*------------------------------------------------------------------------*/
-ProcDecl                  (. int type; string name; Obj obj; int adr; .)
+ProcDecl                  (. Types type; string name; Obj obj; int adr; .)
 = "fun" (
-  Ident<out name>         (. obj = tab.NewObj(name, proc, undef); obj.adr = gen.pc;
+  Ident<out name>         (. obj = tab.NewObj(name, Kinds.proc, Types.undef); obj.adr = gen.pc;
                              tab.OpenScope(); .)
   '(' {Ident<out name>
 
-	   Type<out type>     (. tab.NewObj(name, form, type); .)
+	   Type<out type>     (. tab.NewObj(name, Kinds.form, type); .)
 
 	   {','Ident<out name>
-	   Type<out type>     (. tab.NewObj(name, form, type); .)
+	   Type<out type>     (. tab.NewObj(name, Kinds.form, type); .)
 	   }                  (. tab.setformsof(obj);
 	       				   .)
 	   }  ')'
   '{'                     (. adr = gen.pc - 2; .)
   { VarDecl | Stat }
   '}'                     (. tab.CloseScope(); .)
-  | "main"                (. obj = tab.NewObj("Main", proc, undef); obj.adr = gen.pc;
+  | "main"                (. obj = tab.NewObj("Main", Kinds.proc, Types.undef); obj.adr = gen.pc;
                             gen.progStart = gen.pc;
                             tab.OpenScope(); .)
   '(' ')'
@@ -101,17 +102,17 @@ RelOp<out Op op>
   | '>'                  (. op = Op.GTR; .)
   ).
 /*------------------------------------------------------------------------*/
-SimExpr<out int type>    (. int type1; Op op; .)
+SimExpr<out Types type>    (. Types type1; Op op; .)
 = Term<out type>
   { AddOp<out op>
-    Term<out type1>      (. if (type != integer || type1 != integer)
+    Term<out type1>      (. if (type != Types.integer || type1 != Types.integer)
                               SemErr("integer type expected"); .)
 	}.
 /*------------------------------------------------------------------------*/
-Stat                     (. int type; string name; Obj obj; Queue<int> actualTypes = new Queue<int>();
+Stat                     (. Types type; string name; Obj obj; Queue<Types> actualTypes = new Queue<Types>();
                             int adr; .)
 = Ident<out name>        (. obj = tab.Find(name); .)
-  ( '='                  (. if ( !(obj.kind == var || obj.kind == form) )
+  ( '='                  (. if ( !(obj.kind == Kinds.var || obj.kind == Kinds.form) )
 								SemErr("cannot assign to procedure"); .)
 		Expr<out type> ';'
 						 (. if (type != obj.type) SemErr("incompatible types"); .)
@@ -119,19 +120,19 @@ Stat                     (. int type; string name; Obj obj; Queue<int> actualTyp
 	| '('{ Expr<out type>      (. actualTypes.Enqueue(type); .) 
            { ',' Expr<out type>  (. actualTypes.Enqueue(type); .)
 		  }  }')' ';'
-						 (. if (obj.kind != proc) SemErr("object is not a procedure");
-							tab.checkActualTypes(obj,actualTypes);
+						 (. if (obj.kind != Kinds.proc) SemErr("object is not a procedure");
+							tab.checkActualFormalTypes(obj,actualTypes);
 						 .)
 	)
 
 | "if"
-	'(' Expr<out type> ')' (. if (type != boolean) SemErr("boolean type expected");
+	'(' Expr<out type> ')' (. if (type != Types.boolean) SemErr("boolean type expected");
 							  adr = gen.pc - 2; .)
 	Stat
 	[ "else"  Stat ]          
 
 | "while"                  
-	'(' Expr<out type> ')' (. if (type != boolean) SemErr("boolean type expected"); .)
+	'(' Expr<out type> ')' (. if (type != Types.boolean) SemErr("boolean type expected"); .)
 	Stat                   
 
 | '{' { Stat | VarDecl } '}' .
@@ -144,34 +145,34 @@ Fun
 							SemErr("main function never defined");
                          .).
 /*------------------------------------------------------------------------*/
-Term<out int type>       (. int type1; Op op; .)
+Term<out Types type>       (. Types type1; Op op; .)
 = Factor<out type>
   { MulOp<out op>
-    Factor<out type1>    (. if (type != integer || type1 != integer)
+    Factor<out type1>    (. if (type != Types.integer || type1 != Types.integer)
                               SemErr("integer type expected"); .)
 	}.
 /*------------------------------------------------------------------------*/
-Type<out int type>
-= 						  (. type = undef; .)
-  ( "fun"                 (. type = fun; .)
-  | "int"                 (. type = integer; .)
-  | "bool"                (. type = boolean; .)
+Type<out Types type>
+= 						  (. type = Types.undef; .)
+  ( "fun"                 (. type = Types.fun; .)
+  | "int"                 (. type = Types.integer; .)
+  | "bool"                (. type = Types.boolean; .)
    ).
 /*------------------------------------------------------------------------*/
-VarDecl                  (. string name; ArrayList names = new ArrayList(); int type; int type1; Obj obj; .)
+VarDecl                  (. string name; ArrayList names = new ArrayList(); Types type; Types type1; Obj obj; .)
 = "var"
    Ident<out name>              (. names.Add(name); .)
 	( 
 		',' Ident<out name>  	    (. names.Add(name); .)
 			{ ',' Ident<out name>  (. names.Add(name); .)
 		} Type<out type> ';'          (. foreach(string n in names)
-						    			{ tab.NewObj(n, var, type); }.)
+						    			{ tab.NewObj(n, Kinds.var, type); }.)
 
 		| Type<out type>            
-				( ';'									(. tab.NewObj((string)names[0], var, type); .)
+				( ';'									(. tab.NewObj((string)names[0], Kinds.var, type); .)
 	
 	  			   |'=' Expr<out type1>  ';'			(. if (type != type1) SemErr("incompatible types");
-					 									   tab.NewObj((string)names[0], var, type);
+					 									   tab.NewObj((string)names[0], Kinds.var, type);
 															obj = tab.Find(name);.)	
 				)
 	).
