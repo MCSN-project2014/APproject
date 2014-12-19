@@ -143,7 +143,7 @@ const int // types
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); type = obj.type;
-			if (obj.kind != var && obj.) SemErr("variable expected"); 
+			if (obj.kind != var && obj.kind != form) SemErr("variable expected"); 
 			
 		} else if (la.kind == 2) {
 			Get();
