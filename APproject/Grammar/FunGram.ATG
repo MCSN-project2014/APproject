@@ -30,12 +30,14 @@ COMMENTS FROM "//" TO lf
 IGNORE cr + lf + tab
 
 PRODUCTIONS
+
 /*------------------------------------------------------------------------*/
 AddOp<out Op op>
 =                        (. op = Op.ADD; .)
   ( '+'
   | '-'                  (. op = Op.SUB; .)
   ).
+
 /*------------------------------------------------------------------------*/
 Expr<out Types type>       (. Types type1; Op op; .)
 = SimExpr<out type>
@@ -43,6 +45,7 @@ Expr<out Types type>       (. Types type1; Op op; .)
     SimExpr<out type1>   (. if (type != type1) SemErr("incompatible types");
                             type = Types.boolean; .)
   ].
+
 /*------------------------------------------------------------------------*/
 Factor<out Types type>     (. int n; Obj obj; string name; .)
 =                        (. type = Types.fun; .)
@@ -85,7 +88,7 @@ ProcDecl                  (. Types type; string name; Obj obj; int adr; .)
 	   }  ')'
   '{'                     (. adr = gen.pc - 2; .)
   { VarDecl | Stat }
-  '}' //RType<out type>     (. obj.type = type; .)
+  '}' RType<out type>     (. obj.type = type; .)
 							(. tab.CloseScope(); .)
   | "main"                (. obj = tab.NewObj("Main", Kinds.proc, Types.undef); obj.adr = gen.pc;
 
