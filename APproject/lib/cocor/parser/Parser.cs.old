@@ -88,18 +88,18 @@ public SymbolTable   tab;
 	}
 
 	
-	void AddOp(out Op op) {
-		op = Op.ADD; 
+	void AddOp(out Operation op) {
+		op = Operation.ADD; 
 		if (la.kind == 3) {
 			Get();
 		} else if (la.kind == 4) {
 			Get();
-			op = Op.SUB; 
+			op = Operation.SUB; 
 		} else SynErr(28);
 	}
 
 	void Expr(out Types type) {
-		Types type1; Op op; 
+		Types type1; Operation op; 
 		SimExpr(out type);
 		if (la.kind == 16 || la.kind == 17 || la.kind == 18) {
 			RelOp(out op);
@@ -110,7 +110,7 @@ public SymbolTable   tab;
 	}
 
 	void SimExpr(out Types type) {
-		Types type1; Op op; 
+		Types type1; Operation op; 
 		Term(out type);
 		while (la.kind == 3 || la.kind == 4) {
 			AddOp(out op);
@@ -120,16 +120,16 @@ public SymbolTable   tab;
 		}
 	}
 
-	void RelOp(out Op op) {
-		op = Op.EQU; 
+	void RelOp(out Operation op) {
+		op = Operation.EQU; 
 		if (la.kind == 16) {
 			Get();
 		} else if (la.kind == 17) {
 			Get();
-			op = Op.LSS; 
+			op = Operation.LSS; 
 		} else if (la.kind == 18) {
 			Get();
-			op = Op.GTR; 
+			op = Operation.GTR; 
 		} else SynErr(29);
 	}
 
@@ -167,13 +167,13 @@ public SymbolTable   tab;
 		name = t.val; 
 	}
 
-	void MulOp(out Op op) {
-		op = Op.MUL; 
+	void MulOp(out Operation op) {
+		op = Operation.MUL; 
 		if (la.kind == 7) {
 			Get();
 		} else if (la.kind == 8) {
 			Get();
-			op = Op.DIV; 
+			op = Operation.DIV; 
 		} else SynErr(31);
 	}
 
@@ -232,7 +232,7 @@ public SymbolTable   tab;
 		} else SynErr(32);
 	}
 
-	void Type(out int type) {
+	void Type(out Types type) {
 		type = Types.undef; 
 		if (la.kind == 9) {
 			Get();
@@ -343,7 +343,7 @@ public SymbolTable   tab;
 	}
 
 	void Term(out Types type) {
-		Types type1; Op op; 
+		Types type1; Operation op; 
 		Factor(out type);
 		while (la.kind == 7 || la.kind == 8) {
 			MulOp(out op);

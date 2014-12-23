@@ -44,14 +44,16 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Mono.C5" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="codeGenerator\CodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
     <Compile Include="MainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AST\Node.cs" />
+    <Compile Include="codeGenerator\Operation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -73,4 +75,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="AST\" />
+  </ItemGroup>
 </Project>
