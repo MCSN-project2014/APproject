@@ -10,7 +10,7 @@ namespace APproject
 		public string name;		// name of the object
 		public Types type;			// type of the object (undef for proc)
 		public Obj	next;			// to next object in same scope
-		public Kinds kind;      // var, proc, scope
+		public Kinds kind;           // var, proc, scope
 		public int adr;				// address in memory or start of proc
 		public int level;			// nesting level; 0=global, 1=local
 		public Obj locals;		// scopes: to locally declared objects
