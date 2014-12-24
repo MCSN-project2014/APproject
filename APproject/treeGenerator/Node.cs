@@ -10,22 +10,29 @@ namespace APproject.treeGenerator
     {
         private String nameConstruct;
 
-        public Node(String n) { nameConstruct = n; }
+        public Node(String n) 
+        { nameConstruct = n; }
 
-        public String  getname(){ return nameConstruct;}
+        public Node() 
+        { }
+        public String  getname()
+        { return nameConstruct;}
 
     }
     
-    class Stmt : Node { }
+    class Stmt : Node 
+    { 
+        public Stmt () : base ()
+        { }
+    }
 
     class Exp : Stmt
     {
-        private String name;
         private Types rType;    // for future type cecking : bool or int
         private String expType ; // Aexp or Exp or FExp
 
-        public Exp ( String n, Types rtype, String etype){
-            name = n;
+        public Exp ( Types rtype, String etype){
+     
             rType = rtype;
             expType = etype;
         }
