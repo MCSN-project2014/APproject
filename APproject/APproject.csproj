@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
@@ -76,7 +77,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="AST\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
