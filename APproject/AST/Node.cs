@@ -6,8 +6,8 @@ namespace APproject
     /**
      * All possible node labels: both reserved keywords and primitive operators.
      **/
-	public enum Statement {If,While,Return,Ass,Dec,AssDec,Print,Read,Async, 
-							Plus,Mul,Minus,Div,Gt,Gte,Lt,Lte,Eq};
+	public enum Statement {Main, FunDecl, Fun, If, While, Return, Assig, Decl, AssigDecl, Print,
+                            For, Read, Async, Afun, Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq};
 
 	public class Node
 	{
