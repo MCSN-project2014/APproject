@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
+    <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
