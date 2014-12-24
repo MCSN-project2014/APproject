@@ -113,7 +113,7 @@ namespace APproject.FSCodeGenerator
                 case Labels.Eq:
                     translateEq(n);
                     break;
-                case default : 
+                default : 
                     break;
             }
         }

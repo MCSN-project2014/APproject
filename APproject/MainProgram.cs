@@ -34,9 +34,9 @@ namespace APproject
 			Obj o = new Obj ();
 			o.kind = Kinds.func;
 			Node main = new Node (o);
-			Node If = new Node ( Statement.If);
+			Node If = new Node ( Labels.If);
 			main.addChildren (If);
-			Node condition = new Node (Statement.geq);
+            Node condition = new Node(Labels.Gte);
 			If.addChildren (condition);
 			Obj term1 = new Obj ();
 			term1.type = Types.integer;
@@ -46,7 +46,7 @@ namespace APproject
 			term1.kind = Kinds.var;
 			condition.addChildren (new Node(term1));
 			condition.addChildren (new Node(term2));
-			Node ret = new Node (Statement.Return);
+            Node ret = new Node(Labels.Return);
 			If.addChildren (ret);
 			Obj term3 = new Obj ();
 			term1.type = Types.integer;
@@ -62,7 +62,7 @@ namespace APproject
 				if (node.term != null)
 					Console.WriteLine (node.term);
 				else
-					Console.WriteLine (node.stmn);
+					Console.WriteLine (node.label);
 				foreach (Node n in node.getChildren()) {
 					printAST (n);
 				}
