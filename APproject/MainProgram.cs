@@ -20,11 +20,11 @@ namespace APproject
                 parser.gen = new CodeGenerator();
                 //parser.treegen = new APproject.treeGenerator.TreeGen();
                 parser.Parse();
-                /*if (parser.errors.count == 0)
-                {
-                    parser.gen.Decode();
-                    parser.gen.Interpret("Taste.IN");
-                }*/
+                //if (parser.errors.count == 0)
+                //{
+                //    parser.gen.Decode();
+                //    parser.gen.Interpret("Taste.IN");
+               // }
                 Console.WriteLine(parser.errors.count + " errors detected");
             }
             else

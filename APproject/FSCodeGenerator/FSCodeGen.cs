@@ -16,6 +16,7 @@ namespace APproject.FSCodeGenerator
     public class FSCodeGen
     {
         private StreamWriter fileWriter;
+
         public FSCodeGen(string outputFileName)
         {
             if (outputFileName == string.Empty)
@@ -26,7 +27,7 @@ namespace APproject.FSCodeGenerator
             {
                 try
                 {
-                    FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                    //FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
                     fileWriter = new StreamWriter(outputFileName + ".fs");
                 }
                 catch (IOException)
@@ -116,11 +117,17 @@ namespace APproject.FSCodeGenerator
                 default : 
                     break;
             }
+            fileWriter.Close();
         }
 
         public void translateMain(Node n)
         {
-
+            fileWriter.WriteLine(" il main non esiste");
+            foreach ( Node c in n.getChildren() )
+            {
+                translate(c);
+            }
+            
         }
 
         public void translateFunDecl(Node n)
@@ -135,6 +142,7 @@ namespace APproject.FSCodeGenerator
     
         public void translateIf(Node n)
         {
+            fileWriter.WriteLine(" if in f# ");
 
         }
 
@@ -193,6 +201,15 @@ namespace APproject.FSCodeGenerator
              * if childRight is terminal print child rigth
              * else print(translate(childRight));
              **/
+
+            List<Node> children = n.getChildren();
+            foreach ( Node c in children )
+            {
+                if( c.isTerminal())
+                {
+
+                }
+            }
         }
 
         public void translateMinus(Node n)
