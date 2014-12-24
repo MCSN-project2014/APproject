@@ -55,6 +55,7 @@
     <Compile Include="codeGenerator\Operation.cs" />
     <Compile Include="treeGenerator\Node.cs" />
     <Compile Include="treeGenerator\TreeGen.cs" />
+    <Compile Include="Interpreter\Interpreter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -78,5 +79,6 @@
   -->
   <ItemGroup>
     <Folder Include="AST\" />
+    <Folder Include="Interpreter\" />
   </ItemGroup>
 </Project>

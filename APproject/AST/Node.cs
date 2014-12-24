@@ -8,7 +8,7 @@ namespace APproject
 
 	public class Node
 	{
-		private Node parent;
+		public Node parent;
 		private List<Node> children;
 		public Statement stmn;
 		//public Operation op;
