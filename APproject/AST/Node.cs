@@ -3,8 +3,11 @@ using System;
 
 namespace APproject
 {	
+    /**
+     * All possible node labels: both reserved keywords and primitive operators.
+     **/
 	public enum Statement {If,While,Return,Ass,Dec,AssDec,Print,Read,Async, 
-							plus,mul,minus,div,g,geq,l,leq,eq};
+							Plus,Mul,Minus,Div,Gt,Gte,Lt,Lte,Eq};
 
 	public class Node
 	{
