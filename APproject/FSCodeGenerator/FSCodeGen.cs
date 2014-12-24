@@ -27,7 +27,7 @@ namespace APproject.FSCodeGenerator
             {
                 try
                 {
-                    //FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                    FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
                     fileWriter = new StreamWriter(outputFileName + ".fs");
                 }
                 catch (IOException)
