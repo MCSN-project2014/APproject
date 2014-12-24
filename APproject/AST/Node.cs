@@ -6,14 +6,14 @@ namespace APproject
     /**
      * All possible node labels: both reserved keywords and primitive operators.
      **/
-	public enum Statement {Main, FunDecl, Fun, If, While, Return, Assig, Decl, AssigDecl, Print,
-                            For, Read, Async, Afun, Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq};
+	public enum Labels {Main, FunDecl, Fun, If, While, Return, Assig, Decl, AssigDecl, Print,
+                            For, Async, Afun, Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq};
 
 	public class Node
 	{
 		private Node parent;
 		private List<Node> children;
-		public Statement stmn;
+		public Labels label;
 		//public Operation op;
 		public Obj term;
 
@@ -22,10 +22,10 @@ namespace APproject
 			this.parent = null;
 			this.children = new List<Node> ();
 		}
-		public Node (Statement stmn)
+		public Node (Labels l)
 		{
 			init ();
-			this.stmn = stmn;
+			this.label = l;
 		}
 
 		public Node (Obj term){
@@ -41,6 +41,17 @@ namespace APproject
 		public List<Node> getChildren(){
 			return new List<Node>(children);
 		}
+
+        /**
+         * This method determines whether the node is a leaf or not
+         * (i.e. if the node represents a terminal symbol).
+        **/
+        public Boolean isTerminal()
+        {
+            if (term.type == Types.boolean || term.type == Types.integer)
+                return true;
+            else return false;
+        }
 	}
 }
 
