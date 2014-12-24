@@ -9,12 +9,16 @@ namespace APproject.treeGenerator
     class  Node
     {
         private String nameConstruct;
+        private List<Node> children;
 
         public Node(String n) 
-        { nameConstruct = n; }
+        { 
+            nameConstruct = n; 
+        }
 
         public Node() 
         { }
+
         public String  getname()
         { return nameConstruct;}
 
