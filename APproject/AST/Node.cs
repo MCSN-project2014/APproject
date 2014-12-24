@@ -8,14 +8,16 @@ namespace APproject
 
 	public class Node
 	{
+		private Node parent;
 		private List<Node> children;
 		public Statement stmn;
-		//public Operation op; 
+		//public Operation op;
 		public Obj term;
 
 		private void init(){
-			term = null;
-			children = new List<Node> ();
+			this.term = null;
+			this.parent = null;
+			this.children = new List<Node> ();
 		}
 		public Node (Statement stmn)
 		{
@@ -29,6 +31,7 @@ namespace APproject
 		}
 
 		public void addChildren (Node node){
+			node.parent = this;
 			children.Add (node);
 		}
 
