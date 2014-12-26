@@ -16,6 +16,7 @@ namespace APproject.FSCodeGenerator
     public class FSCodeGen
     {
         private StreamWriter fileWriter;
+
         public FSCodeGen(string outputFileName)
         {
             if (outputFileName == string.Empty)
@@ -116,11 +117,28 @@ namespace APproject.FSCodeGenerator
                 default : 
                     break;
             }
+            fileWriter.Close();
+        }
+
+        /**
+         * This is a helper method which calls the method translate 
+         * if needed or prints the name of a node if it's a terminal
+         * one.
+         **/
+        private void translateRecursive (Node n){
+             if (n.isTerminal())
+                fileWriter.Write(n.term.name);
+            else translate(n);
         }
 
         public void translateMain(Node n)
         {
-
+            fileWriter.WriteLine(" il main non esiste");
+            foreach ( Node c in n.getChildren() )
+            {
+                translate(c);
+            }
+            
         }
 
         public void translateFunDecl(Node n)
@@ -135,6 +153,7 @@ namespace APproject.FSCodeGenerator
     
         public void translateIf(Node n)
         {
+            fileWriter.WriteLine(" if in f# ");
 
         }
 
@@ -175,7 +194,10 @@ namespace APproject.FSCodeGenerator
 
         public void translateAsync(Node n)
         {
-
+            fileWriter.WriteLine("async {");
+            fileWriter.Write("\t");
+            translate(n.getChildren().ElementAt(0));
+            fileWriter.WriteLine("}");
         }
 
         public void translateAfun(Node n)
@@ -185,54 +207,122 @@ namespace APproject.FSCodeGenerator
 
         public void translatePlus(Node n)
         {
-            /**
-             * PSEUDOCODE
-             * if childLeft isTerminal() print childLeft
-             * else print (translate(childLeft));
-             * print plus;
-             * if childRight is terminal print child rigth
-             * else print(translate(childRight));
-             **/
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
+
+            translateRecursive(first);
+
+            fileWriter.Write(" + ");
+
+            translateRecursive(second);
+
         }
 
         public void translateMinus(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            translateRecursive(first);
+
+            fileWriter.Write(" - ");
+
+            translateRecursive(second);
         }
 
         public void translateMul(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
+
+            translateRecursive(first);
+
+            fileWriter.Write(" * ");
+
+            translateRecursive(second);
 
         }
 
         public void translateDiv(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
+
+            translateRecursive(first);
+
+            fileWriter.Write(" / ");
+
+            translateRecursive(second);
 
         }
 
         public void translateGt(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            translateRecursive(first);
+
+            fileWriter.Write(" > ");
+
+            translateRecursive(second);
         }
 
         public void translateGte(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            translateRecursive(first);
+
+            fileWriter.Write(" >= ");
+
+            translateRecursive(second);
         }
 
         public void translateLt(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            translateRecursive(first);
+
+            fileWriter.Write(" < ");
+
+            translateRecursive(second);
         }
 
         public void translateLte(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            translateRecursive(first);
+
+            fileWriter.Write(" <= ");
+
+            translateRecursive(second);
         }
 
         public void translateEq(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            translateRecursive(first);
+
+            fileWriter.Write(" == ");
+
+            translateRecursive(second);
         }
     }
 }
