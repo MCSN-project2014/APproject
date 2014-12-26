@@ -183,12 +183,15 @@ namespace APproject.FSCodeGenerator
 
         public void translateAsync(Node n)
         {
-
+            fileWriter.WriteLine("async {");
+            fileWriter.Write("\t");
+            translate(n.getChildren().ElementAt(0));
+            fileWriter.WriteLine("}");
         }
 
         public void translateAfun(Node n)
         {
-
+            //I've got a few doubts about the implementation :P
         }
 
         public void translatePlus(Node n)
