@@ -193,63 +193,158 @@ namespace APproject.FSCodeGenerator
 
         public void translatePlus(Node n)
         {
-            /**
-             * PSEUDOCODE
-             * if childLeft isTerminal() print childLeft
-             * else print (translate(childLeft));
-             * print plus;
-             * if childRight is terminal print child rigth
-             * else print(translate(childRight));
-             **/
-
             List<Node> children = n.getChildren();
-            foreach ( Node c in children )
-            {
-                if( c.isTerminal())
-                {
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
-                }
-            }
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" + ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
+
         }
 
         public void translateMinus(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node firstAddend = children.ElementAt(0);
+            Node secondAddend = children.ElementAt(1);
 
+            if (firstAddend.isTerminal())
+                fileWriter.Write(firstAddend);
+            else translate(firstAddend);
+
+            fileWriter.Write(" - ");
+
+            if (secondAddend.isTerminal())
+                fileWriter.Write(secondAddend);
+            else translate(secondAddend);
         }
 
         public void translateMul(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
+
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" * ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
 
         }
 
         public void translateDiv(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
+
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" / ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
 
         }
 
         public void translateGt(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" > ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
         }
 
         public void translateGte(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" >= ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
         }
 
         public void translateLt(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" < ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
         }
 
         public void translateLte(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" <= ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
         }
 
         public void translateEq(Node n)
         {
+            List<Node> children = n.getChildren();
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
+            if (first.isTerminal())
+                fileWriter.Write(first);
+            else translate(first);
+
+            fileWriter.Write(" == ");
+
+            if (second.isTerminal())
+                fileWriter.Write(second);
+            else translate(second);
         }
     }
 }
