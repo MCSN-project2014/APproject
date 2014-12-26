@@ -120,6 +120,17 @@ namespace APproject.FSCodeGenerator
             fileWriter.Close();
         }
 
+        /**
+         * This is a helper method which calls the method translate 
+         * if needed or prints the name of a node if it's a terminal
+         * one.
+         **/
+        private void translateRecursive (Node n){
+             if (n.isTerminal())
+                fileWriter.Write(n.term.name);
+            else translate(n);
+        }
+
         public void translateMain(Node n)
         {
             fileWriter.WriteLine(" il main non esiste");
@@ -200,33 +211,25 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" + ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
 
         }
 
         public void translateMinus(Node n)
         {
             List<Node> children = n.getChildren();
-            Node firstAddend = children.ElementAt(0);
-            Node secondAddend = children.ElementAt(1);
+            Node first = children.ElementAt(0);
+            Node second = children.ElementAt(1);
 
-            if (firstAddend.isTerminal())
-                fileWriter.Write(firstAddend);
-            else translate(firstAddend);
+            translateRecursive(first);
 
             fileWriter.Write(" - ");
 
-            if (secondAddend.isTerminal())
-                fileWriter.Write(secondAddend);
-            else translate(secondAddend);
+            translateRecursive(second);
         }
 
         public void translateMul(Node n)
@@ -235,15 +238,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" * ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
 
         }
 
@@ -253,15 +252,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" / ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
 
         }
 
@@ -271,15 +266,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" > ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
         }
 
         public void translateGte(Node n)
@@ -288,15 +279,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" >= ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
         }
 
         public void translateLt(Node n)
@@ -305,15 +292,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" < ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
         }
 
         public void translateLte(Node n)
@@ -322,15 +305,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" <= ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
         }
 
         public void translateEq(Node n)
@@ -339,15 +318,11 @@ namespace APproject.FSCodeGenerator
             Node first = children.ElementAt(0);
             Node second = children.ElementAt(1);
 
-            if (first.isTerminal())
-                fileWriter.Write(first);
-            else translate(first);
+            translateRecursive(first);
 
             fileWriter.Write(" == ");
 
-            if (second.isTerminal())
-                fileWriter.Write(second);
-            else translate(second);
+            translateRecursive(second);
         }
     }
 }
