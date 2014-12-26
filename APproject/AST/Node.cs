@@ -14,21 +14,21 @@ namespace APproject
 		public Node parent;
 		private List<Node> children;
 		public Labels label;
-		//public Operation op;
-		public Obj term;
+		public Term term;
 
 		private void init(){
 			this.term = null;
 			this.parent = null;
 			this.children = new List<Node> ();
 		}
+
 		public Node (Labels l)
 		{
 			init ();
 			this.label = l;
 		}
 
-		public Node (Obj term){
+		public Node (Term term){
 			init ();
 			this.term = term;
 		}
@@ -41,17 +41,30 @@ namespace APproject
 		public List<Node> getChildren(){
 			return new List<Node>(children);
 		}
+	}
 
-        /**
-         * This method determines whether the node is a leaf or not
-         * (i.e. if the node represents a terminal symbol).
-        **/
-        public Boolean isTerminal()
-        {
-            if (term.type == Types.boolean || term.type == Types.integer)
-                return true;
-            else return false;
-        }
+	public enum terminalType {integer, boolean, variable, functionCall}
+
+	public class Term{
+		public int integer;
+		public bool boolean;
+		public Obj variable;
+		public terminalType type;
+
+		public Term(int integer){
+			this.integer = integer;
+			type = terminalType.integer;
+		}
+
+		public Term(bool boolean){
+			this.boolean = boolean;
+			type = terminalType.boolean;
+		}
+
+		public Term(Obj variable, terminalType type){
+			this.variable = variable;
+			this.type = type;
+		}
 	}
 }
 

@@ -8,7 +8,7 @@ namespace APproject
 		public static void tryInterpreter(){
 			Obj o = new Obj ();
 			o.kind = Kinds.func;
-			Node main = new Node (o);
+			Node main = new Node (new Term(o, terminalType.variable));
 			Node If = new Node ( Labels.If);
 			main.addChildren (If);
 			Node condition = new Node (Labels.Gte);
@@ -19,14 +19,14 @@ namespace APproject
 			Obj term2 = new Obj ();
 			term1.type = Types.integer;
 			term1.kind = Kinds.var;
-			condition.addChildren (new Node(term1));
-			condition.addChildren (new Node(term2));
+			condition.addChildren (new Node(new Term(term1, terminalType.variable)));
+			condition.addChildren (new Node(new Term(term2, terminalType.variable)));
 			Node ret = new Node (Labels.Return);
 			If.addChildren (ret);
 			Obj term3 = new Obj ();
 			term1.type = Types.integer;
 			term1.kind = Kinds.var;
-			ret.addChildren (new Node(term3));
+			ret.addChildren (new Node(new Term(term3, terminalType.variable)));
 
 			printAST (main);
 			//Interpret (main);
