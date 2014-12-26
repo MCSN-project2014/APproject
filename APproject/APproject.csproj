@@ -58,6 +58,7 @@
     <Compile Include="treeGenerator\Node.cs" />
     <Compile Include="treeGenerator\TreeGen.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
+    <Compile Include="Interpreter\Memory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

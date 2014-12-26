@@ -34,7 +34,6 @@ namespace APproject
 			Console.ReadKey();
 		}
 			
-		/*
 		public static void Interpret (Node node){
 			if (node != null) {
 				if (node.term != null)
@@ -44,28 +43,44 @@ namespace APproject
 					bool condition;
 					switch (node.label) {
 					case Labels.If:
-						condition = Interpret (children [0]);
+						condition = InterpretCondition (children [0]);
 						if (condition)
 							Interpret (children [1]);
 						else if (children.Count > 2)
 							Interpret (children [2]);
 						break;
 					case Labels.While:
-						condition = Interpret (children [0]);
+						condition = InterpretCondition (children [0]);
 						while (condition) {
 							Interpret (children [1]);
-							condition = Interpret (children [0]);
+							condition = InterpretCondition (children [0]);
 						}
 						break;
 					case Labels.Print:
-						Console.WriteLine ("FUNW@P console: " + Interpret (children [0]));
+						Console.WriteLine ("FUNW@P console: " + Convert.ToString(InterpretExp (children [0])));
 						break;
+					}
 				}
-
 			}
 		}
+
+		static bool InterpretCondition (Node node)
+		{
+			return (bool) InterpretExp(node);
 		}
-*/
+
+		static int InterpretExpInt (Node node){
+			return (Int32) InterpretExp(node);
+		}
+
+		static Object InterpretExp (Node node)
+		{
+			if (node.isTerminal ()) {
+				return node.term.boolean;
+			} else
+				return null;
+		}
+
 		public static void printAST(Node node){
 			if (node != null){
 				if (node.term != null)
