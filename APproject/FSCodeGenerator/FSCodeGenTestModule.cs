@@ -28,14 +28,14 @@ namespace APproject.FSCodeGenerator
 			Obj term2 = new Obj ();
 			term1.type = Types.integer;
 			term1.kind = Kinds.var;
-			condition.addChildren (new Node(term1));
-			condition.addChildren (new Node(term2));
+			condition.addChildren (new Node(new Term(term1)));
+			condition.addChildren (new Node(new Term(term2)));
 			Node ret = new Node (Labels.Return);
 			If.addChildren (ret);
 			Obj term3 = new Obj ();
 			term1.type = Types.integer;
 			term1.kind = Kinds.var;
-			ret.addChildren (new Node(term3));
+			ret.addChildren (new Node(new Term (term3)));
 		 
             return main;
         }

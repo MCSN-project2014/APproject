@@ -54,9 +54,6 @@ namespace APproject.FSCodeGenerator
                 case Labels.FunDecl: 
                     translateFunDecl(n);
                     break;
-                case Labels.Fun: 
-                    translateFun(n);
-                    break;
                 case Labels.If:
                     translateIf(n);
                     break;
@@ -127,7 +124,7 @@ namespace APproject.FSCodeGenerator
          **/
         private void translateRecursive (Node n){
              if (n.isTerminal())
-                fileWriter.Write(n.term.name);
+                fileWriter.Write(n);
             else translate(n);
         }
 
