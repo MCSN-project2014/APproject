@@ -202,7 +202,7 @@ namespace APproject.FSCodeGenerator
 
         public void translateAfun(Node n)
         {
-            //I've got a few doubts about the implementation :P
+
         }
 
         public void translatePlus(Node n)
