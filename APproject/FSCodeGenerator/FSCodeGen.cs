@@ -18,10 +18,12 @@ namespace APproject.FSCodeGenerator
     {
         private StreamWriter fileWriter;
         private int indentationLevel; //it stores the number of \t needed to get the perfect indentation ;)
+        private string fileName;
 
         public FSCodeGen(string outputFileName)
         {
             indentationLevel = 0;
+            fileName = outputFileName + ".fs";
 
             if (outputFileName == string.Empty)
             {
@@ -32,7 +34,7 @@ namespace APproject.FSCodeGenerator
                 try
                 {
                     FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                    fileWriter = new StreamWriter(outputFileName + ".fs", true);
+                    fileWriter = new StreamWriter(fileName, true);
                 }
                 catch (IOException)
                 {
@@ -40,8 +42,6 @@ namespace APproject.FSCodeGenerator
                 }
             }
         }
-
-
 
         ///<summary>
         /// This method calls the necessary ones in order to translate 
@@ -197,16 +197,19 @@ namespace APproject.FSCodeGenerator
 
         public void translateAsync(Node n)
         {
-            fileWriter.WriteLine("async {");
-            indentationLevel++;
-            for (int i = 0; i < indentationLevel; i++)
+            using (fileWriter = new StreamWriter(fileName + ".fs", true))
             {
-                fileWriter.Write("\t");
+                fileWriter.WriteLine("async {");
+                indentationLevel++;
+                for (int i = 0; i < indentationLevel; i++)
+                {
+                    fileWriter.Write("\t");
+                }
+                translate(n.getChildren().ElementAt(0));
+                fileWriter.WriteLine();
+                indentationLevel--;
+                fileWriter.WriteLine("}");
             }
-            translate(n.getChildren().ElementAt(0));
-            fileWriter.WriteLine();
-            indentationLevel--;
-            fileWriter.WriteLine("}");
         }
 
         public void translateAfun(Node n)

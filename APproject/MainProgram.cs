@@ -24,13 +24,13 @@ namespace APproject
                 //{
                 //    parser.gen.Decode();
                 //    parser.gen.Interpret("Taste.IN");
-               // }
+                // }
                 Console.WriteLine(parser.errors.count + " errors detected");
             }
             else
             {
                 Console.Write("-- No source file specified");
             }
-		}
-	}
+        }
+    }
 }
