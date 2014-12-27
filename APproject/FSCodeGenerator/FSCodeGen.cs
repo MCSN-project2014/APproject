@@ -122,7 +122,7 @@ namespace APproject.FSCodeGenerator
 
         /**
          * This is a helper method which calls the method translate 
-         * if needed or prints the name of a node if it's a terminal
+         * if needed or prints the content of a node if it's a terminal
          * one.
          **/
         private void translateRecursive (Node n){
@@ -195,8 +195,14 @@ namespace APproject.FSCodeGenerator
         public void translateAsync(Node n)
         {
             fileWriter.WriteLine("async {");
-            fileWriter.Write("\t");
+            indentationLevel++;
+            for (int i = 0; i < indentationLevel; i++)
+            {
+                fileWriter.Write("\t");
+            }
             translate(n.getChildren().ElementAt(0));
+            fileWriter.WriteLine();
+            indentationLevel--;
             fileWriter.WriteLine("}");
         }
 

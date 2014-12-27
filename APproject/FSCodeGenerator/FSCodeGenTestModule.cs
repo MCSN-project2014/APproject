@@ -58,6 +58,22 @@ namespace APproject.FSCodeGenerator
 
         }
 
+        static public Node createAST2()
+        {
+            Term t1 = new Term(42);
+            Term t2 = new Term(10);
+            Node min = new Node(Labels.Minus);
+            Node async = new Node(Labels.Async);
+            Node NodeT1 = new Node(t1);
+            Node NodeT2 = new Node(t2);
+
+            async.addChildren(min);
+            min.addChildren(NodeT1);
+            min.addChildren(NodeT2);
+
+            return async;
+
+        }
         public void printAST(Node node)
         {
             if (node != null)
@@ -73,15 +89,14 @@ namespace APproject.FSCodeGenerator
             }
         }
 
-//        static void Main(string[] args)
-//        {
-//            String fileName = "traslated_file";
-//            FSCodeGen gen = new FSCodeGen(fileName);
-//            Node root = createAST1();
-//            Console.WriteLine(root.label);
-//            gen.translate(root);
+        //static void Main(string[] args)
+        //{
+        //    String fileName = "traslated_file";
+        //    FSCodeGen gen = new FSCodeGen(fileName);
+        //    Node root = createAST3();
+        //    gen.translate(root);
 
 
-//        }
+        //}
     }
 }
