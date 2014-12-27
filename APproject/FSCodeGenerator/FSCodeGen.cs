@@ -124,7 +124,7 @@ namespace APproject.FSCodeGenerator
          **/
         private void translateRecursive (Node n){
              if (n.isTerminal())
-                fileWriter.Write(n);
+                fileWriter.Write(n.term);
             else translate(n);
         }
 
