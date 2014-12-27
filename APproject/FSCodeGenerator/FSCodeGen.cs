@@ -92,31 +92,31 @@ namespace APproject.FSCodeGenerator
                     translateAfun(n);
                     break;
                 case Labels.Plus: 
-                    translatePlus(n);
+                    translateOp("+", n);
                     break;
-                case Labels.Mul: 
-                    translateMul(n);
+                case Labels.Mul:
+                    translateOp("*", n);
                     break;
-                case Labels.Minus: 
-                    translateMinus(n);
+                case Labels.Minus:
+                    translateOp("-", n);
                     break;
-                case Labels.Div: 
-                    translateDiv(n);
+                case Labels.Div:
+                    translateOp("/", n);
                     break;
-                case Labels.Gt: 
-                    translateGt(n);
+                case Labels.Gt:
+                    translateOp(">", n);
                     break;
-                case Labels.Gte: 
-                    translateGte(n);
+                case Labels.Gte:
+                    translateOp(">=", n);
                     break;
-                case Labels.Lt: 
-                    translateLt(n);
+                case Labels.Lt:
+                    translateOp("<", n);
                     break;
                 case Labels.Lte:
-                    translateLte(n);
+                    translateOp("<=", n);
                     break;
                 case Labels.Eq:
-                    translateEq(n);
+                    translateOp("==", n);
                     break;
                 default : 
                     break;
@@ -296,7 +296,13 @@ namespace APproject.FSCodeGenerator
             //few doubts about the implementation :P
         }
 
-        public void translatePlus(Node n)
+        /// <summary>
+        /// This method translates into F# all arithmetic and
+        /// boolean expressions.
+        /// </summary>
+        /// <param name="op">The symbol of the operator within a string.</param>
+        /// <param name="n">The node.</param>
+        public void translateOp(string op, Node n)
         {
             List<Node> children = n.getChildren();
             Node first = children.ElementAt(0);
@@ -304,116 +310,11 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            safeWrite(" + ");
+            safeWrite(" " + op + " ");
 
             translateRecursive(second);
 
         }
 
-        public void translateMinus(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" - ");
-
-            translateRecursive(second);
-        }
-
-        public void translateMul(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" * ");
-
-            translateRecursive(second);
-
-        }
-
-        public void translateDiv(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" / ");
-            
-            translateRecursive(second);
-
-        }
-
-        public void translateGt(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" > ");
-
-            translateRecursive(second);
-        }
-
-        public void translateGte(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" >= ");
-
-            translateRecursive(second);
-        }
-
-        public void translateLt(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" < ");
-
-            translateRecursive(second);
-        }
-
-        public void translateLte(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" <= ");
-
-            translateRecursive(second);
-        }
-
-        public void translateEq(Node n)
-        {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
-
-            translateRecursive(first);
-
-            safeWrite(" == ");
-
-            translateRecursive(second);
-        }
     }
 }

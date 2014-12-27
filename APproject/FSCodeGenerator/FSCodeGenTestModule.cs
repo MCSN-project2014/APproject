@@ -165,10 +165,10 @@ namespace APproject.FSCodeGenerator
         {
             String fileName = "traslated_file";
             FSCodeGen gen = new FSCodeGen(fileName);
-            //Node root = createAST2();
+           Node root = createAST2();
           //  gen.translate(root);
 
-            Node root = createASTIf();
+            //Node root = createASTIf();
             gen.translate(root);
 
            // Node root = createAST();
