@@ -134,6 +134,11 @@ namespace APproject.FSCodeGenerator
             else translate(n);
         }
 
+        /// <summary>
+        /// This is a helper method which allows to make a safe use of 
+        /// the file being written.
+        /// </summary>
+        /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
         {
             using (fileWriter = new StreamWriter(fileName, true))
@@ -205,19 +210,16 @@ namespace APproject.FSCodeGenerator
 
         public void translateAsync(Node n)
         {
-            using (fileWriter = new StreamWriter(fileName + ".fs", true))
+            safeWrite("async {\n");
+            indentationLevel++;
+            for (int i = 0; i < indentationLevel; i++)
             {
-                safeWrite("async {\n");
-                indentationLevel++;
-                for (int i = 0; i < indentationLevel; i++)
-                {
-                    safeWrite("\t");
-                }
-                translate(n.getChildren().ElementAt(0));
-                safeWrite("\n");
-                indentationLevel--;
-                safeWrite("}\n");
+                safeWrite("\t");
             }
+            translate(n.getChildren().ElementAt(0));
+            safeWrite("\n");
+            indentationLevel--;
+            safeWrite("}\n");
         }
 
         public void translateAfun(Node n)
