@@ -297,7 +297,7 @@ namespace APproject.FSCodeGenerator
         }
 
         /// <summary>
-        /// This method translates into F# all arithmetic and
+        /// This method translates into F# all binary arithmetic and
         /// boolean expressions.
         /// </summary>
         /// <param name="op">The symbol of the operator within a string.</param>
