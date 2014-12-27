@@ -55,6 +55,9 @@ namespace APproject.FSCodeGenerator
                 case Labels.Main: 
                     translateMain(n);
                     break;
+                case Labels.Block:
+                    translateBlock(n);
+                    break;
                 case Labels.FunDecl: 
                     translateFunDecl(n);
                     break;
@@ -148,53 +151,107 @@ namespace APproject.FSCodeGenerator
 
         public void translateMain(Node n)
         {
-            fileWriter.WriteLine(" il main non esiste");
             foreach ( Node c in n.getChildren() )
             {
-                translate(c);
+                translateRecursive(c);
             }
             
         }
+        public void  translateBlock(Node n)
+        {   indentationLevel++;
+            List<Node> children = n.getChildren();
+            foreach( Node c in children)
+            {
+                for ( int i =0 ; i < indentationLevel; indentationLevel++)
+                {
+                    safeWrite("\t");
+                }
+                 translateRecursive(c);
+                 safeWrite("\n");
+            }
+            indentationLevel--;
+           
+        }
 
         public void translateFunDecl(Node n)
-        {
-
+        {   // fun add ( x int, y int ) 
+            //{  return  x + y }
+            // let add x y =
+            //      x+y
+            List<Node> children = n.getChildren(); 
+            safeWrite("let ");
+            translateRecursive(n);
+            translateRecursive(children.ElementAt(0)); // <parameters>
+            safeWrite(" = \n");
+            translateRecursive(children.ElementAt(1)); // <block> 
+             
         }
 
         public void translateFun(Node n)
         {
+            List<Node> children = n.getChildren();
+            safeWrite("for ");
+            translateRecursive(children.ElementAt(0)); 
+            safeWrite(" in ");
+            translateRecursive(children.ElementAt(1));  
+            safeWrite(" do \n ");
+            safeWrite("\t");
+            translateRecursive(children.ElementAt(3));  // for statement block 
 
         }
     
         public void translateIf(Node n)
         {
-            fileWriter.WriteLine(" if in f# ");
-
+            List<Node> children = n.getChildren();
+            safeWrite("if ");
+            translateRecursive( children.ElementAt(0));
+            safeWrite(" then ");
+            translateRecursive( children.ElementAt(1));
+            safeWrite("\n");
+            if( children.Count == 3)
+            {
+                safeWrite("else");
+                translateRecursive(children.ElementAt(2));
+                safeWrite("\n");
+            }
+        
         }
 
         public void translateWhile(Node n)
         {
-
+            List<Node> children = n.getChildren();
+            safeWrite("While ");
+            translateRecursive(children.ElementAt(0));
+            safeWrite("do \n");
+            translateRecursive(children.ElementAt(1));  
         }
 
         public void translateReturn(Node n)
         {
-
+            translateRecursive(n.getChildren().ElementAt(0));
         }
 
         public void translateAssig(Node n)
-        {
-
+        { 
+            List<Node> children = n.getChildren();
+            translateRecursive(children.ElementAt(0));
+            safeWrite(" = ");
+            translateRecursive(children.ElementAt(1));
         }
 
         public void translateDecl(Node n)
         {
-
+            safeWrite("let ");
+            translateRecursive(n.getChildren().ElementAt(0));
         }
 
         public void translateAssigDecl(Node n)
         {
-
+            List<Node> children = n.getChildren();
+            safeWrite("let ");
+            translateRecursive( n ); // n contains the variable name declared
+            safeWrite(" = ");
+            translateRecursive(children.ElementAt(1));
         }
 
         public void translatePrint(Node n)
