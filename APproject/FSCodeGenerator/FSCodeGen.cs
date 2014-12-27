@@ -203,7 +203,7 @@ namespace APproject.FSCodeGenerator
             safeWrite("\n");
             safeWrite("printfn (");
             safeWrite(n.getChildren().ElementAt(0).term.ToString());
-            safeWrite(");\n");
+            safeWrite(")\n");
         }
 
         public void translateFor(Node n)
