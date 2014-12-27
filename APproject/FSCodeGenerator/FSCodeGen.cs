@@ -34,7 +34,7 @@ namespace APproject.FSCodeGenerator
                 try
                 {
                     FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                    fileWriter = new StreamWriter(fileName, true);
+                    //fileWriter = new StreamWriter(fileName, true);
                 }
                 catch (IOException)
                 {
@@ -130,8 +130,16 @@ namespace APproject.FSCodeGenerator
         ///<param name="n">n.</param>
         private void translateRecursive (Node n){
              if (n.isTerminal())
-                fileWriter.Write(n.term);
+                safeWrite(n.term.ToString());
             else translate(n);
+        }
+
+        private void safeWrite(string s)
+        {
+            using (fileWriter = new StreamWriter(fileName, true))
+            {
+                fileWriter.Write(s);
+            }
         }
 
         public void translateMain(Node n)
@@ -199,16 +207,16 @@ namespace APproject.FSCodeGenerator
         {
             using (fileWriter = new StreamWriter(fileName + ".fs", true))
             {
-                fileWriter.WriteLine("async {");
+                safeWrite("async {\n");
                 indentationLevel++;
                 for (int i = 0; i < indentationLevel; i++)
                 {
-                    fileWriter.Write("\t");
+                    safeWrite("\t");
                 }
                 translate(n.getChildren().ElementAt(0));
-                fileWriter.WriteLine();
+                safeWrite("\n");
                 indentationLevel--;
-                fileWriter.WriteLine("}");
+                safeWrite("}\n");
             }
         }
 
@@ -225,7 +233,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" + ");
+            safeWrite(" + ");
 
             translateRecursive(second);
 
@@ -239,7 +247,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" - ");
+            safeWrite(" - ");
 
             translateRecursive(second);
         }
@@ -252,7 +260,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" * ");
+            safeWrite(" * ");
 
             translateRecursive(second);
 
@@ -266,7 +274,10 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" / ");
+            using (fileWriter = new StreamWriter(fileName, true))
+            {
+                safeWrite(" / ");
+            }
 
             translateRecursive(second);
 
@@ -280,7 +291,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" > ");
+            safeWrite(" > ");
 
             translateRecursive(second);
         }
@@ -293,7 +304,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" >= ");
+            safeWrite(" >= ");
 
             translateRecursive(second);
         }
@@ -306,7 +317,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" < ");
+            safeWrite(" < ");
 
             translateRecursive(second);
         }
@@ -319,7 +330,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" <= ");
+            safeWrite(" <= ");
 
             translateRecursive(second);
         }
@@ -332,7 +343,7 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            fileWriter.Write(" == ");
+            safeWrite(" == ");
 
             translateRecursive(second);
         }
