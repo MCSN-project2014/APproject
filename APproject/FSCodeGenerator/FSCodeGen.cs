@@ -34,7 +34,6 @@ namespace APproject.FSCodeGenerator
                 try
                 {
                     FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                    //fileWriter = new StreamWriter(fileName, true);
                 }
                 catch (IOException)
                 {
