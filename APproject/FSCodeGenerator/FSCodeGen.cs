@@ -146,6 +146,18 @@ namespace APproject.FSCodeGenerator
             }
         }
 
+        /// <summary>
+        /// This method prints n \t's according to the passed parameter. 
+        /// </summary>
+        /// <param name="n">Indentation level to be used.</param>
+        private void indent(int n)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                safeWrite("\t");
+            }
+        }
+
         public void translateMain(Node n)
         {
             fileWriter.WriteLine(" il main non esiste");
@@ -200,6 +212,7 @@ namespace APproject.FSCodeGenerator
         public void translatePrint(Node n)
         {
             safeWrite("\n");
+            indent(indentationLevel);
             safeWrite("printfn (");
             safeWrite(n.getChildren().ElementAt(0).term.ToString());
             safeWrite(")\n");
@@ -214,10 +227,7 @@ namespace APproject.FSCodeGenerator
         {
             safeWrite("async {\n");
             indentationLevel++;
-            for (int i = 0; i < indentationLevel; i++)
-            {
-                safeWrite("\t");
-            }
+            indent(indentationLevel);
             translateRecursive(n.getChildren().ElementAt(0));
             safeWrite("\n");
             indentationLevel--;
@@ -278,11 +288,8 @@ namespace APproject.FSCodeGenerator
 
             translateRecursive(first);
 
-            using (fileWriter = new StreamWriter(fileName, true))
-            {
-                safeWrite(" / ");
-            }
-
+            safeWrite(" / ");
+            
             translateRecursive(second);
 
         }
