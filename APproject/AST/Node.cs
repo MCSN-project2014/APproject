@@ -18,7 +18,7 @@ namespace APproject
 		public Term term;
 
 		/// <summary>
-		/// Given only the label of the node create a new istance of the class Node.
+		/// Given the label of the node, create a new istance of the class Node.
 		/// </summary>
 		/// <param name="l">L.</param>
 		public Node (Labels l){
@@ -29,7 +29,7 @@ namespace APproject
 		}
 
 		/// <summary>
-		/// Create a terminal node given a istance of the class Term
+		/// Create a terminal node given a istance of the class Term.
 		/// </summary>
 		/// <param name="term">Term.</param>
 		public Node (Term term){
@@ -59,7 +59,7 @@ namespace APproject
 		/// <summary>
 		/// Check if a node is a leaf. 
 		/// </summary>
-		/// <returns><c>true</c>, if terminal was ised, <c>false</c> otherwise.</returns>
+		/// <returns><c>true</c>, if terminal was used, <c>false</c> otherwise.</returns>
 		public bool isTerminal(){
 			return label == Labels.Term;
 		}
