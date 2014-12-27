@@ -200,7 +200,10 @@ namespace APproject.FSCodeGenerator
 
         public void translatePrint(Node n)
         {
-
+            safeWrite("\n");
+            safeWrite("printfn (");
+            safeWrite(n.getChildren().ElementAt(0).term.ToString());
+            safeWrite(");\n");
         }
 
         public void translateFor(Node n)
@@ -216,7 +219,7 @@ namespace APproject.FSCodeGenerator
             {
                 safeWrite("\t");
             }
-            translate(n.getChildren().ElementAt(0));
+            translateRecursive(n.getChildren().ElementAt(0));
             safeWrite("\n");
             indentationLevel--;
             safeWrite("}\n");
