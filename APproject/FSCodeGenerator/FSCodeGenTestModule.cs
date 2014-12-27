@@ -35,6 +35,7 @@ namespace APproject.FSCodeGenerator
             return If;
 
         }
+        /*
         static public Node createAST()
         {    /** create a sample AST for:
               *
@@ -60,9 +61,9 @@ namespace APproject.FSCodeGenerator
           //  Node sum = new Node(Labels.FunDecl);
            // Node minus = new Node(Labels.FunDecl);
 
-			Node main = new Node (Labels.Main);
+		/*	Node main = new Node (Labels.Main);
 
-            Node assT = new Node(new Term( Labels.AssigDecl);
+            Node assT = new Node(Labels.AssigDecl);
             assT.term.variable.name = "t";
             Node valueT = new Node(Labels.Term);
             valueT.term.integer = 20;
@@ -108,8 +109,9 @@ namespace APproject.FSCodeGenerator
             main.addChildren(If);
 
             return main;
+         
         }
-
+        */
         static public Node createAST1()
         {
             Term t1 = new Term(42);
@@ -166,11 +168,11 @@ namespace APproject.FSCodeGenerator
             //Node root = createAST2();
           //  gen.translate(root);
 
-            //Node root = createASTIf();
-            //gen.translate(root);
-
-            Node root = createAST();
+            Node root = createASTIf();
             gen.translate(root);
+
+           // Node root = createAST();
+           // gen.translate(root);
         }
 
     }
