@@ -271,7 +271,7 @@ namespace APproject.FSCodeGenerator
             safeWrite("\n");
             indent(indentationLevel);
             safeWrite("printfn (");
-            safeWrite(n.getChildren().ElementAt(0).term.ToString());
+            translateRecursive(n.getChildren().ElementAt(0));
             safeWrite(")\n");
         }
 
@@ -315,6 +315,5 @@ namespace APproject.FSCodeGenerator
             translateRecursive(second);
 
         }
-
     }
 }
