@@ -62,7 +62,7 @@ namespace APproject.FSCodeGenerator
 
 			Node main = new Node (Labels.Main);
 
-            Node assT = new Node(Labels.AssigDecl);
+            Node assT = new Node(new Term( Labels.AssigDecl);
             assT.term.variable.name = "t";
             Node valueT = new Node(Labels.Term);
             valueT.term.integer = 20;
