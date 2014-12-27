@@ -16,9 +16,12 @@ namespace APproject.FSCodeGenerator
     public class FSCodeGen
     {
         private StreamWriter fileWriter;
+        private int indentationLevel; //it stores the number of \t needed to get the perfect indentation ;)
 
         public FSCodeGen(string outputFileName)
         {
+            indentationLevel = 0;
+
             if (outputFileName == string.Empty)
             {
                 Console.WriteLine("Invalid File Name");
