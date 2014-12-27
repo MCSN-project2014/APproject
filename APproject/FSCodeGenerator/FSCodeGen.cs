@@ -121,6 +121,7 @@ namespace APproject.FSCodeGenerator
             }
             fileWriter.Close();
         }
+
         ///<summary>
         ///This is a helper method which calls the method 'translate'
         ///if needed or prints the content of a node if it's a terminal
