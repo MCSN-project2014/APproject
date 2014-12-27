@@ -89,13 +89,6 @@ namespace APproject.FSCodeGenerator
             }
         }
 
-        //static void Main(string[] args)
-        //{
-        //    String fileName = "traslated_file";
-        //    FSCodeGen gen = new FSCodeGen(fileName);
-        //    Node root = createAST2();
-        //    gen.translate(root);
-        //}
 
     }
 }
