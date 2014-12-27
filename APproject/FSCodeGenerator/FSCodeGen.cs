@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace APproject.FSCodeGenerator
 {
-    /**
-     * This class converts an AST of funW@P into the corresponding F#
-     * code, simply by visiting the tree.
-     * Output is written into a outputFileName.fs file, 
-     * result of the translation.
-     * */
+
+    ///<summary>
+    ///This class converts an AST of funW@P into the corresponding F#
+    ///code, simply by visiting the tree.
+    ///Output is written into a outputFileName.fs file, 
+    ///result of the translation.
+    ///</summary>
     public class FSCodeGen
     {
         private StreamWriter fileWriter;
@@ -31,7 +32,7 @@ namespace APproject.FSCodeGenerator
                 try
                 {
                     FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                    fileWriter = new StreamWriter(outputFileName + ".fs");
+                    fileWriter = new StreamWriter(outputFileName + ".fs", true);
                 }
                 catch (IOException)
                 {
@@ -40,14 +41,15 @@ namespace APproject.FSCodeGenerator
             }
         }
 
-     
 
-        /**
-         * This method calls the necessary ones in order to translate 
-         * the AST into F# code.
-         * It is recursively called by all other methods.
-         * Just a big switch case.
-         **/
+
+        ///<summary>
+        /// This method calls the necessary ones in order to translate 
+        /// the AST into F# code.
+        /// It is recursively called by all other methods.
+        /// Just a big switch case.
+        ///</summary>
+        /// <param name="Node n">n.</param>
         public void translate(Node n) {
             switch (n.label)
             {
@@ -119,12 +121,12 @@ namespace APproject.FSCodeGenerator
             }
             fileWriter.Close();
         }
-
-        /**
-         * This is a helper method which calls the method translate 
-         * if needed or prints the content of a node if it's a terminal
-         * one.
-         **/
+        ///<summary>
+        ///This is a helper method which calls the method 'translate'
+        ///if needed or prints the content of a node if it's a terminal
+        ///one.
+        ///</summary>
+        ///<param name="n">n.</param>
         private void translateRecursive (Node n){
              if (n.isTerminal())
                 fileWriter.Write(n.term);
