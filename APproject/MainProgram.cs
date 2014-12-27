@@ -31,6 +31,11 @@ namespace APproject
             {
                 Console.Write("-- No source file specified");
             }
+
+			/*test*/
+			Node n = new Node (Labels.Print);
+			n.addChildren (new Node(new Term(3)));
+			Console.WriteLine(n.getChildren () [0].term);
 		}
 	}
 }

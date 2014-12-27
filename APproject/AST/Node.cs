@@ -65,12 +65,13 @@ namespace APproject
 		}
 	}
 
-	public enum terminalType {integer, boolean, variable}
+	public enum terminalType {integer, boolean, String, variable}
 
 	public class Term{
 		public int integer;
 		public bool boolean;
 		public Obj variable;
+		public string String;
 		public terminalType type;
 
 		/// <summary>
@@ -102,19 +103,31 @@ namespace APproject
 		}
 
 		/// <summary>
+		/// Create a new Terminal of type String
+		/// </summary>
+		/// <param name="integer">Integer.</param>
+		public Term(string String){
+			this.String = String;
+			type = terminalType.String;
+		}
+
+		/// <summary>
 		/// Returns a String that represents the current object.
 		/// </summary>
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="APproject.Term"/>.</returns>
 		public override string ToString(){
 			switch (type) {
-			case terminalType.boolean:
-				return Convert.ToString (boolean);
+			case terminalType.String:
+				return String;
 			case terminalType.integer:
 				return Convert.ToString (integer);
+			case terminalType.boolean:
+				return Convert.ToString (boolean);
 			case terminalType.variable:
 				return variable.name;
+			default:
+				return "";
 			}
-			return "";
 		}
 	}
 }

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace APproject
 {
-	public static class Interpreter
+	public class Interpreter
 	{
-		public static void tryInterpreter(){
+		Memory mem;
+		public void tryInterpreter(){
 			Obj o = new Obj ();
 			o.kind = Kinds.func;
 			Node main = new Node (new Term(o));
@@ -29,12 +30,17 @@ namespace APproject
 			ret.addChildren (new Node(new Term(term3)));
 
 			printAST (main);
-			//Interpret (main);
+			Interpret (main);
 
 			Console.ReadKey();
 		}
 			
-		public static void Interpret (Node node){
+		public void Start (Node node){
+			mem = new Memory ();
+			Interpret (node);
+		}
+
+		private void Interpret (Node node){
 			if (node != null) {
 				if (node.term != null)
 					Console.WriteLine ("term");
@@ -44,17 +50,21 @@ namespace APproject
 					switch (node.label) {
 					case Labels.If:
 						condition = InterpretCondition (children [0]);
-						if (condition)
+						mem.addScope ();
+						if (condition) {
 							Interpret (children [1]);
-						else if (children.Count > 2)
+						}else if (children.Count > 2)
 							Interpret (children [2]);
+						mem.removeScope ();
 						break;
 					case Labels.While:
 						condition = InterpretCondition (children [0]);
+						mem.addScope ();
 						while (condition) {
 							Interpret (children [1]);
 							condition = InterpretCondition (children [0]);
 						}
+						mem.removeScope ();
 						break;
 					case Labels.Print:
 						Console.WriteLine ("FUNW@P console: " + Convert.ToString(InterpretExp (children [0])));
@@ -64,24 +74,25 @@ namespace APproject
 			}
 		}
 
-		static bool InterpretCondition (Node node)
+		private bool InterpretCondition (Node node)
 		{
 			return (bool) InterpretExp(node);
 		}
 
-		static int InterpretExpInt (Node node){
+		private int InterpretExpInt (Node node){
 			return (Int32) InterpretExp(node);
 		}
 
-		static Object InterpretExp (Node node)
+		private Object InterpretExp (Node node)
 		{
 			if (node.isTerminal ()) {
+
 				return node.term.boolean;
 			} else
 				return null;
 		}
 
-		public static void printAST(Node node){
+		public void printAST(Node node){
 			if (node != null){
 				if (node.term != null)
 					Console.WriteLine (node.term);
