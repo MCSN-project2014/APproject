@@ -11,7 +11,7 @@ COMPILER Fun
 	*/
 	
 	public SymbolTable   tab;
-	public CodeGenerator gen;
+	public ASTGenerator  gen;
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -42,7 +42,8 @@ Fun =																			(. tab.OpenScope();  .)
    
                                                     
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
-ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Obj obj;      .)
+ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Obj obj; 
+																					Node node;     .)
 			"fun"
 			(
 			    Ident<out name>													(. proc = tab.NewObj(name, Kinds.proc, Types.undef);
@@ -60,6 +61,8 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Ob
 		        '{' {VarDecl | Stat} '}'
 																				(. tab.CloseScope(); .)
 			  | "main"															(. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
+																				   node = new Node(Labels.Main); 	
+																				   gen.initAST(node);
 																				   tab.OpenScope();	.)	
 				'(' ')' '{'  { VarDecl | Stat } '}'								
 																				(.  tab.CloseScope(); .)
@@ -143,19 +146,30 @@ Stat																			(. Types type; string name; string name1; Obj obj;Obj obj
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 VarDecl 																		(. string name; ArrayList names = new ArrayList(); 
-																					Types type; Types type1; .)
+																					Types type; Types type1; Node node; 
+																					Term term; Obj obj;.)
 
-=		  "var" Ident<out name>													(. names.Add(name); .)	
+=		  "var" Ident<out name>													(.  node = new Node(Labels.Decl);
+																					names.Add(name); .)	
 		  (
 			',' Ident<out name>													(. names.Add(name); .) 
 			{',' Ident<out name>												(. names.Add(name); .)
 			} Type<out type> ';'												(. foreach(string n in names)
-						    															tab.NewObj(n, Kinds.var, type); .)
+																				   {
+						    															obj = tab.NewObj(n, Kinds.var, type); 
+																						term =  new Term (obj);
+																						node.addChildren(term);
+																						gen.addChildren(node);
+																					} 
+																				.)
 			
 			| Type<out type>
 			  
 			  (
-				';'																(. tab.NewObj((string)names[0], Kinds.var, type); .)
+				';'																(. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   term =  new Term (obj);
+																				   node.addChildren(term);
+																				   gen.addChildren(node); .)
 				| '=' 
 					(	"readln" '{''}' ';'										(. if(type != Types.integer)
 																					  SemErr("incompatible types"); 
@@ -172,9 +186,9 @@ VarDecl 																		(. string name; ArrayList names = new ArrayList();
 		  
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-CompleteExpr<out Types type>													 (. Types type1; Op op; .)
+CompleteExpr<out Types type>													 (. Types type1; .)
 = Expr<out type> 
-  [ BoolOp<out op>
+  [ BoolOp
 	Expr<out type1>																 (. if (type != type1)
 																						SemErr("incompatible types");
 																					type = Types.boolean; .)
@@ -182,9 +196,9 @@ CompleteExpr<out Types type>													 (. Types type1; Op op; .)
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Expr<out Types type>															 (. Types type1; Op op; .)
+Expr<out Types type>															 (. Types type1; .)
 = SimpExpr<out type> 
-  [ RelOp<out op>
+  [ RelOp
 	SimpExpr<out type1>															 (. if (type != type1)
 																					    SemErr("incompatible types");
 																					type = Types.boolean; .) 
@@ -192,18 +206,18 @@ Expr<out Types type>															 (. Types type1; Op op; .)
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-SimpExpr<out Types type>														 (. Types type1; Op op; .)
+SimpExpr<out Types type>														 (. Types type1;.)
 = Term<out type> 
-  { AddOp<out op>
+  { AddOp
     Term<out type1>																 (. if (type != Types.integer || type1 != Types.integer)
 																						  SemErr("integer type expected"); .) 
   }.
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Term<out Types type>															(. Types type1; Op op; .)
+Term<out Types type>															(. Types type1; .)
 = Factor<out type> 
-  { MulOp<out op>
+  { MulOp
     Factor<out type1>															(. if (type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected"); .)
   }.
@@ -256,17 +270,17 @@ Type<out Types type>
 		
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-AddOp<out Op op> 
-=																				(. op = Op.ADD; .)
+AddOp
+=																				
   (																				
 	  '+' 
-	| '-'																		(. op = Op.SUB; .)	
+	| '-'																			
    ).
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-RelOp<out Op op>
- =																				(. op = Op.EQU; .)
+RelOp
+ =																				
 	(																			
 	   '<'																			
 	 | '>' 
@@ -278,8 +292,8 @@ RelOp<out Op op>
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-BoolOp<out Op op>
- =																				(. op = Op.EQU; .)
+BoolOp
+ =																				
 	(																			
 	    "&&" 
 	  | "||"
@@ -287,11 +301,11 @@ BoolOp<out Op op>
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-MulOp<out Op op>
- =																				(. op = Op.MUL; .)
+MulOp
+ =																				
 	(																			
 	    '*' 
-	  | '/'																		(. op = Op.DIV; .)			
+	  | '/'																					
 	).               
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/

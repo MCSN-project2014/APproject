@@ -49,11 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASTGenerator\ASTGenerator.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="MainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="codeGenerator\Operation.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
     <Compile Include="treeGenerator\Node.cs" />
     <Compile Include="treeGenerator\TreeGen.cs" />
