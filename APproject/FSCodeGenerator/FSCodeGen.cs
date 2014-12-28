@@ -171,7 +171,8 @@ namespace APproject.FSCodeGenerator
         }
 
         public void  translateBlock(Node n)
-        {   indentationLevel++;
+        {   
+            indentationLevel++;
             List<Node> children = n.getChildren();
             foreach( Node c in children)
             {
@@ -179,8 +180,7 @@ namespace APproject.FSCodeGenerator
                 translateRecursive(c);
                 safeWrite("\n");
             }
-            indentationLevel--;
-           
+            indentationLevel--;   
         }
 
         public void translateFunDecl(Node n)
@@ -213,7 +213,7 @@ namespace APproject.FSCodeGenerator
             {
                 safeWrite("else\n");
                 translateRecursive(children.ElementAt(2));
-                safeWrite("\n");//System.Environment.NewLine
+                safeWrite("\n");
             }
         
         }
@@ -249,8 +249,8 @@ namespace APproject.FSCodeGenerator
         public void translateAssigDecl(Node n)
         {
             List<Node> children = n.getChildren();
-            safeWrite("let mutable");
-            translateRecursive( n ); // n contains the variable name declared
+            safeWrite("let mutable ");
+            translateRecursive(n); // n contains the variable name declared
             safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
@@ -259,7 +259,7 @@ namespace APproject.FSCodeGenerator
         {
             safeWrite("\n");
             indent(indentationLevel);
-            safeWrite("printfn (");
+            safeWrite("printfn(");
             translateRecursive(n.getChildren().ElementAt(0));
             safeWrite(")\n");
         }
