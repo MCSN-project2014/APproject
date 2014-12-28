@@ -1,0 +1,153 @@
+using System.Collections;
+using System.Collections.Generic;
+
+COMPILER Fun
+
+	/*const int // types
+	  undef = 0, integer = 1, boolean = 2, fun = 3;
+
+	const int // object kinds
+	  var = 0, proc = 1, func = 2, form = 3, act=4;
+	*/
+	
+	public SymbolTable   tab;
+	public CodeGenerator gen;
+
+/*--------------------------------------------------------------------------*/
+
+CHARACTERS
+  letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+  digit = "0123456789".
+  cr  = '\r'.
+  lf  = '\n'.
+  tab = '\t'.
+
+TOKENS
+  ident  = letter {letter | digit}.
+  number = digit {digit}.
+
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO lf
+
+IGNORE cr + lf + tab
+
+PRODUCTIONS
+
+/*------------------------------------------------------------------------*/
+							 
+Fun =  { ProcDecl }. 
+   
+                                                    
+/*------------------------------------------------------------------------*/
+
+ProcDecl = "fun"
+			(
+			    Ident '(' {Ident Type{',' Ident Type}} ')' RType 
+		        '{' {VarDecl | Stat} '}'
+			  | "main" '(' ')' '{'  { VarDecl | Stat } '}'
+			  
+			).   
+			
+/*------------------------------------------------------------------------*/
+                                                                
+AProcDecl = "fun" '(' {Ident Type{',' Ident Type}} ')' RType               
+		    '{' {VarDecl | Stat} '}'.                         			
+                                                              
+/*------------------------------------------------------------------------*/
+                                                                             
+Stat = Ident                                                                 
+		(                                                                    
+			'=' 
+				(                                                            
+				                                                               
+				      "async" '{' "return" Ident '(' { CompleteExpr {',' CompleteExpr}} ')' '}'';'
+					| CompleteExpr ';'
+					| AProcDecl                                   
+				                                                              
+				)                                                            
+			                                                                 
+			| '(' { CompleteExpr { ',' CompleteExpr } } ')' ';'                            
+                                                                                
+			                                                                  
+		)                                                       
+		                                                                     
+	| "if" CompleteExpr Stat [ "else" Stat ]                                         
+	| "While" CompleteExpr Stat                                                      
+	| "for" Ident '=' CompleteExpr ';' CompleteExpr ';' CompleteExpr Stat
+    | "println" '{' '}' ';'
+	| "return" 
+			(  
+    			                                                               
+   				CompleteExpr ';'                                                      
+			   | AProcDecl                                                
+			                                                                  
+			)                                                                    
+	| '{' { Stat | VarDecl } '}'.
+
+/*------------------------------------------------------------------------*/
+
+VarDecl = "var" Ident
+		  (
+			',' Ident {',' Ident} Type ';'
+			
+			| Type
+			  
+			  (
+				';'
+				| '=' [CompleteExpr ';' | AProcDecl]
+			  )
+		  
+		  ).
+		  
+/*------------------------------------------------------------------------*/		  
+
+CompleteExpr = Expr [ BoolOp Expr ].
+
+/*------------------------------------------------------------------------*/		  
+
+Expr = SimpExpr [ RelOp SimpExpr ].
+
+/*------------------------------------------------------------------------*/		  
+
+SimpExpr = Term { AddOp Term }.
+
+/*------------------------------------------------------------------------*/		  
+
+Term = Factor { MulOp Factor}.
+
+/*------------------------------------------------------------------------*/		  
+
+Factor = Ident ['(' { CompleteExpr { ',' CompleteExpr } } ')'] 
+		| number | '-'Factor | "true" | "false". 
+
+/*------------------------------------------------------------------------*/
+
+RType = "fun" '(' { Type{',' Type}} ')' RType
+		| "int" | "bool".
+
+/*------------------------------------------------------------------------*/
+
+Type = "fun" | "int" | "bool".		
+		
+/*------------------------------------------------------------------------*/		  
+
+AddOp = '+' | '-'.
+
+/*------------------------------------------------------------------------*/		  
+
+RelOp = '<' | '>' | "==" | "!=" | "<=" | ">=". 
+
+/*------------------------------------------------------------------------*/		  
+
+BoolOp = "&&" | "||".
+
+/*------------------------------------------------------------------------*/
+
+MulOp =  '*' | '/'.               
+
+/*------------------------------------------------------------------------*/
+
+Ident = ident.
+
+	  
+END Fun.
