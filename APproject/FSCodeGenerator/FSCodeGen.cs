@@ -170,7 +170,7 @@ namespace APproject.FSCodeGenerator
             
         }
 
-        public void  translateBlock(Node n)
+        public void translateBlock(Node n)
         {   
             indentationLevel++;
             List<Node> children = n.getChildren();
@@ -187,7 +187,7 @@ namespace APproject.FSCodeGenerator
         {   // fun add ( x int, y int ) 
             //{  return  x + y 
             // }
-         
+   
             List<Node> children = n.getChildren(); 
             safeWrite("let ");
             translateRecursive(n);
@@ -215,7 +215,6 @@ namespace APproject.FSCodeGenerator
                 translateRecursive(children.ElementAt(2));
                 safeWrite("\n");
             }
-        
         }
 
         public void translateWhile(Node n)
