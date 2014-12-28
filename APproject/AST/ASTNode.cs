@@ -6,8 +6,11 @@ namespace APproject
     /**
      * All possible node labels: both reserved keywords and primitive operators.
      **/
-	public enum Labels {Main, FunDecl, If, While, Return, Assig, Decl, AssigDecl, Print, Block,
-                        For, Async, Afun, Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq,
+	public enum Labels {Main, Afun, FunDecl, 
+						For, If, While, Block,
+						Assig, Decl, AssigDecl, 
+						Return, Async, Print, Read,  
+						Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq, NotEq, And, Or,
 						FunCall};
 
 	public abstract class ASTNode{
