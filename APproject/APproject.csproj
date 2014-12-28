@@ -62,6 +62,7 @@
     <Compile Include="AST\ASTNode.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
+    <Compile Include="Interpreter\InterpreterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
