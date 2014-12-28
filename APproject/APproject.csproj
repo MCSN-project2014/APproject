@@ -60,6 +60,8 @@
     <Compile Include="Interpreter\Interpreter.cs" />
     <Compile Include="Interpreter\Memory.cs" />
     <Compile Include="AST\ASTNode.cs" />
+    <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
+    <Compile Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -69,8 +71,6 @@
     <None Include="lib\cocor\Scanner.frame" />
     <None Include="Test\parameterTest.fun" />
     <None Include="Test\vardeclTest.fun" />
-    <None Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
-    <None Include="FSCodeGenerator\FSCodeGen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
