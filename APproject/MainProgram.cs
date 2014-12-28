@@ -20,8 +20,7 @@ namespace APproject
                 parser.gen = new ASTGenerator();
                 //parser.treegen = new APproject.treeGenerator.TreeGen();
                 parser.Parse();
-                InterpreterTest.printAST(parser.gen.getRoot());
-				Console.WriteLine(parser.errors.count + " errors detected");
+                Console.WriteLine(parser.errors.count + " errors detected");
 				if (parser.errors.count == 0){
 					InterpreterTest.printAST(parser.gen.getRoot());
 					Interpreter inter = new Interpreter (parser.gen.getRoot());
