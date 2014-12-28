@@ -151,13 +151,14 @@ namespace APproject.FSCodeGenerator
 
         /// <summary>
         /// This method prints n \t's according to the passed parameter. 
+        /// http://msdn.microsoft.com/en-us/library/dd233191.aspx
         /// </summary>
         /// <param name="n">Indentation level to be used.</param>
         private void indent(int n)
         {
             for (int i = 0; i < n; i++)
             {
-                safeWrite("    ");
+                safeWrite("\t");
             }
         }
 
@@ -213,7 +214,7 @@ namespace APproject.FSCodeGenerator
             {
                 safeWrite("else");
                 translateRecursive(children.ElementAt(2));
-                safeWrite("\n");//System.Environment.NewLine);
+                safeWrite("\n");//System.Environment.NewLine
             }
         
         }
