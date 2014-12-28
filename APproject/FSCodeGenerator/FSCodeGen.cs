@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace APproject.FSCodeGenerator
 {
-
     ///<summary>
     ///This class converts an AST of funW@P into the corresponding F#
     ///code, simply by visiting the tree.
@@ -158,7 +157,7 @@ namespace APproject.FSCodeGenerator
         {
             for (int i = 0; i < n; i++)
             {
-                safeWrite("\t");
+                safeWrite("    ");
             }
         }
 
