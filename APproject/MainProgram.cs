@@ -21,12 +21,12 @@ namespace APproject
                 //parser.treegen = new APproject.treeGenerator.TreeGen();
                 parser.Parse();
                 InterpreterTest.printAST(parser.gen.getRoot());
-                //if (parser.errors.count == 0)
-                //{
-                //    parser.gen.Decode();
-                //    parser.gen.Interpret("Taste.IN");
-                // }
-                Console.WriteLine(parser.errors.count + " errors detected");
+				Console.WriteLine(parser.errors.count + " errors detected");
+				if (parser.errors.count == 0){
+					InterpreterTest.printAST(parser.gen.getRoot());
+					Interpreter inter = new Interpreter (parser.gen.getRoot());
+					inter.Start ();
+				}
                 Console.Read();
             }
             else

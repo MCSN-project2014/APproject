@@ -56,6 +56,19 @@ namespace APproject
 			function.Add (fun, funMem);
 		}
 
+		public void addUpdateValue(Obj var, object value, Obj fun){
+			bool find = false;
+			foreach (var scope in mem) {
+				find = scope.ContainsKey (var);
+				if (find) {
+					scope [var] = value;
+					break;
+				}
+			}
+			if (!find)
+				function [fun].addUpdateValue (var, value);
+		}
+
 		public object getValue(Obj var, Obj fun){
 			object value = getValue (var);
 			if (value == null) {
@@ -66,6 +79,14 @@ namespace APproject
 			} else
 				return value;
 			return null;
+		}
+
+		public void addScope(Obj fun){
+			function [fun].addScope ();
+		}
+
+		public void removeScope(Obj fun){
+			function [fun].removeScope ();
 		}
 	}
 
