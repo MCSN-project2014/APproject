@@ -48,7 +48,7 @@ namespace APproject.FSCodeGenerator
         /// Just a big switch case.
         ///</summary>
         /// <param name="Node n">n.</param>
-        public void translate(Node n) {
+        public void translate(ASTNode n) {
             switch (n.label)
             {
                 case Labels.Main: 
@@ -129,9 +129,9 @@ namespace APproject.FSCodeGenerator
         ///one.
         ///</summary>
         ///<param name="n">n.</param>
-        private void translateRecursive (Node n){
+        private void translateRecursive (ASTNode n){
              if (n.isTerminal())
-                safeWrite(n.term.ToString()); 
+                safeWrite(n.ToString()); 
             else translate(n);
         }
 
@@ -161,19 +161,19 @@ namespace APproject.FSCodeGenerator
             }
         }
 
-        public void translateMain(Node n)
+        public void translateMain(ASTNode n)
         {
-            foreach ( Node c in n.getChildren() )
+            foreach ( Node c in n.children )
             {
                 translateRecursive(c);
             }
             
         }
 
-        public void translateBlock(Node n)
+        public void translateBlock(ASTNode n)
         {   
             indentationLevel++;
-            List<Node> children = n.getChildren();
+            List<ASTNode> children = n.children;
             foreach( Node c in children)
             {
                 indent(indentationLevel);
@@ -183,12 +183,12 @@ namespace APproject.FSCodeGenerator
             indentationLevel--;   
         }
 
-        public void translateFunDecl(Node n)
+        public void translateFunDecl(ASTNode n)
         {   // fun add ( x int, y int ) 
             //{  return  x + y 
             // }
-   
-            List<Node> children = n.getChildren(); 
+
+            List<ASTNode> children = n.children; 
             safeWrite("let ");
             translateRecursive(n);
             translateRecursive(children.ElementAt(0)); // <parameters>
@@ -197,14 +197,14 @@ namespace APproject.FSCodeGenerator
              
         }
 
-        public void translateFun(Node n)
+        public void translateFun(ASTNode n)
         {
 
         }
-    
-        public void translateIf(Node n)
+
+        public void translateIf(ASTNode n)
         {
-            List<Node> children = n.getChildren();
+            List<ASTNode> children = n.children;
             safeWrite("if ");
             translateRecursive(children.ElementAt(0));
             safeWrite(" then\n");
@@ -217,55 +217,55 @@ namespace APproject.FSCodeGenerator
             }
         }
 
-        public void translateWhile(Node n)
+        public void translateWhile(ASTNode n)
         {
-            List<Node> children = n.getChildren();
+            List<ASTNode> children = n.children;
             safeWrite("while ");
             translateRecursive(children.ElementAt(0));
             safeWrite("do\n");
             translateRecursive(children.ElementAt(1));  
         }
 
-        public void translateReturn(Node n)
+        public void translateReturn(ASTNode n)
         {
-            translateRecursive(n.getChildren().ElementAt(0));
+            translateRecursive(n.children.ElementAt(0));
         }
 
-        public void translateAssig(Node n)
-        { 
-            List<Node> children = n.getChildren();
+        public void translateAssig(ASTNode n)
+        {
+            List<ASTNode> children = n.children;
             translateRecursive(children.ElementAt(0));
             safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
 
-        public void translateDecl(Node n)
+        public void translateDecl(ASTNode n)
         {
             safeWrite("let mutable ");
-            translateRecursive(n.getChildren().ElementAt(0));
+            translateRecursive(n.children.ElementAt(0));
         }
 
-        public void translateAssigDecl(Node n)
+        public void translateAssigDecl(ASTNode n)
         {
-            List<Node> children = n.getChildren();
+            List<ASTNode> children = n.children;
             safeWrite("let mutable ");
             translateRecursive(n); // n contains the variable name declared
             safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
 
-        public void translatePrint(Node n)
+        public void translatePrint(ASTNode n)
         {
             safeWrite("\n");
             indent(indentationLevel);
             safeWrite("printfn(");
-            translateRecursive(n.getChildren().ElementAt(0));
+            translateRecursive(n.children.ElementAt(0));
             safeWrite(")\n");
         }
 
-        public void translateFor(Node n)
+        public void translateFor(ASTNode n)
         {
-            List<Node> children = n.getChildren();
+            List<ASTNode> children = n.children;
             safeWrite("for ");
             translateRecursive(children.ElementAt(0));
             safeWrite(" in ");
@@ -276,18 +276,18 @@ namespace APproject.FSCodeGenerator
 
         }
 
-        public void translateAsync(Node n)
+        public void translateAsync(ASTNode n)
         {
             safeWrite("async {\n");
             indentationLevel++;
             indent(indentationLevel);
-            translateRecursive(n.getChildren().ElementAt(0));
+            translateRecursive(n.children.ElementAt(0));
             safeWrite("\n");
             indentationLevel--;
             safeWrite("}\n");
         }
 
-        public void translateAfun(Node n)
+        public void translateAfun(ASTNode n)
         {
             //few doubts about the implementation :P
         }
@@ -298,11 +298,11 @@ namespace APproject.FSCodeGenerator
         /// </summary>
         /// <param name="op">The symbol of the operator within a string.</param>
         /// <param name="n">The node.</param>
-        public void translateOp(string op, Node n)
+        public void translateOp(string op, ASTNode n)
         {
-            List<Node> children = n.getChildren();
-            Node first = children.ElementAt(0);
-            Node second = children.ElementAt(1);
+            List<ASTNode> children = n.children;
+            ASTNode first = children.ElementAt(0);
+            ASTNode second = children.ElementAt(1);
 
             translateRecursive(first);
 
