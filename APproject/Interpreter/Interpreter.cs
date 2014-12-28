@@ -6,100 +6,163 @@ namespace APproject
 	public class Interpreter
 	{
 		Memory mem;
-		public void tryInterpreter(){
-			Obj o = new Obj ();
-			o.kind = Kinds.func;
-			Node main = new Node (new Term(o));
-			Node If = new Node ( Labels.If);
-			main.addChildren (If);
-			Node condition = new Node (Labels.Gte);
-			If.addChildren (condition);
-			Obj term1 = new Obj ();
-			term1.type = Types.integer;
-			term1.kind = Kinds.var;
-			Obj term2 = new Obj ();
-			term1.type = Types.integer;
-			term1.kind = Kinds.var;
-				condition.addChildren (new Node(new Term(term1)));
-			condition.addChildren (new Node(new Term(term2)));
-			Node ret = new Node (Labels.Return);
-			If.addChildren (ret);
-			Obj term3 = new Obj ();
-			term1.type = Types.integer;
-			term1.kind = Kinds.var;
-			ret.addChildren (new Node(new Term(term3)));
+		ASTNode startNode;
 
-			printAST (main);
-			Interpret (main);
+		public Interpreter( ASTNode node){
+			startNode = node;
+			mem = new Memory ();
+		}
 
+		public static void tryInterpreter(){
+			ASTNode If = test1 ();
+			printAST (If);
+			Interpreter inter = new Interpreter (If);
+			inter.Start ();
 			Console.ReadKey();
 		}
 			
-		public void Start (Node node){
-			mem = new Memory ();
-			Interpret (node);
+		public void Start (){
+			Console.WriteLine ("INTERPRETER STARTs:");
+			Interpret (startNode);
 		}
 
-		private void Interpret (Node node){
+		private void Interpret (ASTNode node){
 			if (node != null) {
-				if (node.term != null)
+				if (node.isTerminal())
 					Console.WriteLine ("term");
 				else{
-					List<Node> children = node.getChildren ();
+					List<ASTNode> children = node.children;
 					bool condition;
 					switch (node.label) {
+					case Labels.Block:
+						mem.addScope ();
+						foreach (Node n in children)
+							Interpret (n);
+						mem.removeScope ();
+						break;
 					case Labels.If:
 						condition = InterpretCondition (children [0]);
-						mem.addScope ();
+
 						if (condition) {
 							Interpret (children [1]);
 						}else if (children.Count > 2)
 							Interpret (children [2]);
-						mem.removeScope ();
 						break;
 					case Labels.While:
 						condition = InterpretCondition (children [0]);
-						mem.addScope ();
 						while (condition) {
 							Interpret (children [1]);
 							condition = InterpretCondition (children [0]);
 						}
-						mem.removeScope ();
+						break;
+					case Labels.Decl:
+						foreach (ASTNode n in children)
+							mem.addUpdateValue((Obj)n.value,null);
+						break;
+					case Labels.AssigDecl:
+						mem.addUpdateValue ((Obj)children [0].value, InterpretExp (children [1]));
+						break;
+					case Labels.Assig:
+						mem.addUpdateValue ((Obj)children [0].value, InterpretExp (children [1]));
 						break;
 					case Labels.Print:
-						Console.WriteLine ("FUNW@P console: " + Convert.ToString(InterpretExp (children [0])));
+						if (children[0].isTerminal() && children[0].value is string)
+							Console.WriteLine ("FUNW@P console: " + children [0].value);
+						else
+							Console.WriteLine ("FUNW@P console: " + Convert.ToString(InterpretExp (children [0])));
 						break;
 					}
 				}
 			}
 		}
 
-		private bool InterpretCondition (Node node)
+		private bool InterpretCondition (ASTNode node)
 		{
 			return (bool) InterpretExp(node);
 		}
 
-		private int InterpretExpInt (Node node){
-			return (Int32) InterpretExp(node);
+		private int InterpretExpInt (ASTNode node){
+			return (int) InterpretExp(node);
 		}
 
-		private Object InterpretExp (Node node)
+		private object InterpretExp (ASTNode node)
 		{
 			if (node.isTerminal ()) {
-
-				return node.term.boolean;
-			} else
-				return null;
+				if (node.value is Obj)
+					return mem.getValue ((Obj)node.value);
+				else
+					return node.value;
+			} else {
+				List<ASTNode> children = node.children;
+				switch (node.label) {
+				case Labels.Plus:
+					return (int) InterpretExp (children [0]) + (int) InterpretExp (children [1]);
+				case Labels.Minus:
+					return (int) InterpretExp (children [0]) - (int) InterpretExp (children [1]);
+				case Labels.Mul:
+					return (int) InterpretExp (children [0]) * (int) InterpretExp (children [1]);
+				case Labels.Div:
+					return (int) InterpretExp (children [0]) / (int) InterpretExp (children [1]);
+				case Labels.Eq:
+					var tmp = InterpretExp (children [0]);
+					if (tmp is bool)
+						return (bool) tmp == (bool) InterpretExp (children [1]);
+					else
+						return (int) InterpretExp (children [0]) == (int) InterpretExp (children [1]);
+				case Labels.Gt:
+					return (int) InterpretExp (children [0]) > (int) InterpretExp (children [1]);
+				case Labels.Gte:
+					return (int) InterpretExp (children [0]) >= (int) InterpretExp (children [1]);
+				case Labels.Lt:
+					return (int) InterpretExp (children [0]) < (int) InterpretExp (children [1]);
+				case Labels.Lte:
+					return (int) InterpretExp (children [0]) <= (int) InterpretExp (children [1]);
+				default:
+					return null;
+				}
+			}
 		}
 
-		public void printAST(Node node){
+		public static ASTNode test1 (){
+			//Obj o = new Obj ();
+			//o.kind = Kinds.func;
+			Node main = new Node (Labels.Main);
+			Node If = new Node ( Labels.If);
+			main.addChildren (If);
+			Node condition = new Node (Labels.Gte);
+			If.addChildren (condition);
+			Term term1 = new Term(3);
+			Term term2 = new Term(1);
+			condition.addChildren (term1);
+			condition.addChildren (term2);
+			Node block = new Node (Labels.Block);
+			If.addChildren (block);
+			Node decAss = new Node (Labels.AssigDecl);
+			block.addChildren (decAss);
+			Obj varA = new Obj();
+			varA.name = "a";
+			Term num1 = new Term (3);
+			Term num2 = new Term (7);
+			Node plus = new Node (Labels.Plus);
+			plus.addChildren (num1);
+			plus.addChildren (num2);
+			decAss.addChildren (new Term (varA));
+			decAss.addChildren (plus);
+			Node print = new Node (Labels.Print);
+			block.addChildren (print);
+			print.addChildren (new Term (varA));
+
+			return If;
+		}
+
+		public static void printAST(ASTNode node){
 			if (node != null){
-				if (node.term != null)
-					Console.WriteLine (node.term);
-				else
-					Console.WriteLine (node.label);
-				foreach (Node n in node.getChildren()) {
-					printAST (n);
+				if (node.isTerminal())
+					Console.WriteLine (node);
+				else{
+					Console.WriteLine (node);
+					foreach (ASTNode n in node.children) 
+						printAST (n);
 				}
 			}
 		}

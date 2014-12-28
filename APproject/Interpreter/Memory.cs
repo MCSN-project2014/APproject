@@ -21,12 +21,21 @@ namespace APproject
 			mem.RemoveAt(lastIndex);
 		}
 
-		public void addValue(Obj var, object value){
-			mem[lastIndex].Add (var, value);
+		public void addUpdateValue(Obj var, object value){
+			bool find = false;
+			foreach (Dictionary<Obj,object> scope in mem) {
+				find = scope.ContainsKey (var);
+				if (find) {
+					scope [var] = value;
+					break;
+				}
+			}
+			if (!find)
+				mem [lastIndex].Add (var, value);
 		}
 
 		public object getValue(Obj var){
-			int count = mem.Count;
+			int count = lastIndex;
 			for (int i = count; i >= 0; i--) {
 				object value;
 				if (mem[i].TryGetValue (var, out value))
