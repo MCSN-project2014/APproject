@@ -206,12 +206,12 @@ namespace APproject.FSCodeGenerator
         {
             List<Node> children = n.getChildren();
             safeWrite("if ");
-            translateRecursive( children.ElementAt(0));
-            safeWrite(" then ");
-            translateRecursive( children.ElementAt(1));
-            if( children.Count == 3)
+            translateRecursive(children.ElementAt(0));
+            safeWrite(" then\n");
+            translateRecursive(children.ElementAt(1));
+            if(children.Count == 3)
             {
-                safeWrite("else");
+                safeWrite("else\n");
                 translateRecursive(children.ElementAt(2));
                 safeWrite("\n");//System.Environment.NewLine
             }
@@ -221,9 +221,9 @@ namespace APproject.FSCodeGenerator
         public void translateWhile(Node n)
         {
             List<Node> children = n.getChildren();
-            safeWrite("While ");
+            safeWrite("while ");
             translateRecursive(children.ElementAt(0));
-            safeWrite("do \n");
+            safeWrite("do\n");
             translateRecursive(children.ElementAt(1));  
         }
 
@@ -236,22 +236,22 @@ namespace APproject.FSCodeGenerator
         { 
             List<Node> children = n.getChildren();
             translateRecursive(children.ElementAt(0));
-            safeWrite(" = ");
+            safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
 
         public void translateDecl(Node n)
         {
-            safeWrite("let ");
+            safeWrite("let mutable ");
             translateRecursive(n.getChildren().ElementAt(0));
         }
 
         public void translateAssigDecl(Node n)
         {
             List<Node> children = n.getChildren();
-            safeWrite("let ");
+            safeWrite("let mutable");
             translateRecursive( n ); // n contains the variable name declared
-            safeWrite(" = ");
+            safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
 
