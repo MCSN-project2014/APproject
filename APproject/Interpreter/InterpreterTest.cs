@@ -21,15 +21,13 @@ namespace APproject
 		/// }
 		/// </summary>
 		public static ASTNode test1 (){
-			//Obj o = new Obj ();
-			//o.kind = Kinds.func;
 			Node main = new Node (Labels.Main);
 			Node If = new Node ( Labels.If);
 			main.addChildren (If);
-			Node condition = new Node (Labels.Gte);
+			Node condition = new Node (Labels.Eq);
 			If.addChildren (condition);
-			Term term1 = new Term(3);
-			Term term2 = new Term(1);
+			Term term1 = new Term(true);
+			Term term2 = new Term(true);
 			condition.addChildren (term1);
 			condition.addChildren (term2);
 			Node block = new Node (Labels.Block);
@@ -49,7 +47,7 @@ namespace APproject
 			block.addChildren (print);
 			print.addChildren (new Term (varA));
 
-			return If;
+			return main;
 		}
 
 		/// <summary>
@@ -60,7 +58,8 @@ namespace APproject
 		/// println (a);
 		/// </summary>
 		public static ASTNode test2 (){
-			Node blockM = new Node (Labels.Block);
+
+			Node blockM = new Node (Labels.Main);
 
 			Obj varA = new Obj();
 			varA.name = "a";
@@ -106,7 +105,7 @@ namespace APproject
 		/// println (a);
 		/// </summary>
 		public static ASTNode test3 (){
-			Node blockM = new Node (Labels.Block);
+			Node blockM = new Node (Labels.Main);
 
 			Node decAss1 = new Node (Labels.AssigDecl);
 			blockM.addChildren (decAss1);
@@ -151,7 +150,7 @@ namespace APproject
 		/// }
 		/// </summary>
 		public static ASTNode testWhile (){
-			Node blockM = new Node (Labels.Block);
+			Node blockM = new Node (Labels.Main);
 
 			Node decAssI = new Node (Labels.AssigDecl);
 			blockM.addChildren (decAssI);

@@ -26,6 +26,10 @@ namespace APproject
 					List<ASTNode> children = node.children;
 					bool condition;
 					switch (node.label) {
+					case Labels.Main:
+						foreach (Node n in children)
+							Interpret (n);
+						break;
 					case Labels.Block:
 						mem.addScope ();
 						foreach (Node n in children)
@@ -116,4 +120,3 @@ namespace APproject
 		}
 	}
 }
-

@@ -32,7 +32,7 @@ namespace APproject
                 Console.Write("-- No source file specified");
             }
 
-			//InterpreterTest.Start (InterpreterTest.testWhile);
+			//InterpreterTest.Start (InterpreterTest.test1);
 		}
 	}
 }

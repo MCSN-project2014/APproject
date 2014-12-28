@@ -26,7 +26,6 @@ namespace APproject
 		public Labels label{ get { return _label; } }
 
 		public abstract bool isTerminal ();
-
 	}
 
 
@@ -88,8 +87,9 @@ namespace APproject
 		public override string ToString(){
 			if (_value is Obj)
 				return ((Obj)value).name;
-			else
-				return Convert.ToString (value);
+			string tmp = Convert.ToString (value);
+			if(_value is bool) return tmp.ToLower ();
+			return tmp;
 		}
 
 		public override bool isTerminal(){

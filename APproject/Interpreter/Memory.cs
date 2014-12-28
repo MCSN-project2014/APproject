@@ -6,6 +6,8 @@ namespace APproject
 	public class Memory
 	{
 		private List<Dictionary<Obj,object>> mem;
+		private Dictionary<Obj,Memory> function;
+
 		private int lastIndex {get{return mem.Count-1;}}
 
 		public Memory (){
@@ -41,6 +43,28 @@ namespace APproject
 				if (mem[i].TryGetValue (var, out value))
 					return value;
 			}
+			return null;
+		}
+
+		public void createClousure(Obj fun){
+			Memory funMem = new Memory ();
+			foreach (var scope in mem) {
+				foreach (var dic in scope){
+					funMem.addUpdateValue (dic.Key, dic.Value);
+				}
+			}
+			function.Add (fun, funMem);
+		}
+
+		public object getValue(Obj var, Obj fun){
+			object value = getValue (var);
+			if (value == null) {
+				Memory funmen;
+				if (function.TryGetValue (fun, out funmen)) {
+					return funmen.getValue (var);
+				}
+			} else
+				return value;
 			return null;
 		}
 	}
