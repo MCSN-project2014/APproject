@@ -1,7 +1,7 @@
 
 /*Comment*/
 
-fun add(w int, v int){
+fun add(w int, v int) int{
 	var z int = v + w;
 }
 

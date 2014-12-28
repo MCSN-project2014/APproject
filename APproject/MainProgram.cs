@@ -17,7 +17,6 @@ namespace APproject
                 Scanner scanner = new Scanner(args[0]);
                 Parser parser = new Parser(scanner);
                 parser.tab = new SymbolTable(parser);
-                parser.gen = new CodeGenerator();
                 //parser.treegen = new APproject.treeGenerator.TreeGen();
                 parser.Parse();
                 //if (parser.errors.count == 0)

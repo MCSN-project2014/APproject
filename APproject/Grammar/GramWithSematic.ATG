@@ -1,0 +1,303 @@
+using System.Collections;
+using System.Collections.Generic;
+
+COMPILER Fun
+
+	/*const int // types
+	  undef = 0, integer = 1, boolean = 2, fun = 3;
+
+	const int // object kinds
+	  var = 0, proc = 1, func = 2, form = 3, act=4;
+	*/
+	
+	public SymbolTable   tab;
+	public CodeGenerator gen;
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+CHARACTERS
+  letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+  digit = "0123456789".
+  cr  = '\r'.
+  lf  = '\n'.
+  tab = '\t'.
+
+TOKENS
+  ident  = letter {letter | digit}.
+  number = digit {digit}.
+  print  = '"'{letter | digit }'"'.
+
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO lf
+
+IGNORE cr + lf + tab
+
+PRODUCTIONS
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+							 
+Fun =																			(. tab.OpenScope();  .)
+		{ ProcDecl }
+																				(. tab.CloseScope(); .).
+   
+                                                    
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Obj obj;      .)
+			"fun"
+			(
+			    Ident<out name>													(. proc = tab.NewObj(name, Kinds.proc, Types.undef);
+																				   tab.OpenScope();                                .)
+				
+				'(' 
+					{ Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
+																				   tab.addFormal(proc,formal);             .)
+				    {',' Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
+																				   tab.addFormal(proc,formal);             .)
+					}
+					}
+				 ')' 
+				  RType<out type>												(. tab.setRType(proc, type); .) 
+		        '{' {VarDecl | Stat} '}'
+																				(. tab.CloseScope(); .)
+			  | "main"															(. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
+																				   tab.OpenScope();	.)	
+				'(' ')' '{'  { VarDecl | Stat } '}'								
+																				(.  tab.CloseScope(); .)
+			).   
+			
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+                                                                
+AProcDecl																		(. string name; Types type;.)
+ =																			
+			"fun"'(' {Ident<out name> Type<out type>
+				      {',' Ident<out name> Type<out type>
+					  }} ')' RType<out type>               
+		    '{' {VarDecl | Stat} '}'.                         			
+                                                              
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+                                                                             
+Stat																			(. Types type; string name; string name1; Obj obj;Obj obj1;
+																				   Queue<Types> actualTypes = new Queue<Types>(); .) 
+
+= 
+	Ident<out name>																(. obj = tab.Find(name); .)                                                               
+		(                                                                    
+			'='																	(. if ( obj.kind != Kinds.var )
+																					   SemErr("cannot assign to procedure"); .)
+				(                                                            
+				                                                               
+				      "async" '{' "return" Ident<out name1>						(. obj1 = tab.Find(name1); .)
+								 '(' { CompleteExpr<out type>					(. actualTypes.Enqueue(type); .) 
+									 {',' CompleteExpr<out type>				(. actualTypes.Enqueue(type); .) 
+									 } } ')' '}'';'								(. if (obj1.kind != Kinds.proc) 
+																				       SemErr("object is not a procedure");
+																				   tab.checkActualFormalTypes(obj1,actualTypes); 
+																				   if(obj.type != obj1.type) 
+																					   SemErr("incompatible types"); .)
+					| CompleteExpr<out type>';'									(. if (type != obj.type)
+																					    SemErr("incompatible types"); .)
+					| AProcDecl
+					| "readln" '{''}' ';'									    (. if(obj.type != Types.integer) 
+																						SemErr("incompatible types"); .) 
+				                                                              
+				)                                                            
+			                                                                 
+			| '(' { CompleteExpr<out type>										(. actualTypes.Enqueue(type); .) 
+				  { ',' CompleteExpr<out type>									(. actualTypes.Enqueue(type); .) 
+				  } } ')' ';'													(. if (obj.kind != Kinds.proc) 
+																				       SemErr("object is not a procedure");
+																				   tab.checkActualFormalTypes(obj,actualTypes); .)
+                                                                                
+			                                                                  
+		)                                                       
+		                                                                     
+	| "if" CompleteExpr<out type>												(. if (type != Types.boolean) 
+																					  SemErr("boolean type expected"); .)
+	   Stat [ "else"	Stat ] 
+	                                 
+	| "While" CompleteExpr<out type>											(. if (type != Types.boolean) 
+																					  SemErr("boolean type expected"); .) 
+	   Stat                                   
+	| "for" Ident<out name> '=' CompleteExpr<out type>';'						(. obj=tab.Find(name);
+																				   if (type != obj.type)
+																					  SemErr("incompatible types"); .)
+		    CompleteExpr<out type>';'											(. if (type != Types.boolean) 
+																					  SemErr("boolean type expected"); .)
+		    Ident<out name1> '=' CompleteExpr<out type>							(. obj=tab.Find(name1); 
+																				   if (type != obj.type)
+																					  SemErr("incompatible types");.)				
+			Stat
+																				
+    | "println" '{'{ print } '}' ';'
+	| "return" 
+			(  
+    			                                                               
+   				CompleteExpr<out type> ';'                                                      
+			   | AProcDecl                                                
+			                                                                  
+			)                                                                    
+	|																			(. tab.OpenScope(); .) 
+	'{' { Stat | VarDecl } '}'
+																				(. tab.CloseScope(); .).
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+VarDecl 																		(. string name; ArrayList names = new ArrayList(); 
+																					Types type; Types type1; .)
+
+=		  "var" Ident<out name>													(. names.Add(name); .)	
+		  (
+			',' Ident<out name>													(. names.Add(name); .) 
+			{',' Ident<out name>												(. names.Add(name); .)
+			} Type<out type> ';'												(. foreach(string n in names)
+						    															tab.NewObj(n, Kinds.var, type); .)
+			
+			| Type<out type>
+			  
+			  (
+				';'																(. tab.NewObj((string)names[0], Kinds.var, type); .)
+				| '=' 
+					(	"readln" '{''}' ';'										(. if(type != Types.integer)
+																					  SemErr("incompatible types"); 
+																				   tab.NewObj((string)names[0], Kinds.var, type); .)	
+
+					    |CompleteExpr<out type1>';'								(. if (type != type1) 
+																					   SemErr("incompatible types");
+					 															   tab.NewObj((string)names[0], Kinds.var, type); .)		 
+						| AProcDecl
+					)
+			  )
+		  
+		  ).
+		  
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+CompleteExpr<out Types type>													 (. Types type1; Op op; .)
+= Expr<out type> 
+  [ BoolOp<out op>
+	Expr<out type1>																 (. if (type != type1)
+																						SemErr("incompatible types");
+																					type = Types.boolean; .)
+  ].
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+Expr<out Types type>															 (. Types type1; Op op; .)
+= SimpExpr<out type> 
+  [ RelOp<out op>
+	SimpExpr<out type1>															 (. if (type != type1)
+																					    SemErr("incompatible types");
+																					type = Types.boolean; .) 
+  ].
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+SimpExpr<out Types type>														 (. Types type1; Op op; .)
+= Term<out type> 
+  { AddOp<out op>
+    Term<out type1>																 (. if (type != Types.integer || type1 != Types.integer)
+																						  SemErr("integer type expected"); .) 
+  }.
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+Term<out Types type>															(. Types type1; Op op; .)
+= Factor<out type> 
+  { MulOp<out op>
+    Factor<out type1>															(. if (type != Types.integer || type1 != Types.integer)
+																					   SemErr("integer type expected"); .)
+  }.
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+Factor<out Types type>															(. int n; Obj obj; string name; Types type1; bool control = false;
+																				   Queue<Types> actualTypes = new Queue<Types>(); .) 
+
+=																				(. type = Types.undef; .)
+	(																		    
+		Ident<out name>															(. obj = tab.Find(name); 
+																				   type = obj.type; .) 
+		[																		(. control = true; .)
+		'(' { CompleteExpr<out type1>											(. actualTypes.Enqueue(type1); .) 
+			 { ',' CompleteExpr<out type1>										(. actualTypes.Enqueue(type1); .) 
+			 } } ')'															(. if (obj.kind != Kinds.proc) 
+																				       SemErr("object is not a procedure");
+																				   tab.checkActualFormalTypes(obj,actualTypes); .)
+		]																		
+																				(. if (!control && obj.kind != Kinds.var)
+																				      SemErr("variable expected"); .)
+		| number																(. n = Convert.ToInt32(t.val);
+																				   type = Types.integer; .)
+		| '-'Factor<out type>													(. if (type != Types.integer) 
+																					   SemErr("integer type expected");
+																				   type = Types.integer; .)
+		| "true"																(. type = Types.boolean; .)
+		| "false"																(. type = Types.boolean; .)
+	).	 
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+RType<out Types type>																			(. Types type1; .)
+=																								(. type = Types.undef; .)																						
+		(
+		  "fun" '(' { Type<out type1>{',' Type<out type1>}} ')' RType<out type1>				(. type = Types.fun; .)
+		| "int"																					(. type = Types.integer; .) 
+		| "bool"																				(. type = Types.boolean; .)
+		).
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+Type<out Types type> 
+=																				(. type = Types.undef; .)
+ (																				
+	  "fun"																		(. type = Types.fun; .) 
+	| "int"																		(. type = Types.integer; .)
+	| "bool"																	(. type = Types.boolean; .)
+  ).		
+		
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+AddOp<out Op op> 
+=																				(. op = Op.ADD; .)
+  (																				
+	  '+' 
+	| '-'																		(. op = Op.SUB; .)	
+   ).
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+RelOp<out Op op>
+ =																				(. op = Op.EQU; .)
+	(																			
+	   '<'																			
+	 | '>' 
+	 | "==" 
+	 | "!=" 
+	 | "<=" 
+	 | ">="
+   ). 
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+BoolOp<out Op op>
+ =																				(. op = Op.EQU; .)
+	(																			
+	    "&&" 
+	  | "||"
+	).
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+MulOp<out Op op>
+ =																				(. op = Op.MUL; .)
+	(																			
+	    '*' 
+	  | '/'																		(. op = Op.DIV; .)			
+	).               
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+Ident<out string name>
+ = ident																		(. name = t.val; .).
+
+	  
+END Fun.
