@@ -116,12 +116,12 @@ namespace APproject.FSCodeGenerator
                     translateOp("<=", n);
                     break;
                 case Labels.Eq:
-                    translateOp("==", n);
+                    translateOp("=", n);
                     break;
                 default : 
                     break;
             }
-            fileWriter.Close();
+         //   fileWriter.Close();
         }
 
         ///<summary>
@@ -132,7 +132,7 @@ namespace APproject.FSCodeGenerator
         ///<param name="n">n.</param>
         private void translateRecursive (Node n){
              if (n.isTerminal())
-                safeWrite(n.term.ToString());
+                safeWrite(n.term.ToString()); 
             else translate(n);
         }
 
@@ -142,7 +142,7 @@ namespace APproject.FSCodeGenerator
         /// </summary>
         /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
-        {
+        {  
             using (fileWriter = new StreamWriter(fileName, true))
             {
                 fileWriter.Write(s);
@@ -157,7 +157,7 @@ namespace APproject.FSCodeGenerator
         {
             for (int i = 0; i < n; i++)
             {
-                safeWrite("\t");
+                safeWrite("    ");
             }
         }
 
@@ -169,17 +169,15 @@ namespace APproject.FSCodeGenerator
             }
             
         }
+
         public void  translateBlock(Node n)
         {   indentationLevel++;
             List<Node> children = n.getChildren();
             foreach( Node c in children)
             {
-                for ( int i =0 ; i < indentationLevel; indentationLevel++)
-                {
-                    safeWrite("\t");
-                }
-                 translateRecursive(c);
-                 safeWrite("\n");
+                indent(indentationLevel);
+                translateRecursive(c);
+                safeWrite("\n");
             }
             indentationLevel--;
            
@@ -187,9 +185,9 @@ namespace APproject.FSCodeGenerator
 
         public void translateFunDecl(Node n)
         {   // fun add ( x int, y int ) 
-            //{  return  x + y }
-            // let add x y =
-            //      x+y
+            //{  return  x + y 
+            // }
+         
             List<Node> children = n.getChildren(); 
             safeWrite("let ");
             translateRecursive(n);
@@ -201,14 +199,6 @@ namespace APproject.FSCodeGenerator
 
         public void translateFun(Node n)
         {
-            List<Node> children = n.getChildren();
-            safeWrite("for ");
-            translateRecursive(children.ElementAt(0)); 
-            safeWrite(" in ");
-            translateRecursive(children.ElementAt(1));  
-            safeWrite(" do \n ");
-            safeWrite("\t");
-            translateRecursive(children.ElementAt(3));  // for statement block 
 
         }
     
@@ -219,12 +209,11 @@ namespace APproject.FSCodeGenerator
             translateRecursive( children.ElementAt(0));
             safeWrite(" then ");
             translateRecursive( children.ElementAt(1));
-            safeWrite("\n");
             if( children.Count == 3)
             {
                 safeWrite("else");
                 translateRecursive(children.ElementAt(2));
-                safeWrite("\n");
+                safeWrite("\n");//System.Environment.NewLine);
             }
         
         }
@@ -277,6 +266,14 @@ namespace APproject.FSCodeGenerator
 
         public void translateFor(Node n)
         {
+            List<Node> children = n.getChildren();
+            safeWrite("for ");
+            translateRecursive(children.ElementAt(0));
+            safeWrite(" in ");
+            translateRecursive(children.ElementAt(1));
+            safeWrite(" do \n ");
+            safeWrite("\t");
+            translateRecursive(children.ElementAt(3));  // for statement block 
 
         }
 

@@ -122,9 +122,10 @@ namespace APproject
 			case terminalType.integer:
 				return Convert.ToString (integer);
 			case terminalType.boolean:
-				return Convert.ToString (boolean);
-			case terminalType.variable:
+				return Convert.ToString (boolean).ToLower();
+  			case terminalType.variable:
 				return variable.name;
+                
 			default:
 				return "";
 			}
