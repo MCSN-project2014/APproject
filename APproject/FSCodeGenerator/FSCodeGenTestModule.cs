@@ -9,30 +9,51 @@ namespace APproject.FSCodeGenerator
 {
     class FSCodeGenTestModule
     {
-        static public Node createASTIf( )
-        {
+        static public Node createASTif( )
+        { /* if ( t == False ){
+           *    s = 0;
+           *    }
+           *  else s = 1;
+           * 
+           * */
             Node If = new Node ( Labels.If);
-			Node condition = new Node (Labels.Gte);
-			If.addChildren (condition);
-			Obj term1 = new Obj ();
-			term1.type = Types.integer;
-            term1.name = "s";
-			term1.kind = Kinds.var;
-			Obj term2 = new Obj ();
-			term2.type = Types.integer;
-			term2.kind = Kinds.var;
-            term2.name = "z";
-			condition.addChildren (new Node(new Term(term1)));
-			condition.addChildren (new Node(new Term(term2)));
-			Node then = new Node (Labels.Block);
-			If.addChildren (then);
-			Obj term3 = new Obj ();
-			term3.type = Types.integer;
-			term3.kind = Kinds.var;
-            term3.name = "z";
-			then.addChildren (new Node(new Term (term3)));
+			
+            Node condition = new Node (Labels.Eq);
+            condition.addChildren(new Node(new Term( new Obj { name = "t" })));
+			condition.addChildren (new Node(new Term(true)));
+			
+            Node then = new Node (Labels.Block);
+            Node assign = new Node(Labels.Assig);
+            assign.addChildren(new Node(new Term(new Obj { name = "s" })));
+            assign.addChildren(new Node(new Term(0)));
+			then.addChildren (assign);
+
+            Node Else = new Node(Labels.Block);
+            Node assign1 = new Node(Labels.Assig);
+            Else.addChildren(assign1);
+            assign1.addChildren(new Node(new Term(new Obj { name = "s" })));
+            assign1.addChildren(new Node(new Term(1)));
+
+            If.addChildren(condition);
+            If.addChildren(then);
+            If.addChildren(Else);
 
             return If;
+
+        }
+
+        static public Node createASTfunDecl()
+        {     // fun add ( x int, y int ) 
+            //{  return  x + y
+            // }
+            // let add x y =
+            //      x+y
+            Node sum = new Node(Labels.FunDecl);
+            return sum;
+            //sum.addChildren( new Node ( new Term(new Obj{ name = "x", type = Types.integer}));
+           // sum.addChildren
+
+
 
         }
         /*
@@ -165,13 +186,13 @@ namespace APproject.FSCodeGenerator
         {
             String fileName = "traslated_file";
             FSCodeGen gen = new FSCodeGen(fileName);
-           Node root = createAST2();
-          //  gen.translate(root);
+         //  Node root = createAST2();
+            //  gen.translate(root);
 
-            //Node root = createASTIf();
-            gen.translate(root);
+           Node root = createASTif();
+          gen.translate(root);
 
-           // Node root = createAST();
+            //Node root = createAST();
            // gen.translate(root);
         }
 

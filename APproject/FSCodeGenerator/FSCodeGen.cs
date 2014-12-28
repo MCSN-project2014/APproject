@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace APproject.FSCodeGenerator
 {
-
     ///<summary>
     ///This class converts an AST of funW@P into the corresponding F#
     ///code, simply by visiting the tree.
@@ -116,12 +115,12 @@ namespace APproject.FSCodeGenerator
                     translateOp("<=", n);
                     break;
                 case Labels.Eq:
-                    translateOp("==", n);
+                    translateOp("=", n);
                     break;
                 default : 
                     break;
             }
-            fileWriter.Close();
+         //   fileWriter.Close();
         }
 
         ///<summary>
@@ -132,7 +131,7 @@ namespace APproject.FSCodeGenerator
         ///<param name="n">n.</param>
         private void translateRecursive (Node n){
              if (n.isTerminal())
-                safeWrite(n.term.ToString());
+                safeWrite(n.term.ToString()); 
             else translate(n);
         }
 
@@ -142,7 +141,7 @@ namespace APproject.FSCodeGenerator
         /// </summary>
         /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
-        {
+        {  
             using (fileWriter = new StreamWriter(fileName, true))
             {
                 fileWriter.Write(s);
@@ -151,13 +150,14 @@ namespace APproject.FSCodeGenerator
 
         /// <summary>
         /// This method prints n \t's according to the passed parameter. 
+        /// http://msdn.microsoft.com/en-us/library/dd233191.aspx
         /// </summary>
         /// <param name="n">Indentation level to be used.</param>
         private void indent(int n)
         {
             for (int i = 0; i < n; i++)
             {
-                safeWrite("\t");
+                safeWrite("    ");
             }
         }
 
@@ -169,27 +169,25 @@ namespace APproject.FSCodeGenerator
             }
             
         }
-        public void  translateBlock(Node n)
-        {   indentationLevel++;
+
+        public void translateBlock(Node n)
+        {   
+            indentationLevel++;
             List<Node> children = n.getChildren();
             foreach( Node c in children)
             {
-                for ( int i =0 ; i < indentationLevel; indentationLevel++)
-                {
-                    safeWrite("\t");
-                }
-                 translateRecursive(c);
-                 safeWrite("\n");
+                indent(indentationLevel);
+                translateRecursive(c);
+                safeWrite("\n");
             }
-            indentationLevel--;
-           
+            indentationLevel--;   
         }
 
         public void translateFunDecl(Node n)
         {   // fun add ( x int, y int ) 
-            //{  return  x + y }
-            // let add x y =
-            //      x+y
+            //{  return  x + y 
+            // }
+   
             List<Node> children = n.getChildren(); 
             safeWrite("let ");
             translateRecursive(n);
@@ -201,14 +199,6 @@ namespace APproject.FSCodeGenerator
 
         public void translateFun(Node n)
         {
-            List<Node> children = n.getChildren();
-            safeWrite("for ");
-            translateRecursive(children.ElementAt(0)); 
-            safeWrite(" in ");
-            translateRecursive(children.ElementAt(1));  
-            safeWrite(" do \n ");
-            safeWrite("\t");
-            translateRecursive(children.ElementAt(3));  // for statement block 
 
         }
     
@@ -216,25 +206,23 @@ namespace APproject.FSCodeGenerator
         {
             List<Node> children = n.getChildren();
             safeWrite("if ");
-            translateRecursive( children.ElementAt(0));
-            safeWrite(" then ");
-            translateRecursive( children.ElementAt(1));
-            safeWrite("\n");
-            if( children.Count == 3)
+            translateRecursive(children.ElementAt(0));
+            safeWrite(" then\n");
+            translateRecursive(children.ElementAt(1));
+            if(children.Count == 3)
             {
-                safeWrite("else");
+                safeWrite("else\n");
                 translateRecursive(children.ElementAt(2));
                 safeWrite("\n");
             }
-        
         }
 
         public void translateWhile(Node n)
         {
             List<Node> children = n.getChildren();
-            safeWrite("While ");
+            safeWrite("while ");
             translateRecursive(children.ElementAt(0));
-            safeWrite("do \n");
+            safeWrite("do\n");
             translateRecursive(children.ElementAt(1));  
         }
 
@@ -247,22 +235,22 @@ namespace APproject.FSCodeGenerator
         { 
             List<Node> children = n.getChildren();
             translateRecursive(children.ElementAt(0));
-            safeWrite(" = ");
+            safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
 
         public void translateDecl(Node n)
         {
-            safeWrite("let ");
+            safeWrite("let mutable ");
             translateRecursive(n.getChildren().ElementAt(0));
         }
 
         public void translateAssigDecl(Node n)
         {
             List<Node> children = n.getChildren();
-            safeWrite("let ");
-            translateRecursive( n ); // n contains the variable name declared
-            safeWrite(" = ");
+            safeWrite("let mutable ");
+            translateRecursive(n); // n contains the variable name declared
+            safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
         }
 
@@ -270,13 +258,21 @@ namespace APproject.FSCodeGenerator
         {
             safeWrite("\n");
             indent(indentationLevel);
-            safeWrite("printfn (");
+            safeWrite("printfn(");
             translateRecursive(n.getChildren().ElementAt(0));
             safeWrite(")\n");
         }
 
         public void translateFor(Node n)
         {
+            List<Node> children = n.getChildren();
+            safeWrite("for ");
+            translateRecursive(children.ElementAt(0));
+            safeWrite(" in ");
+            translateRecursive(children.ElementAt(1));
+            safeWrite(" do \n ");
+            safeWrite("\t");
+            translateRecursive(children.ElementAt(3));  // for statement block 
 
         }
 
