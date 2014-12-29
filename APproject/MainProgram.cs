@@ -21,11 +21,11 @@ namespace APproject
                 //parser.treegen = new APproject.treeGenerator.TreeGen();
                 parser.Parse();
                 Console.WriteLine(parser.errors.count + " errors detected");
-				if (parser.errors.count == 0){
+				/*if (parser.errors.count == 0){
 					InterpreterTest.printAST(parser.gen.getRoot());
 					Interpreter inter = new Interpreter (parser.gen.getRoot());
 					inter.Start ();
-				}
+				}*/
                 Console.Read();
             }
             else
@@ -33,7 +33,7 @@ namespace APproject
                 Console.Write("-- No source file specified");
             }
 
-			//InterpreterTest.Start (InterpreterTest.test1);
+			//InterpreterTest.Start (InterpreterTest.testFunRet);
 		}
 	}
 }

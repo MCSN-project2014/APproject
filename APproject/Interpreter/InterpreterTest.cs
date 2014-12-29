@@ -7,11 +7,97 @@ namespace APproject
 	public static class InterpreterTest
 	{
 		public static void Start(test t){
-			ASTNode If = t ();
-			printAST (If);
-			Interpreter inter = new Interpreter (If);
+			ASTNode program = t ();
+			printAST (program);
+			Interpreter inter = new Interpreter (program);
 			inter.Start ();
 			Console.ReadKey();
+		}
+
+		/// <summary>
+		/// fun test(a int, b int){
+		/// 	println(a-b);
+		/// }
+		/// fun main(){
+		/// 	test(7,3);
+		/// }
+		/// </summary>
+		/// <returns>The dec fun.</returns>
+		public static ASTNode testDecFun (){
+			Node program = new Node(Labels.Program);
+
+			Obj fun = new Obj{ name = "test" };
+			Node funDec = new Node (Labels.FunDecl, fun);
+			program.addChildren (funDec);
+			Node block1 = new Node (Labels.Block);
+			funDec.addChildren (block1);
+			Obj varA = new Obj{ name = "a" };
+			Obj varB = new Obj{ name = "b" };
+			funDec.addChildren (new Term (varA));
+			funDec.addChildren (new Term (varB));
+			Node print = new Node (Labels.Print);
+			block1.addChildren (print);
+			Node minus = new Node (Labels.Minus);
+			minus.addChildren (new Term(varA));
+			minus.addChildren (new Term (varB));
+			print.addChildren (minus);
+
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+			Node assDec = new Node (Labels.AssigDecl);
+			main.addChildren (assDec);
+			assDec.addChildren (new Term (new Obj{ name = "c" }));
+			Node call = new Node (Labels.FunCall, fun);
+			call.addChildren (new Term (7));
+			call.addChildren (new Term (3));
+			assDec.addChildren (call);
+
+			return program;
+		}
+
+		/// <summary>
+		/// fun test(a int, b int){
+		/// 	return a-b;
+		/// }
+		/// fun main(){
+		/// 	var c int = test(7,3);
+		/// 	print(c);
+		/// }
+		/// </summary>
+		/// <returns>The dec fun.</returns>
+		public static ASTNode testFunRet (){
+			Node program = new Node(Labels.Program);
+
+			Obj fun = new Obj{ name = "test" };
+			Node funDec = new Node (Labels.FunDecl, fun);
+			program.addChildren (funDec);
+			Node block1 = new Node (Labels.Block);
+			funDec.addChildren (block1);
+			Obj varA = new Obj{ name = "a" };
+			Obj varB = new Obj{ name = "b" };
+			funDec.addChildren (new Term (varA));
+			funDec.addChildren (new Term (varB));
+			Node ret = new Node (Labels.Return);
+			block1.addChildren (ret);
+			Node minus = new Node (Labels.Minus);
+			minus.addChildren (new Term(varA));
+			minus.addChildren (new Term (varB));
+			ret.addChildren (minus);
+
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+			Node assDec = new Node (Labels.AssigDecl);
+			main.addChildren (assDec);
+			var varC = new Obj{ name = "c" };
+			assDec.addChildren (new Term (varC));
+			Node call = new Node (Labels.FunCall, fun);
+			call.addChildren (new Term (7));
+			call.addChildren (new Term (3));
+			assDec.addChildren (call);
+			Node print = new Node (Labels.Print);
+			main.addChildren (print);
+			print.addChildren (new Term (varC));
+			return program;
 		}
 
 		/// <summary>
@@ -199,4 +285,3 @@ namespace APproject
 		}
 	}
 }
-

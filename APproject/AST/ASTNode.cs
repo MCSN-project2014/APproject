@@ -6,7 +6,7 @@ namespace APproject
     /**
      * All possible node labels: both reserved keywords and primitive operators.
      **/
-	public enum Labels {Main, Afun, FunDecl, 
+	public enum Labels {Program, Main, Afun, FunDecl, 
 						For, If, While, Block,
 						Assig, Decl, AssigDecl, 
 						Return, Async, Print, Read,  

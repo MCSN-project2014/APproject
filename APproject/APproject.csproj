@@ -63,6 +63,7 @@
     <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
     <Compile Include="Interpreter\InterpreterTest.cs" />
+    <Compile Include="Interpreter\MemoryFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
