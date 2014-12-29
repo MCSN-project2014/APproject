@@ -9,6 +9,7 @@ namespace APproject.FSCodeGenerator
 {
     class FSCodeGenTestModule
     {
+
         static public Node createASTif()
         { /* if ( t == False ){
            *    s = 0;
@@ -43,17 +44,63 @@ namespace APproject.FSCodeGenerator
         }
 
         static public Node createASTfunDecl()
-        {     // fun add ( x int, y int ) 
-            //{  return  x + y
-            // }
-            // let add x y =
-            //      x+y
-            Node sum = new Node(Labels.FunDecl);
-            return sum;
-            //sum.addChildren( new Node ( new Term(new Obj{ name = "x", type = Types.integer}));
-            // sum.addChildren
+        {   // fun add ( x int, y int ) int {
+            //  
+            // return  x + y
+            // 
+            //  }
+            // 
+     
+        	Node program = new Node(Labels.Program);
+            String sumObj =  "sum" ;
+            Node sumDec = new Node(Labels.FunDecl, sumObj);
+            Node block = new Node ( Labels.Block);
+            Node returnType = new Node(Labels.Return);
+            returnType.addChildren(new Term(new Obj { name  = "int" }));
+            Node returnSum = new Node ( Labels.Return);
+            Node sumOp = new Node( Labels.Plus  );
+            Obj varx = new Obj{ name = "x", type= Types.integer};
+            Obj vary = new Obj{ name = "y"};
+            returnSum.addChildren(sumOp);
+            sumDec.addChildren( block);
+            sumDec.addChildren( returnType);
+            sumDec.addChildren( new Term(varx));
+            sumDec.addChildren( new Term(vary));
+            block.addChildren(sumOp);
+            sumOp.addChildren(new Term(varx));
+            sumOp.addChildren(new Term(vary));
+           
+            program.addChildren(sumDec);
+            return program;
+/*
+			Obj fun = new Obj{ name = "test" };
+			Node funDec = new Node (Labels.FunDecl, fun);
+			program.addChildren (funDec);
+			Node block1 = new Node (Labels.Block);
+			funDec.addChildren (block1);
+			Obj varA = new Obj{ name = "a" };
+			Obj varB = new Obj{ name = "b" };
+			funDec.addChildren (new Term (varA));
+			funDec.addChildren (new Term (varB));
+			Node print = new Node (Labels.Print);
+			block1.addChildren (print);
+			Node minus = new Node (Labels.Minus);
+			minus.addChildren (new Term(varA));
+			minus.addChildren (new Term (varB));
+			print.addChildren (minus);
 
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+			Node assDec = new Node (Labels.AssigDecl);
+			main.addChildren (assDec);
+			assDec.addChildren (new Term (new Obj{ name = "c" }));
+			Node call = new Node (Labels.FunCall, fun);
+			call.addChildren (new Term (7));
+			call.addChildren (new Term (3));
+			assDec.addChildren (call);
 
+			return program;*/
+         
 
         }
         /*
@@ -189,7 +236,10 @@ namespace APproject.FSCodeGenerator
             //  Node root = createAST2();
             //  gen.translate(root);
 
-            Node root = createASTif();
+           // Node root = createASTif();
+            //gen.translate(root);
+
+            Node root = createASTfunDecl();
             gen.translate(root);
 
             //Node root = createAST();

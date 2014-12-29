@@ -51,6 +51,9 @@ namespace APproject.FSCodeGenerator
         public void translate(ASTNode n) {
             switch (n.label)
             {
+                case Labels.Program :
+                    translateProgram(n);
+                    break;
                 case Labels.Main: 
                     translateMain(n);
                     break;
@@ -161,6 +164,14 @@ namespace APproject.FSCodeGenerator
             }
         }
 
+        public void  translateProgram(ASTNode n)
+        {
+            foreach ( ASTNode c in n.children )
+            {
+                translateRecursive( c );
+            }
+        }
+
         public void translateMain(ASTNode n)
         {
             foreach ( Node c in n.children )
@@ -183,19 +194,53 @@ namespace APproject.FSCodeGenerator
             indentationLevel--;   
         }
 
+        /// <summary>
+        /// This method translate a function declaration in f#.
+        /// The first child is the block Node, 
+        /// the second is the return type(if exist)
+        /// others children are the parameters of the function.
+        /// </summary>
+        /// <param name="n">Node representing a function declaration.</param>
         public void translateFunDecl(ASTNode n)
         {   // fun add ( x int, y int ) 
             //{  return  x + y 
             // }
 
             List<ASTNode> children = n.children; 
+            int numElement = children.Count;
             safeWrite("let ");
-            translateRecursive(n);
-            translateRecursive(children.ElementAt(0)); // <parameters>
-            safeWrite(" = \n");
-            translateRecursive(children.ElementAt(1)); // <block> 
-             
+            safeWrite( n.value.ToString()+" ");
+            if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){
+                translateParameters(2 , n);
+                safeWrite(" : ");
+                translateRecursive(children.ElementAt(1)); 
+                safeWrite( " = \n ");
+                translateRecursive(children.ElementAt(0));
+            }
+
+            if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            {
+                translateParameters(1, n);
+                safeWrite(" = \n ");
+                translateRecursive(children.ElementAt(0));
+            }
         }
+
+        private void translateParameters(int initPar, ASTNode n)
+        {
+            List<ASTNode> parameters = n.children;
+            {
+                for (int i = initPar; i < parameters.Count; i++)
+                {
+                    safeWrite(" ");
+                    ASTNode temp = parameters.ElementAt(i);
+                    translateRecursive(temp);
+                    safeWrite(" ");
+                }
+            }
+
+        }
+        
 
         public void translateFun(ASTNode n)
         {
