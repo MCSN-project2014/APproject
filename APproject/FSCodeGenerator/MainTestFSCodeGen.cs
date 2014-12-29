@@ -34,7 +34,6 @@ namespace APproject.FSCodeGenerator
             Node main = new Node(Labels.Main);
             prog.addChildren(main);
 
-
             // var a int = 0;
             // var b int = 0;
             Term varA = new Term(new Obj { name = "a" });
@@ -46,10 +45,21 @@ namespace APproject.FSCodeGenerator
             assigA.addChildren(new Term(0));
             assigB.addChildren(new Term(0));
 
+            // var a_eq_b bool = a == b;
+            Term varAEqB = new Term(new Obj { name = "a_eq_b" });
+            Node equiv = new Node(Labels.Eq);
+            equiv.addChildren(varA);
+            equiv.addChildren(varB);
+            Node assigEquiv = new Node(Labels.AssigDecl);
+            assigEquiv.addChildren(varAEqB);
+            assigEquiv.addChildren(equiv);
+
+
             main.addChildren(assigA);
             main.addChildren(assigB);
+            main.addChildren(assigEquiv);
 
-            return main;
+            return prog;
         }
 
         static void Main(string[] args)

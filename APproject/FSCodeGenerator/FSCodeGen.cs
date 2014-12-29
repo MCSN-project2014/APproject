@@ -295,7 +295,7 @@ namespace APproject.FSCodeGenerator
             List<ASTNode> children = n.children;
             safeWrite("let mutable ");
             translateRecursive(children.ElementAt(0)); // n contains the variable name declared
-            safeWrite(" <- ");
+            safeWrite(" = ");
             translateRecursive(children.ElementAt(1));
             safeWrite("\n");
         }
