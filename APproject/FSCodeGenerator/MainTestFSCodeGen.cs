@@ -53,11 +53,38 @@ namespace APproject.FSCodeGenerator
             Node assigEquiv = new Node(Labels.AssigDecl);
             assigEquiv.addChildren(varAEqB);
             assigEquiv.addChildren(equiv);
+            
+            // ***********************TODO************************
+            //for i = 0 ; i < 32; i++ {
+            //  a += i;
+            //************************TODO************************
 
+            //if a_eq_b && a == 0 {
+            //        println("a is 0, so is b");
+            //    } else {
+            //     println("at leas one is not 0!");
+            //}
+
+            Node ifN = new Node(Labels.If);
+            Node and = new Node(Labels.And);
+            Node isAZero = new Node(Labels.Eq);
+            isAZero.addChildren(varA);
+            isAZero.addChildren(new Term(0));
+            and.addChildren(varAEqB);
+            and.addChildren(isAZero);
+
+            Node print1 = new Node(Labels.Print);
+            Node print2 = new Node(Labels.Print);
+            print1.addChildren(new Term(new Obj{name = "a is 0, so is b"}));
+            print2.addChildren(new Term(new Obj{name = "a is 0, so is b"}));
+            ifN.addChildren(and);
+            ifN.addChildren(print1);
+            ifN.addChildren(print2);
 
             main.addChildren(assigA);
             main.addChildren(assigB);
             main.addChildren(assigEquiv);
+            main.addChildren(ifN);
 
             return prog;
         }
