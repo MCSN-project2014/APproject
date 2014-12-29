@@ -120,6 +120,9 @@ namespace APproject.FSCodeGenerator
                 case Labels.Eq:
                     translateOp("=", n);
                     break;
+                case Labels.FunCall:
+                    translateFunCall(n);
+                    break;
                 default : 
                     break;
             }
@@ -294,11 +297,25 @@ namespace APproject.FSCodeGenerator
         {
             List<ASTNode> children = n.children;
             safeWrite("let mutable ");
-            translateRecursive(n); // n contains the variable name declared
-            safeWrite(" <- ");
+            translateRecursive(children.ElementAt(0)); // n contains the variable name declared
+            safeWrite(" = ");
             translateRecursive(children.ElementAt(1));
+            safeWrite("\n");
         }
 
+        public void translateFunCall( ASTNode n)
+        {
+            List<ASTNode> children = n.children;
+            translateRecursive( children.ElementAt(0)); // contains the name of function;
+            
+            for (int i = 1; i < children.Count(); i++)
+            {
+                safeWrite(" ");
+                translateRecursive(children.ElementAt(i));
+                safeWrite(" ");
+            }
+
+        }
         public void translatePrint(ASTNode n)
         {
             safeWrite("\n");
