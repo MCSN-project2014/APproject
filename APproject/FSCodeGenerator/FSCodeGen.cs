@@ -331,16 +331,37 @@ namespace APproject.FSCodeGenerator
             safeWrite(")\n");
         }
 
+        /// <summary>
+        /// Translate for statement from funW@p to f# syntax.
+        /// The syntax in f# is :
+        /// for pattern in enumerable-expression do
+        ///    body-expression
+        /// </summary>
+        /// <param name="n">Node represents a For statement.</param>
         public void translateFor(ASTNode n)
         {
+            /**
+             *  for i := 0; i < 10; i++ 
+             *  { a += i }
+             * 
+             * for i in 0 .. 10 do
+             *     <block>
+             *    
+             * */
             List<ASTNode> children = n.children;
             safeWrite("for ");
-            translateRecursive(children.ElementAt(0));
+            ASTNode assFor = children.ElementAt(0);
+            Term pattern = (Term)assFor.children.ElementAt(0);
+            safeWrite(pattern.ToString());                 
             safeWrite(" in ");
-            translateRecursive(children.ElementAt(1));
+            Term valueStart = (Term) assFor.children.ElementAt(1);
+            safeWrite(valueStart.ToString());
+            safeWrite(" .. ");
+            ASTNode expFor = children.ElementAt(1);
+            Term valueExp = (Term)expFor.children.ElementAt(1);
+            translateRecursive(valueExp);
             safeWrite(" do \n ");
-            safeWrite("\t");
-            translateRecursive(children.ElementAt(3));  // for statement block 
+            translateRecursive(children.ElementAt(3));  // block 
 
         }
 

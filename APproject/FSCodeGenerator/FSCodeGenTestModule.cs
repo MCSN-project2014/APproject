@@ -42,7 +42,53 @@ namespace APproject.FSCodeGenerator
             return If;
 
         }
+        static public Node createASTfor()
+        {/**
+          *  var a int = 0;
+          *  
+          *  for (int i=0 ; i < 10 ; i++ ) {
+          *     a  = a + i ;
+          *  }
+          * 
+          * */
 
+            Node program = new Node(Labels.Program);
+            Node assA = new Node(Labels.AssigDecl);
+            Term A= new Term(new Obj { name = "a" });
+            Term valueA = new Term("0");
+            assA.addChildren(A);
+            assA.addChildren(valueA);
+
+            Node For = new Node( Labels.For);
+            Node assFor = new Node(Labels.Assig);
+            Term X = new Term(new Obj { name = "i" });
+            Term valueX = new Term("0");
+            assFor.addChildren(X);
+            assFor.addChildren(valueX);
+            Node expFor = new Node(Labels.Gt);
+            expFor.addChildren(new Term(new Obj { name = "i" }));
+            expFor.addChildren(new Term(20));
+  
+            Node block = new Node(Labels.Block);
+            Node assBlock = new Node(Labels.Assig);
+            Term Ablock = new Term(new Obj { name = "a" });
+            Node ASum = new Node(Labels.Plus);
+            ASum.addChildren(new Term(new Obj { name = "a" }));
+            ASum.addChildren(new Term(new Obj { name = "i" }));
+            assBlock.addChildren(Ablock);
+            assBlock.addChildren(ASum);
+            block.addChildren(assBlock);
+
+            For.addChildren(assFor);
+            For.addChildren(expFor);
+            For.addChildren( new Node(Labels.Assig)); // it is not used in the translation phase to f#
+            For.addChildren(block);
+
+            program.addChildren(assA);
+            program.addChildren(For);
+            return program;
+            
+        }
         static public Node createASTfunDecl()
         {
             /* 
@@ -168,9 +214,11 @@ namespace APproject.FSCodeGenerator
            // Node root = createASTif();
             //gen.translate(root);
 
-            Node root = createASTfunDecl();
-            gen.translate(root);
+          //  Node root = createASTfunDecl();
+           // gen.translate(root);
 
+            Node Root = createASTfor();
+            gen.translate(Root);
             //Node root = createAST();
             // gen.translate(root);
         }
