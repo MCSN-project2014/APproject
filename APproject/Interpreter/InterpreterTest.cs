@@ -101,6 +101,129 @@ namespace APproject
 		}
 
 		/// <summary>
+		/// fun test(a int){
+		/// 	if a>10{
+		/// 		return a;
+		/// 	}else
+		/// 		return test(a+1);
+		/// }
+		/// fun main(){
+		/// 	print(test(0));
+		/// }
+		/// </summary>
+		/// <returns>The dec fun.</returns>
+		public static ASTNode testRecursive (){
+			Node program = new Node(Labels.Program);
+
+			Obj fun = new Obj{ name = "test" };
+			Node funDec = new Node (Labels.FunDecl, fun);
+			program.addChildren (funDec);
+			Node blockfun = new Node (Labels.Block);
+			funDec.addChildren (blockfun);
+			Obj varA = new Obj{ name = "a" };
+			funDec.addChildren (new Term (varA));
+			Node If = new Node (Labels.If);
+			blockfun.addChildren (If);
+			Node condition = new Node (Labels.Gt);
+			If.addChildren (condition);
+			condition.addChildren (new Term (varA));
+			condition.addChildren(new Term(10));
+			Node blockTrue = new Node (Labels.Block);
+			If.addChildren (blockTrue);
+			Node blockFalse = new Node (Labels.Block);
+			If.addChildren (blockFalse);
+			Node ret1 = new Node (Labels.Return);
+			blockTrue.addChildren (ret1);
+			ret1.addChildren(new Term(varA));
+
+			Node ret2 = new Node (Labels.Return);
+			blockFalse.addChildren (ret2);
+			Node call1 = new Node (Labels.FunCall, fun);
+			ret2.addChildren (call1);
+			Node plus = new Node (Labels.Plus);
+			call1.addChildren (plus);
+			plus.addChildren (new Term (varA));
+			plus.addChildren (new Term (1));
+
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+			Node assDec = new Node (Labels.AssigDecl);
+			main.addChildren (assDec);
+			var varC = new Obj{ name = "c" };
+			assDec.addChildren (new Term (varC));
+			Node call = new Node (Labels.FunCall, fun);
+			call.addChildren (new Term (0));
+			assDec.addChildren (call);
+			Node print = new Node (Labels.Print);
+			main.addChildren (print);
+			print.addChildren (new Term (varC));
+			return program;
+		}
+
+		/// <summary>
+		/// fun fat(a int){
+		/// 	if a==1{
+		/// 		return a;
+		/// 	}else
+		/// 		return a + test(a-1);
+		/// }
+		/// fun main(){
+		/// 	print(fat(3));
+		/// }
+		/// </summary>
+		/// <returns>The dec fun.</returns>
+		public static ASTNode factorialRecursive (){
+			Node program = new Node(Labels.Program);
+
+			Obj fun = new Obj{ name = "test" };
+			Node funDec = new Node (Labels.FunDecl, fun);
+			program.addChildren (funDec);
+			Node blockfun = new Node (Labels.Block);
+			funDec.addChildren (blockfun);
+			Obj varA = new Obj{ name = "a" };
+			funDec.addChildren (new Term (varA));
+			Node If = new Node (Labels.If);
+			blockfun.addChildren (If);
+			Node condition = new Node (Labels.Eq);
+			If.addChildren (condition);
+			condition.addChildren (new Term (varA));
+			condition.addChildren(new Term(1));
+			Node blockTrue = new Node (Labels.Block);
+			If.addChildren (blockTrue);
+			Node blockFalse = new Node (Labels.Block);
+			If.addChildren (blockFalse);
+			Node ret1 = new Node (Labels.Return);
+			blockTrue.addChildren (ret1);
+			ret1.addChildren(new Term(varA));
+
+			Node ret2 = new Node (Labels.Return);
+			blockFalse.addChildren (ret2);
+			Node mul = new Node (Labels.Mul);
+			ret2.addChildren (mul);
+			mul.addChildren (new Term (varA));
+			Node call1 = new Node (Labels.FunCall, fun);
+			mul.addChildren (call1);
+			Node minus = new Node (Labels.Minus);
+			call1.addChildren (minus);
+			minus.addChildren (new Term (varA));
+			minus.addChildren (new Term (1));
+
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+			Node assDec = new Node (Labels.AssigDecl);
+			main.addChildren (assDec);
+			var varC = new Obj{ name = "c" };
+			assDec.addChildren (new Term (varC));
+			Node call = new Node (Labels.FunCall, fun);
+			call.addChildren (new Term (3));
+			assDec.addChildren (call);
+			Node print = new Node (Labels.Print);
+			main.addChildren (print);
+			print.addChildren (new Term (varC));
+			return program;
+		}
+
+		/// <summary>
 		/// if 3>=1 {
 		/// 	var a int= 3 + 7;
 		/// 	println (a);

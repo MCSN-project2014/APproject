@@ -5,23 +5,27 @@ namespace APproject
 {
 	public class MemoryFunction
 	{
-		private Dictionary<Obj,Memory> _nameSpace;
-		private Dictionary<Obj,ASTNode> function;
-		public Dictionary<Obj,Memory> nameSpace{ get { return _nameSpace; } }
+		//private List<List<Memory>> _nameSpace;
+		private Dictionary<Obj,Tuple<ASTNode,Memory>> function;
+		//public Dictionary<Obj,Memory> nameSpace { get { return _nameSpace; } }
 
 		public MemoryFunction (){
-			_nameSpace = new Dictionary<Obj, Memory> ();
-			function = new Dictionary<Obj, ASTNode> ();
+			//_nameSpace = new Dictionary<Tuple<Obj,int>,Memory> ();
+			function = new Dictionary<Obj, Tuple<ASTNode,Memory>> ();
+		}
+
+		public void addFunction(Obj fun, ASTNode node, Memory mem){
+			function.Add (fun, new Tuple<ASTNode,Memory>(node,mem));
 		}
 
 		public void addFunction(Obj fun, ASTNode node){
-			function.Add (fun, node);
+			addFunction (fun, node, null);
 		}
 
-		public ASTNode getFunction(Obj fun){
+		public Tuple<ASTNode,Memory> getFunction(Obj fun){
 			return function [fun];
 		}
-
+		/*
 		public void addNameSpace(Obj fun){
 			_nameSpace.Add (fun, new Memory ());
 		}
@@ -37,5 +41,6 @@ namespace APproject
 		public void createNameSpace(Obj fun, Memory mem){
 			_nameSpace.Add(fun, mem);
 		}
+		*/
 	}
 }
