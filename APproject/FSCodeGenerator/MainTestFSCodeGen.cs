@@ -49,7 +49,7 @@ namespace APproject.FSCodeGenerator
             main.addChildren(assigA);
             main.addChildren(assigB);
 
-            return assigA;
+            return main;
         }
 
         static void Main(string[] args)

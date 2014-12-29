@@ -297,6 +297,7 @@ namespace APproject.FSCodeGenerator
             translateRecursive(children.ElementAt(0)); // n contains the variable name declared
             safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
+            safeWrite("\n");
         }
 
         public void translatePrint(ASTNode n)
