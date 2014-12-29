@@ -51,6 +51,9 @@ namespace APproject.FSCodeGenerator
         public void translate(ASTNode n) {
             switch (n.label)
             {
+                case Labels.Program :
+                    translateProgram(n);
+                    break;
                 case Labels.Main: 
                     translateMain(n);
                     break;
@@ -117,6 +120,15 @@ namespace APproject.FSCodeGenerator
                 case Labels.Eq:
                     translateOp("=", n);
                     break;
+                case Labels.FunCall:
+                    translateFunCall(n);
+                    break;
+                case Labels.And:
+                    translateOp("and", n);
+                    break;
+                case Labels.Or:
+                    translateOp("or", n);
+                    break;
                 default : 
                     break;
             }
@@ -161,6 +173,14 @@ namespace APproject.FSCodeGenerator
             }
         }
 
+        public void  translateProgram(ASTNode n)
+        {
+            foreach ( ASTNode c in n.children )
+            {
+                translateRecursive( c );
+            }
+        }
+
         public void translateMain(ASTNode n)
         {
             foreach ( Node c in n.children )
@@ -183,19 +203,53 @@ namespace APproject.FSCodeGenerator
             indentationLevel--;   
         }
 
+        /// <summary>
+        /// This method translate a function declaration in f#.
+        /// The first child is the block Node, 
+        /// the second is the return type(if exist)
+        /// others children are the parameters of the function.
+        /// </summary>
+        /// <param name="n">Node representing a function declaration.</param>
         public void translateFunDecl(ASTNode n)
         {   // fun add ( x int, y int ) 
             //{  return  x + y 
             // }
 
             List<ASTNode> children = n.children; 
+            int numElement = children.Count;
             safeWrite("let ");
-            translateRecursive(n);
-            translateRecursive(children.ElementAt(0)); // <parameters>
-            safeWrite(" = \n");
-            translateRecursive(children.ElementAt(1)); // <block> 
-             
+            safeWrite( n.value.ToString()+" ");
+            if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){
+                translateParameters(2 , n);
+                safeWrite(" : ");
+                translateRecursive(children.ElementAt(1)); 
+                safeWrite( " = \n ");
+                translateRecursive(children.ElementAt(0));
+            }
+
+            if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            {
+                translateParameters(1, n);
+                safeWrite(" = \n ");
+                translateRecursive(children.ElementAt(0));
+            }
         }
+
+        private void translateParameters(int initPar, ASTNode n)
+        {
+            List<ASTNode> parameters = n.children;
+            {
+                for (int i = initPar; i < parameters.Count; i++)
+                {
+                    safeWrite(" ");
+                    ASTNode temp = parameters.ElementAt(i);
+                    translateRecursive(temp);
+                    safeWrite(" ");
+                }
+            }
+
+        }
+        
 
         public void translateFun(ASTNode n)
         {
@@ -249,11 +303,25 @@ namespace APproject.FSCodeGenerator
         {
             List<ASTNode> children = n.children;
             safeWrite("let mutable ");
-            translateRecursive(n); // n contains the variable name declared
-            safeWrite(" <- ");
+            translateRecursive(children.ElementAt(0)); // n contains the variable name declared
+            safeWrite(" = ");
             translateRecursive(children.ElementAt(1));
+            safeWrite("\n");
         }
 
+        public void translateFunCall( ASTNode n)
+        {
+            List<ASTNode> children = n.children;
+            translateRecursive( children.ElementAt(0)); // contains the name of function;
+            
+            for (int i = 1; i < children.Count(); i++)
+            {
+                safeWrite(" ");
+                translateRecursive(children.ElementAt(i));
+                safeWrite(" ");
+            }
+
+        }
         public void translatePrint(ASTNode n)
         {
             safeWrite("\n");
@@ -263,16 +331,37 @@ namespace APproject.FSCodeGenerator
             safeWrite(")\n");
         }
 
+        /// <summary>
+        /// Translate for statement from funW@p to f# syntax.
+        /// The syntax in f# is :
+        /// for pattern in enumerable-expression do
+        ///    body-expression
+        /// </summary>
+        /// <param name="n">Node represents a For statement.</param>
         public void translateFor(ASTNode n)
         {
+            /**
+             *  for i := 0; i < 10; i++ 
+             *  { a += i }
+             * 
+             * for i in 0 .. 10 do
+             *     <block>
+             *    
+             * */
             List<ASTNode> children = n.children;
             safeWrite("for ");
-            translateRecursive(children.ElementAt(0));
+            ASTNode assFor = children.ElementAt(0);
+            Term pattern = (Term)assFor.children.ElementAt(0);
+            safeWrite(pattern.ToString());                 
             safeWrite(" in ");
-            translateRecursive(children.ElementAt(1));
+            Term valueStart = (Term) assFor.children.ElementAt(1);
+            safeWrite(valueStart.ToString());
+            safeWrite(" .. ");
+            ASTNode expFor = children.ElementAt(1);
+            Term valueExp = (Term)expFor.children.ElementAt(1);
+            translateRecursive(valueExp);
             safeWrite(" do \n ");
-            safeWrite("\t");
-            translateRecursive(children.ElementAt(3));  // for statement block 
+            translateRecursive(children.ElementAt(3));  // block 
 
         }
 

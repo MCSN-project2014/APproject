@@ -9,6 +9,7 @@ namespace APproject.FSCodeGenerator
 {
     class FSCodeGenTestModule
     {
+
         static public Node createASTif()
         { /* if ( t == False ){
            *    s = 0;
@@ -41,98 +42,119 @@ namespace APproject.FSCodeGenerator
             return If;
 
         }
+        static public Node createASTfor()
+        {/**
+          *  var a int = 0;
+          *  
+          *  for (int i=0 ; i < 10 ; i++ ) {
+          *     a  = a + i ;
+          *  }
+          * 
+          * */
 
+            Node program = new Node(Labels.Program);
+            Node assA = new Node(Labels.AssigDecl);
+            Term A= new Term(new Obj { name = "a" });
+            Term valueA = new Term("0");
+            assA.addChildren(A);
+            assA.addChildren(valueA);
+
+            Node For = new Node( Labels.For);
+            Node assFor = new Node(Labels.Assig);
+            Term X = new Term(new Obj { name = "i" });
+            Term valueX = new Term("0");
+            assFor.addChildren(X);
+            assFor.addChildren(valueX);
+            Node expFor = new Node(Labels.Gt);
+            expFor.addChildren(new Term(new Obj { name = "i" }));
+            expFor.addChildren(new Term(20));
+  
+            Node block = new Node(Labels.Block);
+            Node assBlock = new Node(Labels.Assig);
+            Term Ablock = new Term(new Obj { name = "a" });
+            Node ASum = new Node(Labels.Plus);
+            ASum.addChildren(new Term(new Obj { name = "a" }));
+            ASum.addChildren(new Term(new Obj { name = "i" }));
+            assBlock.addChildren(Ablock);
+            assBlock.addChildren(ASum);
+            block.addChildren(assBlock);
+
+            For.addChildren(assFor);
+            For.addChildren(expFor);
+            For.addChildren( new Node(Labels.Assig)); // it is not used in the translation phase to f#
+            For.addChildren(block);
+
+            program.addChildren(assA);
+            program.addChildren(For);
+            return program;
+            
+        }
         static public Node createASTfunDecl()
-        {     // fun add ( x int, y int ) 
-            //{  return  x + y
-            // }
-            // let add x y =
-            //      x+y
-            Node sum = new Node(Labels.FunDecl);
-            return sum;
-            //sum.addChildren( new Node ( new Term(new Obj{ name = "x", type = Types.integer}));
-            // sum.addChildren
+        {
+            /* 
+             * fun add ( x int, y int ) int {
+             *  return  x + y
+             *  }
+             * 
+             * fun main (){
+             *     var x = 20;
+             *     var y = 10
+             *     var r = add( x, y);
+             *
+             * */
 
+            Node program = new Node(Labels.Program);
+            String sumObj = "sum";
+            Node sumDec = new Node(Labels.FunDecl, sumObj);
+            Node block = new Node(Labels.Block);
+            Node returnType = new Node(Labels.Return);
+            returnType.addChildren(new Term(new Obj { name = "int" }));
+            Node returnSum = new Node(Labels.Return);
+            Node sumOp = new Node(Labels.Plus);
+            Obj varx = new Obj { name = "x", type = Types.integer };
+            Obj vary = new Obj { name = "y" };
+            returnSum.addChildren(sumOp);
+            sumDec.addChildren(block);
+            sumDec.addChildren(returnType);
+            sumDec.addChildren(new Term(varx));
+            sumDec.addChildren(new Term(vary));
+            block.addChildren(sumOp);
+            sumOp.addChildren(new Term(varx));
+            sumOp.addChildren(new Term(vary));
+
+            program.addChildren(sumDec);
+
+            Node main = new Node(Labels.Main);
+
+            Node assX = new Node(Labels.AssigDecl);
+            Term X = new Term(new Obj { name = "x" });
+            Term valueX = new Term("20");
+            assX.addChildren(X);
+            assX.addChildren(valueX);
+            Node assY = new Node(Labels.AssigDecl);
+            Term Y = new Term(new Obj { name = "y" });
+            Term valueY = new Term("10");
+            assY.addChildren(Y);
+            assY.addChildren(valueY);
+            Node assFunSum = new Node(Labels.AssigDecl);
+            Term R = new Term(new Obj { name = "r" });
+            Node sumCall = new Node(Labels.FunCall);
+            sumCall.addChildren(new Term(new Obj { name = "sum" }));
+            sumCall.addChildren(new Term(new Obj { name = "x" }));
+            sumCall.addChildren(new Term(new Obj { name = "y" }));
+            assFunSum.addChildren(R);
+            assFunSum.addChildren(sumCall);
+
+            main.addChildren(assX);
+            main.addChildren(assY);
+            main.addChildren(assFunSum);
+
+            program.addChildren(main);
+            return program;
 
 
         }
-        /*
-        static public Node createAST()
-        {    /** create a sample AST for:
-              *
-              * fun add ( x int , y int ){  //need the Parameters Node label
-              *     return x + y;
-              * }
-              * 
-              * fun minus ( x int , y int ){  
-              *     return x-y;
-              * }
-              * 
-              * fun main (){
-              *     var t = 20;
-              *     var r = 10
-              *     var d = add( t , r);
-              *     if  t > 20 {
-              *       r = 0; 
-              *     }
-              *     else r = 1;
-              * }
-              * 
-              * */
-        //  Node sum = new Node(Labels.FunDecl);
-        // Node minus = new Node(Labels.FunDecl);
-
-        /*	Node main = new Node (Labels.Main);
-
-            Node assT = new Node(Labels.AssigDecl);
-            assT.term.variable.name = "t";
-            Node valueT = new Node(Labels.Term);
-            valueT.term.integer = 20;
-            assT.addChildren(valueT);
-            Node assR = new Node(Labels.AssigDecl);
-            assT.term.variable.name = "r";
-            Node valueR = new Node(Labels.Term);
-            valueR.term.integer = 10;
-            assT.addChildren(valueR);
-
-
-            Node If = new Node(Labels.If);
-            Node condition = new Node (Labels.Gte);
-            Node T = new Node(Labels.Term);
-            T.term.variable.name = "t";
-            Node ceckT = new Node(Labels.Term);
-            valueT.term.integer = 20;
-            condition.addChildren (T);
-            condition.addChildren(ceckT);
-            Node then = new Node(Labels.Block);
-            Node assignR = new Node(Labels.AssigDecl);
-            assignR.term.variable.name = "r";
-            Node valR = new Node(Labels.Term);
-            valR.term.integer = 0;
-            then.addChildren(assignR);
-            then.addChildren(valR);
-            Node elsee = new Node(Labels.Block);
-            Node assignR1 = new Node(Labels.AssigDecl);
-            assignR1.term.variable.name = "r";
-            Node valR1 = new Node(Labels.Term);
-            valR1.term.integer = 1;
-            assignR1.addChildren(valR1);
-            elsee.addChildren(assignR1);
-
-            If.addChildren(condition);
-            If.addChildren(then);
-            If.addChildren(elsee);
-
-
-
-            main.addChildren(assT);
-            main.addChildren(assR);
-            main.addChildren(If);
-
-            return main;
-         
-        }
-        */
+      /*
         //static public Node createAST1()
         //{
         //    Term t1 = new Term(42);
@@ -181,7 +203,7 @@ namespace APproject.FSCodeGenerator
         //        }
         //    }
         //}
-
+*/
         static void Main(string[] args)
         {
             String fileName = "traslated_file";
@@ -189,9 +211,14 @@ namespace APproject.FSCodeGenerator
             //  Node root = createAST2();
             //  gen.translate(root);
 
-            Node root = createASTif();
-            gen.translate(root);
+           // Node root = createASTif();
+            //gen.translate(root);
 
+          //  Node root = createASTfunDecl();
+           // gen.translate(root);
+
+            Node Root = createASTfor();
+            gen.translate(Root);
             //Node root = createAST();
             // gen.translate(root);
         }
