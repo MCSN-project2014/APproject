@@ -124,10 +124,10 @@ namespace APproject.FSCodeGenerator
                     translateFunCall(n);
                     break;
                 case Labels.And:
-                    translateOp("and", n);
+                    translateOp("&&", n);
                     break;
                 case Labels.Or:
-                    translateOp("or", n);
+                    translateOp("||", n);
                     break;
                 default : 
                     break;
