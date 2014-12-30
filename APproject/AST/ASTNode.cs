@@ -26,6 +26,8 @@ namespace APproject
 		public Labels label{ get { return _label; } }
 
 		public abstract bool isTerminal ();
+
+		public virtual Types type { get{ return Types.undef;}}
 	}
 
 
@@ -94,6 +96,14 @@ namespace APproject
 
 		public override bool isTerminal(){
 			return true;
+		}
+
+		public override Types type { 
+			get { if (_value is Obj) {
+					return ((Obj)_value).type;
+				} else
+					return Types.undef;
+				}
 		}
 	}
 

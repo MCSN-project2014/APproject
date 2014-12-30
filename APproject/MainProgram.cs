@@ -33,7 +33,7 @@ namespace APproject
                 Console.Write("-- No source file specified");
             }
 
-			//InterpreterTest.Start (InterpreterTest.factorialRecursive);
+			//InterpreterTest.Start (InterpreterTest.testAFun);
 		}
 	}
 }

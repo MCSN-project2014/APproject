@@ -56,6 +56,58 @@ namespace APproject
 		}
 
 		/// <summary>
+		/// fun main(){
+		/// 	var a int = 5;
+		/// 	var f fun = fun()int{
+		/// 				return a;
+		/// 				}
+		/// 	print(f());
+		/// 	a = 10;
+		/// 	print(f());
+		/// }
+		/// </summary>
+		/// <returns>The dec fun.</returns>
+		public static ASTNode testAFun (){
+			Node program = new Node(Labels.Program);
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+
+			Node assDec1 = new Node (Labels.AssigDecl);
+			main.addChildren (assDec1);
+			var varA = new Obj{ name = "a" };
+			assDec1.addChildren (new Term (varA));
+			assDec1.addChildren (new Term (5));
+
+			Node assDec2 = new Node (Labels.AssigDecl);
+			main.addChildren (assDec2);
+			var varF = new Obj{ name = "f" };
+			assDec2.addChildren (new Term (varF));
+			Node afun = new Node (Labels.Afun);
+			assDec2.addChildren (afun);
+			Node block = new Node (Labels.Block);
+			afun.addChildren (block);
+			Node ret = new Node (Labels.Return);
+			block.addChildren (ret);
+			ret.addChildren (new Term(varA));
+
+			Node print1 = new Node (Labels.Print);
+			main.addChildren (print1);
+			Node call1 = new Node (Labels.FunCall, varF);
+			print1.addChildren (call1);
+
+			Node ass = new Node (Labels.Assig);
+			main.addChildren (ass);
+			ass.addChildren (new Term(varA));
+			ass.addChildren (new Term (10));
+
+			Node print2 = new Node (Labels.Print);
+			main.addChildren (print2);
+			Node call2 = new Node (Labels.FunCall, varF);
+			print2.addChildren (call2);
+
+			return program;
+		}
+		/// <summary>
 		/// fun test(a int, b int){
 		/// 	return a-b;
 		/// }

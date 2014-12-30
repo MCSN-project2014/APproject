@@ -68,10 +68,10 @@ namespace APproject
 						actualMemory.addUpdateValue ((Obj)n.value, null);
 					break;
 				case Labels.AssigDecl:
-					actualMemory.addUpdateValue ((Obj)children [0].value, InterpretExp (children [1], actualMemory));
+					Assignment (children, actualMemory);
 					break;
 				case Labels.Assig:
-					actualMemory.addUpdateValue ((Obj)children [0].value, InterpretExp (children [1], actualMemory));
+					Assignment (children, actualMemory);
 					break;
 				case Labels.Print:
 					if (children [0].isTerminal () && children [0].value is string)
@@ -84,6 +84,15 @@ namespace APproject
 				}
 			} 
 			return null;
+		}
+
+		private void Assignment(List<ASTNode> children, Memory actualMemory){
+			object value = InterpretExp (children [1], actualMemory);
+			Obj variable = (Obj) children[0].value;
+			if (value is Node)
+				funMem.addFunction(variable, (Node)value, actualMemory);
+			else
+				actualMemory.addUpdateValue (variable, value);
 		}
 
 		private bool InterpretCondition (ASTNode node, Memory actualMemory)
@@ -139,6 +148,8 @@ namespace APproject
 					}
 					object ret = Interpret (funNode.children [0], mem);
 					return ret;
+				case Labels.Afun:
+					return node;
 				default:
 					return null;
 				}
