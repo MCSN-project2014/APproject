@@ -124,10 +124,10 @@ namespace APproject.FSCodeGenerator
                     translateFunCall(n);
                     break;
                 case Labels.And:
-                    translateOp("and", n);
+                    translateOp("&&", n);
                     break;
                 case Labels.Or:
-                    translateOp("or", n);
+                    translateOp("||", n);
                     break;
                 default : 
                     break;
@@ -210,6 +210,7 @@ namespace APproject.FSCodeGenerator
         /// others children are the parameters of the function.
         /// </summary>
         /// <param name="n">Node representing a function declaration.</param>
+        /// 
         public void translateFunDecl(ASTNode n)
         {   // fun add ( x int, y int ) 
             //{  return  x + y 
@@ -230,7 +231,7 @@ namespace APproject.FSCodeGenerator
             if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
             {
                 translateParameters(1, n);
-                safeWrite(" = \n ");
+                safeWrite(" = \n");
                 translateRecursive(children.ElementAt(0));
             }
         }
@@ -250,11 +251,6 @@ namespace APproject.FSCodeGenerator
 
         }
         
-
-        public void translateFun(ASTNode n)
-        {
-
-        }
 
         public void translateIf(ASTNode n)
         {
@@ -297,13 +293,20 @@ namespace APproject.FSCodeGenerator
         {
             safeWrite("let mutable ");
             translateRecursive(n.children.ElementAt(0));
+
+            /*   PROBLEM !!!! 
+             *  The decalration in f# must be initialized
+             * let mutable b = 0
+             * Term t = (Term)n.children.ElementAt(0);
+             * t.value.
+             */
         }
 
         public void translateAssigDecl(ASTNode n)
         {
             List<ASTNode> children = n.children;
             safeWrite("let mutable ");
-            translateRecursive(children.ElementAt(0)); // n contains the variable name declared
+            translateRecursive(children.ElementAt(0)); // contains the variable name 
             safeWrite(" = ");
             translateRecursive(children.ElementAt(1));
             safeWrite("\n");
@@ -364,6 +367,10 @@ namespace APproject.FSCodeGenerator
             translateRecursive(children.ElementAt(3));  // block 
 
         }
+        /// <summary>
+        /// This method translates the async node inthe f# syntax
+        /// </summary>
+        /// <param name="n">A Afun node .</param>
 
         public void translateAsync(ASTNode n)
         {
@@ -372,13 +379,41 @@ namespace APproject.FSCodeGenerator
             indent(indentationLevel);
             translateRecursive(n.children.ElementAt(0));
             safeWrite("\n");
+            indent(indentationLevel);
+            safeWrite("}");
             indentationLevel--;
-            safeWrite("}\n");
+            
         }
 
+        /// <summary>
+        /// This method translates into F# the anonymous function.
+        /// The first child is the block, the second the return type(if exist)
+        /// others children are the parameters.
+        /// </summary>
+        /// <param name="n">The node representing an anonymous fuunction.</param>
+        /// 
         public void translateAfun(ASTNode n)
         {
-            //few doubts about the implementation :P
+
+            List<ASTNode> children = n.children; 
+            int numElement = children.Count;
+            safeWrite("fun ");
+            if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){
+                translateParameters(2 , n);
+                safeWrite(" : ");
+                translateRecursive(children.ElementAt(1)); 
+                safeWrite( " -> \n ");
+                translateRecursive(children.ElementAt(0));
+            }
+
+            if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            {
+                translateParameters(1, n);
+                safeWrite(" -> \n ");
+                translateRecursive(children.ElementAt(0));
+            }
+        
+
         }
 
         /// <summary>

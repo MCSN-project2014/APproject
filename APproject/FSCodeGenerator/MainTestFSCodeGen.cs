@@ -73,13 +73,17 @@ namespace APproject.FSCodeGenerator
             and.addChildren(varAEqB);
             and.addChildren(isAZero);
 
+            Node block1 = new Node(Labels.Block);
+            Node block2 = new Node(Labels.Block);
             Node print1 = new Node(Labels.Print);
             Node print2 = new Node(Labels.Print);
-            print1.addChildren(new Term(new Obj{name = "a is 0, so is b"}));
-            print2.addChildren(new Term(new Obj{name = "a is 0, so is b"}));
+            print1.addChildren(new Term(new Obj{name = " \"a is 0, so is b\" "}));
+            print2.addChildren(new Term(new Obj{name = " \"either a or b is not zero\" "}));
             ifN.addChildren(and);
-            ifN.addChildren(print1);
-            ifN.addChildren(print2);
+            block1.addChildren(print1);
+            block2.addChildren(print2);
+            ifN.addChildren(block1);
+            ifN.addChildren(block2);
 
             main.addChildren(assigA);
             main.addChildren(assigB);

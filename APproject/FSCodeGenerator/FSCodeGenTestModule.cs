@@ -54,12 +54,12 @@ namespace APproject.FSCodeGenerator
 
             Node program = new Node(Labels.Program);
             Node assA = new Node(Labels.AssigDecl);
-            Term A= new Term(new Obj { name = "a" });
+            Term A = new Term(new Obj { name = "a" });
             Term valueA = new Term("0");
             assA.addChildren(A);
             assA.addChildren(valueA);
 
-            Node For = new Node( Labels.For);
+            Node For = new Node(Labels.For);
             Node assFor = new Node(Labels.Assig);
             Term X = new Term(new Obj { name = "i" });
             Term valueX = new Term("0");
@@ -68,7 +68,7 @@ namespace APproject.FSCodeGenerator
             Node expFor = new Node(Labels.Gt);
             expFor.addChildren(new Term(new Obj { name = "i" }));
             expFor.addChildren(new Term(20));
-  
+
             Node block = new Node(Labels.Block);
             Node assBlock = new Node(Labels.Assig);
             Term Ablock = new Term(new Obj { name = "a" });
@@ -81,13 +81,13 @@ namespace APproject.FSCodeGenerator
 
             For.addChildren(assFor);
             For.addChildren(expFor);
-            For.addChildren( new Node(Labels.Assig)); // it is not used in the translation phase to f#
+            For.addChildren(new Node(Labels.Assig)); // it is not used in the translation phase to f#
             For.addChildren(block);
 
             program.addChildren(assA);
             program.addChildren(For);
             return program;
-            
+
         }
         static public Node createASTfunDecl()
         {
@@ -154,74 +154,148 @@ namespace APproject.FSCodeGenerator
 
 
         }
-      /*
-        //static public Node createAST1()
-        //{
-        //    Term t1 = new Term(42);
-        //    Term t2 = new Term(10);
-        //    Node min = new Node(Labels.Minus);
-        //    Node plus = new Node(Labels.Plus);
-        //    Node NodeT1 = new Node(t1);
-        //    Node NodeT2 = new Node(t2);
 
-        //    plus.addChildren(NodeT1);
-        //    plus.addChildren(min);
-        //    min.addChildren(NodeT1);
-        //    min.addChildren(NodeT2);
 
-        //    return plus;
+        static public Node createASTasync()
+        { /*
+           * 
+           * fun fib (n int) int {
+           *    var a, b int;
+           *          //We do not wait for fib(n-1)
+           *    a = async{return bib(n-1)}
+           *          // ... because we perform fib(n-2) in parallel
+           *    b = async{return bib(n-2)}
+           *         // but here we wait ....
+           *    return a + b;
+           * }
+           * 
+           **/
+            Node program = new Node(Labels.Program);
+            String fibObj = "Fib";
+            Node fibDec = new Node(Labels.FunDecl, fibObj);
+            Obj varN = new Obj{ name = "n" };
+            Node returnType = new Node(Labels.Return);
+            returnType.addChildren(new Term(new Obj { name = "int" }));
+            Node block = new Node(Labels.Block);
 
-        //}
+            Node declA = new Node(Labels.Decl);
+            Node declB = new Node(Labels.Decl);
+            Term A = new Term(new Obj { name = "a" });
+            Term B = new Term(new Obj { name = "b" });
+            declA.addChildren(A);
+            declB.addChildren(B);
+            Node assigDeclA = new Node(Labels.Assig);
+            Node assigDeclB = new Node(Labels.Assig);
+            Node blockAsyncA = new Node(Labels.Async);
+            Node returnAsyncA = new Node(Labels.Return);
+            Node funCallA = new Node(Labels.FunCall);
+            funCallA.addChildren(new Term("bib"));
+            funCallA.addChildren(new Term("n-1"));
+            returnAsyncA.addChildren(funCallA);
+            blockAsyncA.addChildren(returnAsyncA);
 
-        //static public Node createAST2()
-        //{
-        //    Term t1 = new Term(42);
-        //    Term t2 = new Term(10);
-        //    Node min = new Node(Labels.Minus);
-        //    Node async = new Node(Labels.Async);
-        //    Node NodeT1 = new Node(t1);
-        //    Node NodeT2 = new Node(t2);
+            Node blockAsyncB = new Node(Labels.Async);
+            Node returnAsyncB = new Node(Labels.Return);
+            Node funCallB = new Node(Labels.FunCall);
+            funCallB.addChildren(new Term("bib"));
+            funCallB.addChildren(new Term("n-2"));
+            returnAsyncB.addChildren(funCallB);
+            blockAsyncB.addChildren(returnAsyncB);
 
-        //    async.addChildren(min);
-        //    min.addChildren(NodeT1);
-        //    min.addChildren(NodeT2);
+            assigDeclA.addChildren(new Term("a"));
+            assigDeclA.addChildren(blockAsyncA);
 
-        //    return async;
+            assigDeclB.addChildren(new Term("b"));
+            assigDeclB.addChildren(blockAsyncB);
 
-        //}
-        //public void printAST(Node node)
-        //{
-        //    if (node != null)
-        //    {
-        //        if (node.term != null)
-        //            Console.WriteLine(node.term);
-        //        else
-        //            Console.WriteLine(node.label);
-        //        foreach (Node n in node.getChildren())
-        //        {
-        //            printAST(n);
-        //        }
-        //    }
-        //}
-*/
-        static void Main(string[] args)
+            Node returnFib = new Node(Labels.Return);
+            Node sumAB = new Node(Labels.Plus);
+            sumAB.addChildren(new Term(new Obj { name = "a" }));
+            sumAB.addChildren(new Term(new Obj { name = "b" }));
+
+            block.addChildren(declA);
+            block.addChildren(declB);
+            block.addChildren(assigDeclA);
+            block.addChildren(assigDeclB);
+            block.addChildren(sumAB);
+
+            fibDec.addChildren(block);
+            fibDec.addChildren(new Term(varN));
+            program.addChildren(fibDec);
+
+
+            return program;
+        }
+
+        public static ASTNode  createASTafun()
+        {
+
+            /**
+             * let a = fun(x int) int {
+             *              sum + x
+             * 
+             * 
+             * **/
+
+            Node program = new Node(Labels.Program);
+            Node assDeclAfun = new Node(Labels.AssigDecl);
+           
+            Node afun = new Node(Labels.Afun);
+            Node blockAfun = new Node(Labels.Block);
+            Node sum = new Node( Labels.Plus);
+            sum.addChildren(new Term("sum"));
+            sum.addChildren(new Term("x"));
+            blockAfun.addChildren(sum);
+            Node returnType = new Node(Labels.Return);
+            returnType.addChildren(new Term("int"));
+
+            afun.addChildren(blockAfun );
+            afun.addChildren(new Term("x"));
+
+            assDeclAfun.addChildren(new Term(" a"));
+            assDeclAfun.addChildren(afun);
+            
+
+            program.addChildren(assDeclAfun);
+            return program;
+        }
+        
+        public static void printAST(ASTNode node)
+        {
+            if (node != null)
+            {
+                if (node.isTerminal())
+                    Console.WriteLine(node);
+                else
+                {
+                    Console.WriteLine(node);
+                    foreach (ASTNode n in node.children)
+                        printAST(n);
+                }
+            }
+        }
+
+        static void test(ASTNode root)
         {
             String fileName = "traslated_file";
             FSCodeGen gen = new FSCodeGen(fileName);
-            //  Node root = createAST2();
-            //  gen.translate(root);
-
-           // Node root = createASTif();
-            //gen.translate(root);
-
-          //  Node root = createASTfunDecl();
-           // gen.translate(root);
-
-            Node Root = createASTfor();
-            gen.translate(Root);
-            //Node root = createAST();
-            // gen.translate(root);
+            printAST(root);
+            gen.translate(root);
+            Console.ReadKey();
         }
 
+        static void Main(string[] args)
+        {
+
+            // test(createASTif());
+            // test(createASTfunDecl());
+            // test(createASTfor());
+            test(createASTasync());
+            //test(createASTafun());
+
+
+
+        }
     }
 }
+

@@ -6,17 +6,28 @@ namespace APproject
 	public enum Types {undef,integer,boolean,fun}
 	public enum Kinds {var,proc,act,scope}
 
-	public class Obj {  // object describing a declared name
-		public string name;		// name of the object
-		public Types type;			// type of the object (undef for proc)
-		public Obj	next;			// to next object in same scope
-		public Kinds kind;           // var, proc, scope
-		public int adr;				// address in memory or start of proc
-		public int level;			// nesting level; 0=global, 1=local
-		public Obj locals;		// scopes: to locally declared objects
-		public int nextAdr;		// scopes: next free address in this scope
+    public class RType
+    {
+        public Types type;                          // Type of the function returned
+        public Queue<Types> formals;                // types of formals
+        public RType next;                          // the return type of the function returned
+    }
+    
+    public class Obj {                              // object describing a declared name
+		public string name;		                    // name of the object
+		public Types type;          			    // type of the object (undef for proc)
+		public Obj	next;	            		    // to next object in same scope
+        public Obj owner;                           // the owner of the scope
+		public Kinds kind;                          // var, proc, scope
+		public int adr;	            			    // address in memory or start of proc
+		public int level;           			    // nesting level; 0=global, 1=local
+		public Obj locals;          		        // scopes: to locally declared objects
+		public int nextAdr;		                    // scopes: next free address in this scope
+        public RType rtype;
 	    public Queue<Obj> formals { get; set; }
 	}
+
+   
 
 	public class SymbolTable {
 
@@ -50,6 +61,24 @@ namespace APproject
 		}
 
         ///<summary>
+        /// open a new scope and make it the current scope with owner (topScope)
+        /// <summary>
+        /// <param name="name">owner.</param>
+        public void OpenScope(Obj owner)
+        {
+            Obj scop = new Obj();
+            scop.name = owner.name;
+            scop.kind = Kinds.scope;
+            scop.owner = owner;
+            scop.locals = null;
+            scop.nextAdr = 0;
+            scop.next = topScope;
+            topScope = scop;
+            curLevel++;
+
+        }
+
+        ///<summary>
 		/// close the current scope
         /// <summary>
 		public void CloseScope () {
@@ -79,6 +108,15 @@ namespace APproject
 		}
 
         /// <summary>
+        /// return the owner of the current scope
+        /// <summary>
+
+        public Obj getOwner()
+        {
+            return topScope.owner;
+        }
+
+        /// <summary>
         /// Add a formal formal to procedure
         /// <summary>
         /// <param name="procedure">procedure.</param>
@@ -94,14 +132,13 @@ namespace APproject
         /// <summary>
         /// <param name="procedure">procedure.</param>
         /// <param name="type">type.</param>
-        
-        public void setRType(Obj procedure, Types type)
+        public void setRType(Obj procedure, RType rtype)
         {
-            procedure.type = type;
+            procedure.type = rtype.type;
+            procedure.rtype = rtype;
         }
 
-	
-
+       
 		/// <summary>
 		/// Checks that the actual parameter type of a function call have the same type of the formal parameters.
 		/// </summary>
@@ -127,11 +164,12 @@ namespace APproject
 	        }
 	    }
 
+
+
         /// <summary>
         /// search the name in all open scopes and return its object node
         /// </summary>
         /// <param name="name">name.</param>
-
 		public Obj Find (string name) {
             Obj obj, scope; 
 			scope = topScope;

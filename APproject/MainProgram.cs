@@ -23,8 +23,8 @@ namespace APproject
                 Console.WriteLine(parser.errors.count + " errors detected");
 				/*if (parser.errors.count == 0){
 					InterpreterTest.printAST(parser.gen.getRoot());
-					Interpreter inter = new Interpreter (parser.gen.getRoot());
-					inter.Start ();
+				//	Interpreter inter = new Interpreter (parser.gen.getRoot());
+				//	inter.Start ();
 				}*/
                 Console.Read();
             }
