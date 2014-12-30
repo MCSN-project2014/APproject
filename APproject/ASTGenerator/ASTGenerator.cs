@@ -9,7 +9,7 @@ namespace APproject
     public class ASTGenerator
     {
         private Node AST;
-        private Node root;
+        private ASTNode root;
 
         public ASTGenerator()
         {

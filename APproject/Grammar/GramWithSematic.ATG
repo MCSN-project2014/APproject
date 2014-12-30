@@ -43,12 +43,11 @@ Fun =																			(. tab.OpenScope();  .)
                                                     
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Obj obj; 
-																					Node node;     .)
+																				   RType rtype; Node node;     .)
 			"fun"
 			(
 			    Ident<out name>													(. proc = tab.NewObj(name, Kinds.proc, Types.undef);
-																				   tab.OpenScope();                                .)
-				
+																				   tab.OpenScope(proc);                             .)
 				'(' 
 					{ Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
 																				   tab.addFormal(proc,formal);             .)
@@ -57,24 +56,24 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Ob
 					}
 					}
 				 ')' 
-				  RType<out type>												(. tab.setRType(proc, type); .) 
+				  RType<out rtype>												 (. tab.setRType(proc,rtype); .)
 		        '{' {VarDecl | Stat} '}'
-																				(. tab.CloseScope(); .)
-			  | "main"															(. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
-																				   node = new Node(Labels.Main); 	
-																				   gen.initAST(node);
-																				   tab.OpenScope();	.)	
+																				 (. tab.CloseScope(); .)
+			  | "main"															 (. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
+																				    node = new Node(Labels.Main); 	
+																				    //gen.initAST(node);
+																				    tab.OpenScope();	.)	
 				'(' ')' '{'  { VarDecl | Stat } '}'								
-																				(.  tab.CloseScope(); .)
+																				 (.  tab.CloseScope(); .)
 			).   
 			
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                 
-AProcDecl																		(. string name; Types type;.)
+AProcDecl																		(. string name; Types type; RType rtype;.)
  =																			
 			"fun"'(' {Ident<out name> Type<out type>
 				      {',' Ident<out name> Type<out type>
-					  }} ')' RType<out type>               
+					  }} ')' RType<out rtype>               
 		    '{' {VarDecl | Stat} '}'.                         			
                                                               
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -135,8 +134,10 @@ Stat																			(. Types type; string name; string name1; Obj obj;Obj obj
 	| "return" 
 			(  
     			                                                               
-   				CompleteExpr<out type> ';'                                                      
-			   | AProcDecl                                                
+   				CompleteExpr<out type> ';'										(.  obj = tab.getOwner();
+																					if( obj.type != type )
+																						 SemErr("incompatible return type"); .)                                                 
+			   | AProcDecl                                                      (.  .) 
 			                                                                  
 			)                                                                    
 	|																			(. tab.OpenScope(); .) 
@@ -157,9 +158,9 @@ VarDecl 																		(. string name; ArrayList names = new ArrayList();
 			} Type<out type> ';'												(. foreach(string n in names)
 																				   {
 						    															obj = tab.NewObj(n, Kinds.var, type); 
-																						term =  new Term (obj);
-																						node.addChildren(term);
-																						gen.addChildren(node);
+																						//term =  new Term (obj);
+																						//node.addChildren(term);
+																						//gen.addChildren(node);
 																					} 
 																				.)
 			
@@ -168,8 +169,9 @@ VarDecl 																		(. string name; ArrayList names = new ArrayList();
 			  (
 				';'																(. obj = tab.NewObj((string)names[0], Kinds.var, type);
 																				   term =  new Term (obj);
-																				   node.addChildren(term);
-																				   gen.addChildren(node); .)
+																				   //node.addChildren(term);
+																				   //gen.addChildren(node); 
+																				   .)
 				| '=' 
 					(	"readln" '{''}' ';'										(. if(type != Types.integer)
 																					  SemErr("incompatible types"); 
@@ -251,12 +253,24 @@ Factor<out Types type>															(. int n; Obj obj; string name; Types type1
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-RType<out Types type>																			(. Types type1; .)
-=																								(. type = Types.undef; .)																						
+RType<out RType rtype>																			(. Queue<Types> formals; Types type; 
+																								   RType rtype1;	.)
+=																								(. rtype = new RType(); .) 																						
 		(
-		  "fun" '(' { Type<out type1>{',' Type<out type1>}} ')' RType<out type1>				(. type = Types.fun; .)
-		| "int"																					(. type = Types.integer; .) 
-		| "bool"																				(. type = Types.boolean; .)
+		  "fun"																					(. rtype.type = Types.fun;
+																								   rtype.formals = null;
+																								   rtype1 = new RType();
+																								   formals = new Queue<Types>(); .)
+
+		      '(' { Type<out type>																(. formals.Enqueue(type); .)
+			      {',' Type<out type>															(. formals.Enqueue(type); .)
+				  }} ')'																		(. rtype1.formals = formals;
+																								   rtype.next = rtype1;.)	
+				  RType<out rtype1>				    
+		| "int"																					(.  rtype.type = Types.integer;
+																									rtype.formals = null; .) 
+		| "bool"																				(.  rtype.type = Types.boolean;
+																									rtype.formals = null; .)
 		).
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
