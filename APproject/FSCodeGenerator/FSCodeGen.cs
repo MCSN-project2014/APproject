@@ -161,7 +161,7 @@ namespace APproject.FSCodeGenerator
         }
 
         /// <summary>
-        /// This method prints n \t's according to the passed parameter. 
+        /// This method prints n \s's according to the passed parameter. 
         /// http://msdn.microsoft.com/en-us/library/dd233191.aspx
         /// </summary>
         /// <param name="n">Indentation level to be used.</param>
@@ -290,16 +290,19 @@ namespace APproject.FSCodeGenerator
         }
 
         public void translateDecl(ASTNode n)
-        {
+        {   
             safeWrite("let mutable ");
             translateRecursive(n.children.ElementAt(0));
 
-            /*   PROBLEM !!!! 
-             *  The decalration in f# must be initialized
-             * let mutable b = 0
-             * Term t = (Term)n.children.ElementAt(0);
-             * t.value.
-             */
+            if (n.children.ElementAt(0).type == Types.integer)
+            {
+                safeWrite(" = 0\n");
+            }
+            else if (n.children.ElementAt(0).type == Types.boolean)
+            {
+                safeWrite(" = true\n");
+            }
+            else safeWrite(" = Unchecked.defaultof<'a>\n");
         }
 
         public void translateAssigDecl(ASTNode n)
