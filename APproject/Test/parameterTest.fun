@@ -1,9 +1,11 @@
 
-fun add() int 
+fun add() fun(int) bool
 {
 	var x int;
 	var y bool;
-	return x;
+	return fun(x int) int{
+	
+	}
 }
 
 fun main(){

@@ -69,16 +69,20 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Ob
 			
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                 
-AProcDecl																		(. string name; Types type; RType rtype;.)
- =																			
-			"fun"'(' {Ident<out name> Type<out type>
-				      {',' Ident<out name> Type<out type>
-					  }} ')' RType<out rtype>               
-		    '{' {VarDecl | Stat} '}'.                         			
+AProcDecl<out Obj robj> 														(. string name; Types type; RType rtype; Obj formal;.)
+ =																				(. robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
+																				   tab.OpenScope(); .)	
+			"fun"'(' {Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
+																				   tab.addFormal(robj,formal); .)
+				      {',' Ident<out name> Type<out type>						(. formal = tab.NewObj(name, Kinds.var, type);
+																				   tab.addFormal(robj,formal); .)
+					  }} ')' RType<out rtype>									(. tab.setRType(robj,rtype); .)            
+		    '{' {VarDecl | Stat} '}'                       			        
+																				(. tab.CloseScope(); .).
                                                               
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                              
-Stat																			(. Types type; string name; string name1; Obj obj;Obj obj1;
+Stat																			(. Types type; string name; string name1; Obj obj, obj1, robj;
 																				   Queue<Types> actualTypes = new Queue<Types>(); .) 
 
 = 
@@ -98,7 +102,7 @@ Stat																			(. Types type; string name; string name1; Obj obj;Obj obj
 																					   SemErr("incompatible types"); .)
 					| CompleteExpr<out type>';'									(. if (type != obj.type)
 																					    SemErr("incompatible types"); .)
-					| AProcDecl
+					| AProcDecl<out robj>
 					| "readln" '{''}' ';'									    (. if(obj.type != Types.integer) 
 																						SemErr("incompatible types"); .) 
 				                                                              
@@ -134,10 +138,11 @@ Stat																			(. Types type; string name; string name1; Obj obj;Obj obj
 	| "return" 
 			(  
     			                                                               
-   				CompleteExpr<out type> ';'										(.  obj = tab.getOwner();
-																					if( obj.type != type )
-																						 SemErr("incompatible return type"); .)                                                 
-			   | AProcDecl                                                      (.  .) 
+   				CompleteExpr<out type> ';'										(. obj = tab.getOwner();
+																				   if( obj.type != type )
+																					   SemErr("incompatible return type"); .)                                                 
+			   | AProcDecl<out robj>                                            (. obj = tab.getOwner();
+																				   tab.complexReturnTypeControl(obj,robj); .) 
 			                                                                  
 			)                                                                    
 	|																			(. tab.OpenScope(); .) 
@@ -180,7 +185,7 @@ VarDecl 																		(. string name; ArrayList names = new ArrayList();
 					    |CompleteExpr<out type1>';'								(. if (type != type1) 
 																					   SemErr("incompatible types");
 					 															   tab.NewObj((string)names[0], Kinds.var, type); .)		 
-						| AProcDecl
+						| AProcDecl<out obj>
 					)
 			  )
 		  
@@ -258,19 +263,16 @@ RType<out RType rtype>																			(. Queue<Types> formals; Types type;
 =																								(. rtype = new RType(); .) 																						
 		(
 		  "fun"																					(. rtype.type = Types.fun;
-																								   rtype.formals = null;
-																								   rtype1 = new RType();
 																								   formals = new Queue<Types>(); .)
 
 		      '(' { Type<out type>																(. formals.Enqueue(type); .)
 			      {',' Type<out type>															(. formals.Enqueue(type); .)
-				  }} ')'																		(. rtype1.formals = formals;
-																								   rtype.next = rtype1;.)	
-				  RType<out rtype1>				    
-		| "int"																					(.  rtype.type = Types.integer;
-																									rtype.formals = null; .) 
-		| "bool"																				(.  rtype.type = Types.boolean;
-																									rtype.formals = null; .)
+				  }} ')'																		
+				  RType<out rtype1>																(. rtype1.formals = formals;
+																								   rtype.next = rtype1;.)	 
+						
+		| "int"																					(.  rtype.type = Types.integer; .) 
+		| "bool"																				(.  rtype.type = Types.boolean; .)
 		).
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
