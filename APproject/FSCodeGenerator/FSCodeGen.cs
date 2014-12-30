@@ -296,11 +296,11 @@ namespace APproject.FSCodeGenerator
 
             if (n.children.ElementAt(0).type == Types.integer)
             {
-                safeWrite(" = 0\n");
+                safeWrite(" = 0\n"); // integer are initialized to '0'
             }
             else if (n.children.ElementAt(0).type == Types.boolean)
             {
-                safeWrite(" = true\n");
+                safeWrite(" = true\n"); // bool are initialized to 'true'
             }
             else safeWrite(" = Unchecked.defaultof<'a>\n");
         }
@@ -377,14 +377,9 @@ namespace APproject.FSCodeGenerator
 
         public void translateAsync(ASTNode n)
         {
-            safeWrite("async {\n");
-            indentationLevel++;
-            indent(indentationLevel);
+            safeWrite("Async.RunSynchronously(async { return ");
             translateRecursive(n.children.ElementAt(0));
-            safeWrite("\n");
-            indent(indentationLevel);
-            safeWrite("}");
-            indentationLevel--;
+            safeWrite("})");
             
         }
 
