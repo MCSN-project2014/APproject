@@ -107,6 +107,46 @@ namespace APproject
 			return obj;
 		}
 
+        public void complexReturnTypeControl(Obj procedur, Obj robj)
+        {
+            RType procrtype = procedur.rtype;
+            RType returnobj = robj.rtype;
+            if (procedur.type != Types.fun)
+            {
+                parser.SemErr(procedur.type + " return type expected");
+                return;
+            }
+           
+            procrtype = procrtype.next;
+            if (robj.formals.Count != procrtype.formals.Count)
+                parser.SemErr("parameter expected return type");
+            else
+            {
+                Obj[] aFunFormals = robj.formals.ToArray();
+                Types[] rTypeformals = procrtype.formals.ToArray();
+                for (int i = 0; i < aFunFormals.Length; i++)
+                {
+                    if (aFunFormals[i].type != rTypeformals[i])
+                    {
+                        parser.SemErr(rTypeformals[i] + " parameter in return type expected");
+                        return;
+                    }
+                }
+
+                if(procrtype.type != returnobj.type)
+                {
+                    parser.SemErr(procrtype.type +" return type expected");
+                    return;
+                }
+             }
+            while (procrtype.next != null)
+            {
+                
+            }
+
+
+        }
+
         /// <summary>
         /// return the owner of the current scope
         /// <summary>

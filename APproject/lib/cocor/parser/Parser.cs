@@ -138,7 +138,7 @@ public SymbolTable   tab;
 			Get();
 			obj = tab.NewObj("Main", Kinds.proc, Types.undef);
 			node = new Node(Labels.Main); 	
-			gen.initAST(node);
+			//gen.initAST(node);
 			tab.OpenScope();	
 			Expect(5);
 			Expect(7);
@@ -181,8 +181,6 @@ public SymbolTable   tab;
 		if (la.kind == 4) {
 			Get();
 			rtype.type = Types.fun;
-			rtype.formals = null;
-			rtype1 = new RType();
 			formals = new Queue<Types>(); 
 			Expect(5);
 			while (la.kind == 4 || la.kind == 25 || la.kind == 26) {
@@ -195,17 +193,15 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(7);
+			RType(out rtype1);
 			rtype1.formals = formals;
 			rtype.next = rtype1;
-			RType(out rtype1);
 		} else if (la.kind == 25) {
 			Get();
-			rtype.type = Types.integer;
-			rtype.formals = null; 
+			rtype.type = Types.integer; 
 		} else if (la.kind == 26) {
 			Get();
-			rtype.type = Types.boolean;
-			rtype.formals = null; 
+			rtype.type = Types.boolean; 
 		} else SynErr(41);
 	}
 
@@ -231,9 +227,9 @@ public SymbolTable   tab;
 			foreach(string n in names)
 			{
 			obj = tab.NewObj(n, Kinds.var, type); 
-			term =  new Term (obj);
-			node.addChildren(term);
-			gen.addChildren(node);
+			//term =  new Term (obj);
+			//node.addChildren(term);
+			//gen.addChildren(node);
 			} 
 			
 		} else if (la.kind == 4 || la.kind == 25 || la.kind == 26) {
@@ -242,7 +238,7 @@ public SymbolTable   tab;
 				Get();
 				obj = tab.NewObj((string)names[0], Kinds.var, type);
 				term =  new Term (obj);
-				node.addChildren(term);
+				//node.addChildren(term);
 				//gen.addChildren(node); 
 				
 			} else if (la.kind == 11) {
@@ -262,14 +258,14 @@ public SymbolTable   tab;
 					SemErr("incompatible types");
 					tab.NewObj((string)names[0], Kinds.var, type); 
 				} else if (la.kind == 4) {
-					AProcDecl();
+					AProcDecl(out obj);
 				} else SynErr(42);
 			} else SynErr(43);
 		} else SynErr(44);
 	}
 
 	void Stat() {
-		Types type; string name; string name1; Obj obj;Obj obj1;
+		Types type; string name; string name1; Obj obj, obj1, robj;
 		Queue<Types> actualTypes = new Queue<Types>(); 
 		switch (la.kind) {
 		case 1: {
@@ -309,7 +305,7 @@ public SymbolTable   tab;
 					if (type != obj.type)
 					SemErr("incompatible types"); 
 				} else if (la.kind == 4) {
-					AProcDecl();
+					AProcDecl(out robj);
 				} else if (la.kind == 15) {
 					Get();
 					Expect(8);
@@ -398,7 +394,9 @@ public SymbolTable   tab;
 				if( obj.type != type )
 				SemErr("incompatible return type"); 
 			} else if (la.kind == 4) {
-				AProcDecl();
+				AProcDecl(out robj);
+				obj = tab.getOwner();
+				tab.complexReturnTypeControl(obj,robj); 
 			} else SynErr(47);
 			break;
 		}
@@ -420,21 +418,28 @@ public SymbolTable   tab;
 		}
 	}
 
-	void AProcDecl() {
-		string name; Types type; RType rtype;
+	void AProcDecl(out Obj robj) {
+		string name; Types type; RType rtype; Obj formal;
+		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
+		tab.OpenScope(); 
 		Expect(4);
 		Expect(5);
 		while (la.kind == 1) {
 			Ident(out name);
 			Type(out type);
+			formal = tab.NewObj(name, Kinds.var, type); 
+			tab.addFormal(robj,formal); 
 			while (la.kind == 6) {
 				Get();
 				Ident(out name);
 				Type(out type);
+				formal = tab.NewObj(name, Kinds.var, type);
+				tab.addFormal(robj,formal); 
 			}
 		}
 		Expect(7);
 		RType(out rtype);
+		tab.setRType(robj,rtype); 
 		Expect(8);
 		while (StartOf(1)) {
 			if (la.kind == 21) {
@@ -444,6 +449,7 @@ public SymbolTable   tab;
 			}
 		}
 		Expect(9);
+		tab.CloseScope(); 
 	}
 
 	void CompleteExpr(out Types type) {

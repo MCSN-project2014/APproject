@@ -18,8 +18,12 @@ namespace APproject
                 Parser parser = new Parser(scanner);
                 parser.tab = new SymbolTable(parser);
                 parser.gen = new ASTGenerator();
-                //parser.treegen = new APproject.treeGenerator.TreeGen();
                 parser.Parse();
+
+                String fileName = "traslated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
+                FSCodeGen genFsharp = new FSCodeGen(fileName);
+                genFsharp.translate(parser.gen.getRoot());
+
                 Console.WriteLine(parser.errors.count + " errors detected");
 				/*if (parser.errors.count == 0){
 					InterpreterTest.printAST(parser.gen.getRoot());
