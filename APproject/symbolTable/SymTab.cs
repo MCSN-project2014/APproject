@@ -24,6 +24,8 @@ namespace APproject
 		public Obj locals;          		        // scopes: to locally declared objects
 		public int nextAdr;		                    // scopes: next free address in this scope
         public RType rtype;
+        public bool asyncControl;
+        public bool returnIsSet;
 	    public Queue<Obj> formals { get; set; }
 	}
 
@@ -68,6 +70,7 @@ namespace APproject
         {
             Obj scop = new Obj();
             scop.name = owner.name;
+            owner.returnIsSet = false;
             scop.kind = Kinds.scope;
             scop.owner = owner;
             scop.locals = null;
@@ -82,6 +85,11 @@ namespace APproject
 		/// close the current scope
         /// <summary>
 		public void CloseScope () {
+            Obj obj = getOwner();
+            if (obj != null && !obj.returnIsSet)
+            {
+                parser.SemErr("return expected");
+            }
 			topScope = topScope.next; curLevel--;
 		}
 
@@ -116,7 +124,7 @@ namespace APproject
                 parser.SemErr(procedur.type + " return type expected");
                 return;
             }
-           
+
             procrtype = procrtype.next;
             if (robj.formals.Count != procrtype.formals.Count)
                 parser.SemErr("parameter expected return type");
@@ -133,18 +141,51 @@ namespace APproject
                     }
                 }
 
-                if(procrtype.type != returnobj.type)
+                if (procrtype.type != returnobj.type)
                 {
-                    parser.SemErr(procrtype.type +" return type expected");
+                    parser.SemErr(procrtype.type + " return type expected");
                     return;
                 }
-             }
-            while (procrtype.next != null)
-            {
-                
             }
 
+            while (procrtype.next != null)
+            {
 
+                if (returnobj.next == null)
+                {
+                    parser.SemErr(procrtype.type + " return type expected");
+                }
+                else
+                {
+
+                    procrtype = procrtype.next;
+                    returnobj = returnobj.next;
+                    Types[] aFunFormals = returnobj.formals.ToArray();
+                    Types[] rTypeformals = procrtype.formals.ToArray();
+                    if (procrtype.type != returnobj.type)
+                    {
+                        parser.SemErr(procrtype.type + " return type expected");
+                        return;
+                    }
+                    if (aFunFormals.Length != rTypeformals.Length)
+                    {
+                        parser.SemErr("wrong parameter in return type");
+                    }
+                    else
+                    {
+
+                        for (int i = 0; i < aFunFormals.Length; i++)
+                        {
+                            if (aFunFormals[i] != rTypeformals[i])
+                            {
+                                parser.SemErr(rTypeformals[i] + " parameter in return type expected");
+                                return;
+                            }
+                        }
+                    }
+                }
+
+            }
         }
 
         /// <summary>

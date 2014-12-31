@@ -71,7 +71,7 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Ob
                                                                 
 AProcDecl<out Obj robj> 														(. string name; Types type; RType rtype; Obj formal;.)
  =																				(. robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
-																				   tab.OpenScope(); .)	
+																				   tab.OpenScope(robj); .)	
 			"fun"'(' {Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
 																				   tab.addFormal(robj,formal); .)
 				      {',' Ident<out name> Type<out type>						(. formal = tab.NewObj(name, Kinds.var, type);
@@ -139,10 +139,12 @@ Stat																			(. Types type; string name; string name1; Obj obj, obj1, 
 			(  
     			                                                               
    				CompleteExpr<out type> ';'										(. obj = tab.getOwner();
+																				   obj.returnIsSet=true;
 																				   if( obj.type != type )
 																					   SemErr("incompatible return type"); .)                                                 
-			   | AProcDecl<out robj>                                            (. obj = tab.getOwner();
-																				   tab.complexReturnTypeControl(obj,robj); .) 
+			   |AProcDecl<out robj>                                             (.  obj = tab.getOwner(); 
+																					obj.returnIsSet=true;
+																					tab.complexReturnTypeControl(obj,robj); .) 
 			                                                                  
 			)                                                                    
 	|																			(. tab.OpenScope(); .) 
