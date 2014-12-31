@@ -556,13 +556,17 @@ public SymbolTable   tab;
 	}
 
 	void Term(out Types type, out ASTNode node) {
-		Types type1; 
-		Factor(out type, out node);
+		Types type1; ASTNode op, firstTerm, secondTerm; 
+		Factor(out type, out firstTerm);
+		node = firstTerm; 
 		while (la.kind == 36 || la.kind == 37) {
-			MulOp();
-			Factor(out type1,out node);
+			MulOp(out op);
+			node = op; 
+			Factor(out type1,out secondTerm);
 			if (type != Types.integer || type1 != Types.integer)
-			SemErr("integer type expected"); 
+			SemErr("integer type expected");
+			((Node)op).addChildren(firstTerm);
+			((Node)op).addChildren(secondTerm); 
 		}
 	}
 
@@ -625,11 +629,13 @@ public SymbolTable   tab;
 		} else SynErr(52);
 	}
 
-	void MulOp() {
+	void MulOp(out ASTNode op) {
+		op = new Node(Labels.Mul); 
 		if (la.kind == 36) {
 			Get();
 		} else if (la.kind == 37) {
 			Get();
+			op = new Node(Labels.Div); 
 		} else SynErr(53);
 	}
 

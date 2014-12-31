@@ -251,11 +251,13 @@ SimpExpr<out Types type, out ASTNode node>											 (. Types type1; ASTNode op
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Term<out Types type, out ASTNode node>  										(. Types type1; .)
-= Factor<out type, out node> 
-  { MulOp
-    Factor<out type1,out node>															(. if (type != Types.integer || type1 != Types.integer)
-																					   SemErr("integer type expected"); .)
+Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, firstTerm, secondTerm; .)
+= Factor<out type, out firstTerm>												(. node = firstTerm; .)
+  { MulOp<out op>																(. node = op; .)
+    Factor<out type1,out secondTerm>											(. if (type != Types.integer || type1 != Types.integer)
+																					   SemErr("integer type expected");
+																					   ((Node)op).addChildren(firstTerm);
+																					   ((Node)op).addChildren(secondTerm); .)
   }.
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
@@ -349,11 +351,11 @@ BoolOp
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-MulOp
- =																				
+MulOp<out ASTNode op>
+ =														(. op = new Node(Labels.Mul); .)					
 	(																			
 	    '*' 
-	  | '/'																					
+	  | '/'												(. op = new Node(Labels.Div); .)									
 	).               
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/

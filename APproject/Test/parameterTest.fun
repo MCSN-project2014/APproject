@@ -1,7 +1,7 @@
 
 fun add(y int) int
 {
-  var x int = 5 - 4;
+  var x int = 5 + 4 * 5 * 6;
 }
 
 fun main(){

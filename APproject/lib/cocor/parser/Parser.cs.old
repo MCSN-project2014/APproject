@@ -519,9 +519,9 @@ public SymbolTable   tab;
 			node = op; 
 			Term(out type1,out secondTerm);
 			if (type != Types.integer || type1 != Types.integer)
-			SemErr("integer type expected");
-            ((Node)op).addChildren(firstTerm);
-			((Node)op).addChildren(secondTerm);
+			SemErr("integer type expected"); 
+			((Node)op).addChildren(firstTerm);
+			((Node)op).addChildren(secondTerm); 
 		}
 	}
 
