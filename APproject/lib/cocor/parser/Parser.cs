@@ -395,7 +395,7 @@ public SymbolTable   tab;
 				SemErr("incompatible return type"); 
 			} else if (la.kind == 4) {
 				AProcDecl(out robj);
-				obj = tab.getOwner();
+				obj = tab.getOwner(); 
 				tab.complexReturnTypeControl(obj,robj); 
 			} else SynErr(47);
 			break;
@@ -421,7 +421,7 @@ public SymbolTable   tab;
 	void AProcDecl(out Obj robj) {
 		string name; Types type; RType rtype; Obj formal;
 		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
-		tab.OpenScope(); 
+		tab.OpenScope(robj); 
 		Expect(4);
 		Expect(5);
 		while (la.kind == 1) {

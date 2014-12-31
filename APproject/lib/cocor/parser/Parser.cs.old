@@ -181,7 +181,6 @@ public SymbolTable   tab;
 		if (la.kind == 4) {
 			Get();
 			rtype.type = Types.fun;
-			rtype1 = new RType();
 			formals = new Queue<Types>(); 
 			Expect(5);
 			while (la.kind == 4 || la.kind == 25 || la.kind == 26) {
@@ -194,9 +193,9 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(7);
+			RType(out rtype1);
 			rtype1.formals = formals;
 			rtype.next = rtype1;
-			RType(out rtype1);
 		} else if (la.kind == 25) {
 			Get();
 			rtype.type = Types.integer; 
@@ -396,7 +395,7 @@ public SymbolTable   tab;
 				SemErr("incompatible return type"); 
 			} else if (la.kind == 4) {
 				AProcDecl(out robj);
-				obj = tab.getOwner();
+				obj = tab.getOwner(); 
 				tab.complexReturnTypeControl(obj,robj); 
 			} else SynErr(47);
 			break;
