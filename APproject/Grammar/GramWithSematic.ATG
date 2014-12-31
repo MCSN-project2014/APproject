@@ -46,8 +46,8 @@ Fun =																			(. Node node; .)
    
                                                     
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
-ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Obj obj; 
-																				   RType rtype; Node fundecl,block,node1; Term parameter;     .)
+ProcDecl =																		(. Types type; string name; Obj proc; Obj formal;
+																				   RType rtype; Node fundecl,block,vardeclnode; Term parameter;     .)
 			"fun"																	
 			(
 			    Ident<out name>													(. proc = tab.NewObj(name, Kinds.proc, Types.undef);
@@ -69,17 +69,19 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Ob
 				  RType<out rtype>												 (. block = new Node(Labels.Block);  
 																				    tab.setRType(proc,rtype);
 																					.)
-		        '{' {VarDecl<out node1>											 (. block.addChildren(node1); .)	 
+		        '{' {VarDecl<out vardeclnode>									 (. block.addChildren(vardeclnode); .)	 
 					| Stat} '}'
 																				 (. fundecl.addChildren(0,block);
 																					gen.addChildren(fundecl);
 																				    tab.CloseScope(); .)
-			  | "main"															 (. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
-																				    	
-																				    
+			  | "main"															 (. tab.NewObj("Main", Kinds.proc, Types.undef);
+																					fundecl = new Node(Labels.Main);
+
 																				    tab.OpenScope();	.)	
-				'(' ')' '{'  { VarDecl<out node1> | Stat } '}'								
-																				(.  tab.CloseScope(); .)
+				'(' ')' '{'  { VarDecl<out vardeclnode>							 (.	fundecl.addChildren(vardeclnode); .)
+							  | Stat } '}'								
+																				 (. gen.addChildren(fundecl);
+																				    tab.CloseScope(); .)
 			).   
 			
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -191,7 +193,7 @@ VarDecl<out Node node>															(. string name; ArrayList names = new Array
 			| Type<out type>
 			  
 			  (
-				';'																(. obj = tab.NewObj((string)names[0], Kinds.var, type);
+				';'																(. obj  =  tab.NewObj((string)names[0], Kinds.var, type);
 																				   node =  new Node (Labels.Decl);
 																				   term =  new Term (obj);
 																				   node.addChildren(term);                             .)

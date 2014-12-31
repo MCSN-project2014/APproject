@@ -103,8 +103,8 @@ public SymbolTable   tab;
 	}
 
 	void ProcDecl() {
-		Types type; string name; Obj proc; Obj formal; Obj obj; 
-		RType rtype; Node fundecl,block,node1; Term parameter;     
+		Types type; string name; Obj proc; Obj formal;
+		RType rtype; Node fundecl,block,vardeclnode; Term parameter;     
 		Expect(4);
 		if (la.kind == 1) {
 			Ident(out name);
@@ -138,8 +138,8 @@ public SymbolTable   tab;
 			Expect(8);
 			while (StartOf(1)) {
 				if (la.kind == 21) {
-					VarDecl(out node1);
-					block.addChildren(node1); 
+					VarDecl(out vardeclnode);
+					block.addChildren(vardeclnode); 
 				} else {
 					Stat();
 				}
@@ -150,8 +150,8 @@ public SymbolTable   tab;
 			tab.CloseScope(); 
 		} else if (la.kind == 10) {
 			Get();
-			obj = tab.NewObj("Main", Kinds.proc, Types.undef);
-			
+			tab.NewObj("Main", Kinds.proc, Types.undef);
+			fundecl = new Node(Labels.Main);
 			
 			tab.OpenScope();	
 			Expect(5);
@@ -159,12 +159,14 @@ public SymbolTable   tab;
 			Expect(8);
 			while (StartOf(1)) {
 				if (la.kind == 21) {
-					VarDecl(out node1);
+					VarDecl(out vardeclnode);
+					fundecl.addChildren(vardeclnode); 
 				} else {
 					Stat();
 				}
 			}
 			Expect(9);
+			gen.addChildren(fundecl);
 			tab.CloseScope(); 
 		} else SynErr(39);
 	}
@@ -247,7 +249,7 @@ public SymbolTable   tab;
 			Type(out type);
 			if (la.kind == 14) {
 				Get();
-				obj = tab.NewObj((string)names[0], Kinds.var, type);
+				obj  =  tab.NewObj((string)names[0], Kinds.var, type);
 				node =  new Node (Labels.Decl);
 				term =  new Term (obj);
 				node.addChildren(term);                             
