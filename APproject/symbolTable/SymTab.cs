@@ -25,6 +25,7 @@ namespace APproject
 		public int nextAdr;		                    // scopes: next free address in this scope
         public RType rtype;
         public bool asyncControl;
+        public bool returnIsSet;
 	    public Queue<Obj> formals { get; set; }
 	}
 
@@ -69,6 +70,7 @@ namespace APproject
         {
             Obj scop = new Obj();
             scop.name = owner.name;
+            owner.returnIsSet = false;
             scop.kind = Kinds.scope;
             scop.owner = owner;
             scop.locals = null;
@@ -83,6 +85,11 @@ namespace APproject
 		/// close the current scope
         /// <summary>
 		public void CloseScope () {
+            Obj obj = getOwner();
+            if (obj != null && !obj.returnIsSet)
+            {
+                parser.SemErr("return expected");
+            }
 			topScope = topScope.next; curLevel--;
 		}
 

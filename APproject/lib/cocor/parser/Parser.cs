@@ -391,11 +391,13 @@ public SymbolTable   tab;
 				CompleteExpr(out type);
 				Expect(14);
 				obj = tab.getOwner();
+				obj.returnIsSet=true;
 				if( obj.type != type )
 				SemErr("incompatible return type"); 
 			} else if (la.kind == 4) {
 				AProcDecl(out robj);
 				obj = tab.getOwner(); 
+				obj.returnIsSet=true;
 				tab.complexReturnTypeControl(obj,robj); 
 			} else SynErr(47);
 			break;

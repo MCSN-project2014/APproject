@@ -8,7 +8,7 @@ fun add() fun(int int) fun () fun (int) bool
 		
 			return fun (y int)  bool{
 					var x bool;
-					return x;
+				return x;		
 			}
 		}
 		
@@ -18,4 +18,6 @@ fun add() fun(int int) fun () fun (int) bool
 fun main(){
 	var x int;
 	var y int;
+	var z fun;
+	z = add();
 }

@@ -139,10 +139,12 @@ Stat																			(. Types type; string name; string name1; Obj obj, obj1, 
 			(  
     			                                                               
    				CompleteExpr<out type> ';'										(. obj = tab.getOwner();
+																				   obj.returnIsSet=true;
 																				   if( obj.type != type )
 																					   SemErr("incompatible return type"); .)                                                 
-			   |AProcDecl<out robj>                                             (.  obj = tab.getOwner(); .)
-																				(.  tab.complexReturnTypeControl(obj,robj); .) 
+			   |AProcDecl<out robj>                                             (.  obj = tab.getOwner(); 
+																					obj.returnIsSet=true;
+																					tab.complexReturnTypeControl(obj,robj); .) 
 			                                                                  
 			)                                                                    
 	|																			(. tab.OpenScope(); .) 
