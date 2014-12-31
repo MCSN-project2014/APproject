@@ -62,6 +62,16 @@ namespace APproject
 			node.parent = this;
 			children.Add (node);
 		}
+
+		/// <summary>
+		/// Add a new children at the given position.
+		/// </summary>
+		/// <param name="i">The index.</param>
+		/// <param name="node">Node.</param>
+		public void addChildren (int i, ASTNode node){
+			node.parent = this;
+			children.Insert (i, node);
+		}
 			
 		public override bool isTerminal(){
 			return false;

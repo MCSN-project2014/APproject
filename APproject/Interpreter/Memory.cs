@@ -10,7 +10,7 @@ namespace APproject
 
 		public Memory (){
 			mem = new List<Dictionary<Obj,object>>();
-			addScope();
+			//addScope();
 		}
 
 		public void addScope(){
@@ -19,6 +19,10 @@ namespace APproject
 
 		public void removeScope(){
 			mem.RemoveAt(lastIndex);
+		}
+
+		public void addUpdateValue (Obj var , ASTNode fun, Memory mem){
+			addUpdateValue(var, new Tuple<ASTNode,Memory>(fun,mem));
 		}
 
 		public void addUpdateValue(Obj var, object value){

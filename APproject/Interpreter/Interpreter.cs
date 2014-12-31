@@ -5,25 +5,28 @@ namespace APproject
 {
 	public class Interpreter
 	{
-		MemoryFunction funMem;
+		//MemoryFunction funMem;
+		private Dictionary<Obj,ASTNode> function;
 		Obj main;
 		ASTNode startNode;
 
 		public Interpreter( ASTNode node){
 			startNode = node;
 			main = new Obj{ name = "main" };
-			funMem = new MemoryFunction ();
+			function = new Dictionary<Obj, ASTNode> ();
 		}
 			
 		public void Start (){
 			Console.WriteLine ("INTERPRETER START:");
 			foreach (ASTNode node in startNode.children) {
 				if (node.label == Labels.FunDecl)
-					funMem.addFunction ((Obj)node.value, node);
+					function.Add ((Obj)node.value, node);
 				if (node.label == Labels.Main) {
 					//funMem.addNameSpace (main);
 					var mem = new Memory ();
+					mem.addScope ();
 					Interpret (node, mem);
+					mem.removeScope ();
 				}
 			}
 		}
@@ -45,7 +48,8 @@ namespace APproject
 						if (ret != null)
 							break;
 					}
-					actualMemory.removeScope ();
+					if (!(ret is  Tuple<ASTNode,Memory>))
+						actualMemory.removeScope ();
 					return ret;
 				case Labels.If:
 					condition = InterpretCondition (children [0], actualMemory);
@@ -89,9 +93,10 @@ namespace APproject
 		private void Assignment(List<ASTNode> children, Memory actualMemory){
 			object value = InterpretExp (children [1], actualMemory);
 			Obj variable = (Obj) children[0].value;
-			if (value is Node)
-				funMem.addFunction(variable, (Node)value, actualMemory);
-			else
+			if (value is Tuple<ASTNode,Memory>) {
+				var tuple = (Tuple<ASTNode,Memory>)value;
+				actualMemory.addUpdateValue (variable, tuple.Item1, tuple.Item2);
+			}else
 				actualMemory.addUpdateValue (variable, value);
 		}
 
@@ -138,18 +143,26 @@ namespace APproject
 					return (int) InterpretExp (children [0],actualMemory) <= (int) InterpretExp (children [1],actualMemory);
 				case Labels.FunCall:
 					Obj funName = (Obj)node.value;
-					var tuple = funMem.getFunction (funName);
-					ASTNode funNode = tuple.Item1;
-					Memory mem = tuple.Item2!=null ? tuple.Item2 : new Memory();
+					ASTNode funNode;
+					Memory funMem;
+					if (function.TryGetValue (funName, out funNode)) {
+						funMem = new Memory ();
+					} else {
+						var afun = (Tuple<ASTNode,Memory>)actualMemory.getValue (funName);
+						funNode = afun.Item1;
+						funMem = afun.Item2;
+					}
+					funMem.addScope ();
 					int i = 1;
 					foreach (ASTNode actual in children) {
-						mem.addUpdateValue ((Obj)funNode.children [i].value, InterpretExp (actual, actualMemory));
+						funMem.addUpdateValue ((Obj)funNode.children [i].value, InterpretExp (actual, actualMemory));
 						i++;
 					}
-					object ret = Interpret (funNode.children [0], mem);
+					object ret = Interpret (funNode.children [0], funMem);
+					funMem.removeScope ();
 					return ret;
 				case Labels.Afun:
-					return node;
+					return new Tuple<ASTNode,Memory> (node,actualMemory);
 				default:
 					return null;
 				}

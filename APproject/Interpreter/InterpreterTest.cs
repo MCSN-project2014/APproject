@@ -107,6 +107,61 @@ namespace APproject
 
 			return program;
 		}
+
+		/// <summary>
+		/// fun test(){
+		/// 	var a int = 7;
+		/// 	return fun()int{
+		/// 		return a;
+		/// 	}
+		/// }
+		/// fun main(){
+		/// 	var f fun = test();
+		/// 	print(f());
+		/// }
+		/// </summary>
+		/// <returns>The dec fun.</returns>
+		public static ASTNode testReturnAFun (){
+			Node program = new Node(Labels.Program);
+
+			Obj testfun = new Obj{ name = "test" }; 
+			Node test = new Node (Labels.FunDecl, testfun);
+			program.addChildren (test);
+			Node blocktest = new Node (Labels.Block);
+			test.addChildren (blocktest);
+			Node assDec1 = new Node (Labels.AssigDecl);
+			blocktest.addChildren (assDec1);
+			Obj varA = new Obj (){ name = "a" };
+			assDec1.addChildren (new Term(varA));
+			assDec1.addChildren (new Term(7));
+			Node ret = new Node (Labels.Return);
+			blocktest.addChildren (ret);
+			Node afun = new Node (Labels.Afun);
+			ret.addChildren (afun);
+			Node blockAfun = new Node (Labels.Block);
+			afun.addChildren (blockAfun);
+			Node retAfun = new Node (Labels.Return);
+			blockAfun.addChildren (retAfun);
+			retAfun.addChildren (new Term(varA));
+
+			Node main = new Node (Labels.Main);
+			program.addChildren (main);
+			Node assDec2 = new Node (Labels.AssigDecl);
+			main.addChildren (assDec2);
+			var varF = new Obj(){ name = "f" };
+			assDec2.addChildren (new Term (varF));
+			Node call1 = new Node (Labels.FunCall, testfun);
+			assDec2.addChildren (call1);
+
+			Node print1 = new Node (Labels.Print);
+			main.addChildren (print1);
+			Node call2 = new Node (Labels.FunCall, varF);
+			print1.addChildren (call2);
+			//print1.addChildren (new Term("ciao"));
+
+			return program;
+		}
+
 		/// <summary>
 		/// fun test(a int, b int){
 		/// 	return a-b;
@@ -267,7 +322,7 @@ namespace APproject
 			var varC = new Obj{ name = "c" };
 			assDec.addChildren (new Term (varC));
 			Node call = new Node (Labels.FunCall, fun);
-			call.addChildren (new Term (3));
+			call.addChildren (new Term (10));
 			assDec.addChildren (call);
 			Node print = new Node (Labels.Print);
 			main.addChildren (print);
