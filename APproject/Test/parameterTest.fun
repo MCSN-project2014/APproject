@@ -1,9 +1,7 @@
 
 fun add(y int) int
 {
-	var x int;
-	x = readln{};
-	return x;
+  var x int = 5 - 4;
 }
 
 fun main(){

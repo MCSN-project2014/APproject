@@ -222,7 +222,7 @@ public SymbolTable   tab;
 	void VarDecl(out Node node) {
 		string name; ArrayList names = new ArrayList(); 
 		Types type; Types type1; 
-		Term term; Obj obj;
+		Term term; Obj obj; ASTNode exprnode;
 		Expect(21);
 		Ident(out name);
 		node =  new Node (Labels.AssigDecl);
@@ -267,11 +267,15 @@ public SymbolTable   tab;
 					node.addChildren(term);
 					node.addChildren(readln); 
 				} else if (StartOf(2)) {
-					CompleteExpr(out type1);
+					CompleteExpr(out type1, out exprnode);
 					Expect(14);
 					if (type != type1) 
 					SemErr("incompatible types");
-					tab.NewObj((string)names[0], Kinds.var, type); 
+					obj = tab.NewObj((string)names[0], Kinds.var, type); 
+					node =  new Node (Labels.Decl);
+					term =  new Term (obj);
+					node.addChildren(term);
+					node.addChildren(exprnode); 
 				} else if (la.kind == 4) {
 					AProcDecl(out obj);
 				} else SynErr(42);
@@ -282,7 +286,7 @@ public SymbolTable   tab;
 	void Stat() {
 		Types type; string name; string name1; Obj obj, obj1, robj;
 		Queue<Types> actualTypes = new Queue<Types>();
-		Node node; 
+		Node node; ASTNode exprnode; 
 		switch (la.kind) {
 		case 1: {
 			Ident(out name);
@@ -299,11 +303,11 @@ public SymbolTable   tab;
 					obj1 = tab.Find(name1); 
 					Expect(5);
 					while (StartOf(2)) {
-						CompleteExpr(out type);
+						CompleteExpr(out type, out exprnode);
 						actualTypes.Enqueue(type); 
 						while (la.kind == 6) {
 							Get();
-							CompleteExpr(out type);
+							CompleteExpr(out type, out exprnode);
 							actualTypes.Enqueue(type); 
 						}
 					}
@@ -318,7 +322,7 @@ public SymbolTable   tab;
 					if(obj.type != obj1.type) 
 					SemErr("incompatible types"); 
 				} else if (StartOf(2)) {
-					CompleteExpr(out type);
+					CompleteExpr(out type, out exprnode);
 					Expect(14);
 					if (type != obj.type)
 					SemErr("incompatible types"); 
@@ -335,11 +339,11 @@ public SymbolTable   tab;
 			} else if (la.kind == 5) {
 				Get();
 				while (StartOf(2)) {
-					CompleteExpr(out type);
+					CompleteExpr(out type, out exprnode);
 					actualTypes.Enqueue(type); 
 					while (la.kind == 6) {
 						Get();
-						CompleteExpr(out type);
+						CompleteExpr(out type, out exprnode);
 						actualTypes.Enqueue(type); 
 					}
 				}
@@ -354,7 +358,7 @@ public SymbolTable   tab;
 		}
 		case 16: {
 			Get();
-			CompleteExpr(out type);
+			CompleteExpr(out type, out exprnode);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
 			Stat();
@@ -366,7 +370,7 @@ public SymbolTable   tab;
 		}
 		case 18: {
 			Get();
-			CompleteExpr(out type);
+			CompleteExpr(out type, out exprnode);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
 			Stat();
@@ -376,18 +380,18 @@ public SymbolTable   tab;
 			Get();
 			Ident(out name);
 			Expect(11);
-			CompleteExpr(out type);
+			CompleteExpr(out type, out exprnode);
 			Expect(14);
 			obj=tab.Find(name);
 			if (type != obj.type)
 			SemErr("incompatible types"); 
-			CompleteExpr(out type);
+			CompleteExpr(out type, out exprnode);
 			Expect(14);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
 			Ident(out name1);
 			Expect(11);
-			CompleteExpr(out type);
+			CompleteExpr(out type, out exprnode);
 			obj=tab.Find(name1); 
 			if (type != obj.type)
 			SemErr("incompatible types");
@@ -407,7 +411,7 @@ public SymbolTable   tab;
 		case 13: {
 			Get();
 			if (StartOf(2)) {
-				CompleteExpr(out type);
+				CompleteExpr(out type, out exprnode);
 				Expect(14);
 				obj = tab.getOwner();
 				obj.returnIsSet=true;
@@ -474,24 +478,24 @@ public SymbolTable   tab;
 		tab.CloseScope(); 
 	}
 
-	void CompleteExpr(out Types type) {
+	void CompleteExpr(out Types type, out ASTNode node) {
 		Types type1; 
-		Expr(out type);
+		Expr(out type,out node);
 		if (la.kind == 34 || la.kind == 35) {
 			BoolOp();
-			Expr(out type1);
+			Expr(out type1,out node);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
 		}
 	}
 
-	void Expr(out Types type) {
+	void Expr(out Types type,out ASTNode node) {
 		Types type1; 
-		SimpExpr(out type);
+		SimpExpr(out type, out node);
 		if (StartOf(4)) {
 			RelOp();
-			SimpExpr(out type1);
+			SimpExpr(out type1, out node);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
@@ -506,14 +510,18 @@ public SymbolTable   tab;
 		} else SynErr(49);
 	}
 
-	void SimpExpr(out Types type) {
-		Types type1;
-		Term(out type);
+	void SimpExpr(out Types type, out ASTNode node) {
+		Types type1; ASTNode op, firstTerm, secondTerm; 
+		Term(out type, out firstTerm);
+		node = firstTerm; 
 		while (la.kind == 22 || la.kind == 27) {
-			AddOp();
-			Term(out type1);
+			AddOp(out op);
+			node = op; 
+			Term(out type1,out secondTerm);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected"); 
+			((Node)op).addChildren(firstTerm);
+			((Node)op).addChildren(secondTerm); 
 		}
 	}
 
@@ -547,29 +555,32 @@ public SymbolTable   tab;
 		}
 	}
 
-	void Term(out Types type) {
+	void Term(out Types type, out ASTNode node) {
 		Types type1; 
-		Factor(out type);
+		Factor(out type, out node);
 		while (la.kind == 36 || la.kind == 37) {
 			MulOp();
-			Factor(out type1);
+			Factor(out type1,out node);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected"); 
 		}
 	}
 
-	void AddOp() {
+	void AddOp(out ASTNode op) {
+		op = new Node(Labels.Plus); 
 		if (la.kind == 27) {
 			Get();
 		} else if (la.kind == 22) {
 			Get();
+			op = new Node(Labels.Minus); 
 		} else SynErr(51);
 	}
 
-	void Factor(out Types type) {
+	void Factor(out Types type, out ASTNode node) {
 		int n; Obj obj; string name; Types type1; bool control = false;
-		Queue<Types> actualTypes = new Queue<Types>(); 
-		type = Types.undef; 
+		Queue<Types> actualTypes = new Queue<Types>(); ASTNode exprnode; 
+		type = Types.undef;
+		node = new Node(Labels.Block);
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); 
@@ -578,11 +589,11 @@ public SymbolTable   tab;
 				control = true; 
 				Get();
 				while (StartOf(2)) {
-					CompleteExpr(out type1);
+					CompleteExpr(out type1, out exprnode);
 					actualTypes.Enqueue(type1); 
 					while (la.kind == 6) {
 						Get();
-						CompleteExpr(out type1);
+						CompleteExpr(out type1, out exprnode);
 						actualTypes.Enqueue(type1); 
 					}
 				}
@@ -597,10 +608,11 @@ public SymbolTable   tab;
 		} else if (la.kind == 2) {
 			Get();
 			n = Convert.ToInt32(t.val);
+			node =  new Term(n);
 			type = Types.integer; 
 		} else if (la.kind == 22) {
 			Get();
-			Factor(out type);
+			Factor(out type,out node);
 			if (type != Types.integer) 
 			SemErr("integer type expected");
 			type = Types.integer; 
