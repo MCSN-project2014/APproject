@@ -92,7 +92,10 @@ public SymbolTable   tab;
 
 	
 	void Fun() {
+		Node node; 
 		tab.OpenScope();  
+		node = new Node(Labels.Program); 
+		gen.initAST(node); 
 		while (la.kind == 4) {
 			ProcDecl();
 		}
@@ -101,51 +104,61 @@ public SymbolTable   tab;
 
 	void ProcDecl() {
 		Types type; string name; Obj proc; Obj formal; Obj obj; 
-		RType rtype; Node node;     
+		RType rtype; Node fundecl,block,node1; Term parameter;     
 		Expect(4);
 		if (la.kind == 1) {
 			Ident(out name);
 			proc = tab.NewObj(name, Kinds.proc, Types.undef);
+			fundecl = new Node(Labels.FunDecl, proc);
+			
 			tab.OpenScope(proc);                             
 			Expect(5);
 			while (la.kind == 1) {
 				Ident(out name);
 				Type(out type);
 				formal = tab.NewObj(name, Kinds.var, type); 
-				tab.addFormal(proc,formal);             
+				tab.addFormal(proc,formal);
+				parameter = new Term(formal);
+				fundecl.addChildren(parameter);           
 				while (la.kind == 6) {
 					Get();
 					Ident(out name);
 					Type(out type);
 					formal = tab.NewObj(name, Kinds.var, type); 
-					tab.addFormal(proc,formal);             
+					tab.addFormal(proc,formal); 
+					parameter = new Term(formal);
+					fundecl.addChildren(parameter);               
 				}
 			}
 			Expect(7);
 			RType(out rtype);
-			tab.setRType(proc,rtype); 
+			block = new Node(Labels.Block);  
+			tab.setRType(proc,rtype);
+			
 			Expect(8);
 			while (StartOf(1)) {
 				if (la.kind == 21) {
-					VarDecl();
+					VarDecl(out node1);
+					block.addChildren(node1); 
 				} else {
 					Stat();
 				}
 			}
 			Expect(9);
+			gen.addChildren(fundecl);
 			tab.CloseScope(); 
 		} else if (la.kind == 10) {
 			Get();
 			obj = tab.NewObj("Main", Kinds.proc, Types.undef);
-			node = new Node(Labels.Main); 	
-			//gen.initAST(node);
+			
+			
 			tab.OpenScope();	
 			Expect(5);
 			Expect(7);
 			Expect(8);
 			while (StartOf(1)) {
 				if (la.kind == 21) {
-					VarDecl();
+					VarDecl(out node1);
 				} else {
 					Stat();
 				}
@@ -205,13 +218,13 @@ public SymbolTable   tab;
 		} else SynErr(41);
 	}
 
-	void VarDecl() {
+	void VarDecl(out Node node) {
 		string name; ArrayList names = new ArrayList(); 
-		Types type; Types type1; Node node; 
+		Types type; Types type1; 
 		Term term; Obj obj;
 		Expect(21);
 		Ident(out name);
-		node = new Node(Labels.Decl);
+		node =  new Node (Labels.AssigDecl);
 		names.Add(name); 
 		if (la.kind == 6) {
 			Get();
@@ -226,10 +239,7 @@ public SymbolTable   tab;
 			Expect(14);
 			foreach(string n in names)
 			{
-			obj = tab.NewObj(n, Kinds.var, type); 
-			//term =  new Term (obj);
-			//node.addChildren(term);
-			//gen.addChildren(node);
+			obj = tab.NewObj(n, Kinds.var, type);
 			} 
 			
 		} else if (la.kind == 4 || la.kind == 25 || la.kind == 26) {
@@ -237,10 +247,9 @@ public SymbolTable   tab;
 			if (la.kind == 14) {
 				Get();
 				obj = tab.NewObj((string)names[0], Kinds.var, type);
+				node =  new Node (Labels.AssigDecl);
 				term =  new Term (obj);
-				//node.addChildren(term);
-				//gen.addChildren(node); 
-				
+				node.addChildren(term);                             
 			} else if (la.kind == 11) {
 				Get();
 				if (la.kind == 15) {
@@ -266,7 +275,8 @@ public SymbolTable   tab;
 
 	void Stat() {
 		Types type; string name; string name1; Obj obj, obj1, robj;
-		Queue<Types> actualTypes = new Queue<Types>(); 
+		Queue<Types> actualTypes = new Queue<Types>();
+		Node node; 
 		switch (la.kind) {
 		case 1: {
 			Ident(out name);
@@ -296,6 +306,8 @@ public SymbolTable   tab;
 					Expect(14);
 					if (obj1.kind != Kinds.proc) 
 					SemErr("object is not a procedure");
+					if (obj1.type == Types.fun)
+					SemErr("wrong return type");
 					tab.checkActualFormalTypes(obj1,actualTypes); 
 					if(obj.type != obj1.type) 
 					SemErr("incompatible types"); 
@@ -327,8 +339,9 @@ public SymbolTable   tab;
 				}
 				Expect(7);
 				Expect(14);
-				if (obj.kind != Kinds.proc) 
+				if (obj.kind != Kinds.proc || obj.rtype == null) 
 				SemErr("object is not a procedure");
+				else
 				tab.checkActualFormalTypes(obj,actualTypes); 
 			} else SynErr(46);
 			break;
@@ -409,7 +422,7 @@ public SymbolTable   tab;
 				if (StartOf(3)) {
 					Stat();
 				} else {
-					VarDecl();
+					VarDecl(out node);
 				}
 			}
 			Expect(9);
@@ -422,6 +435,7 @@ public SymbolTable   tab;
 
 	void AProcDecl(out Obj robj) {
 		string name; Types type; RType rtype; Obj formal;
+		Node node;
 		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
 		tab.OpenScope(robj); 
 		Expect(4);
@@ -445,7 +459,7 @@ public SymbolTable   tab;
 		Expect(8);
 		while (StartOf(1)) {
 			if (la.kind == 21) {
-				VarDecl();
+				VarDecl(out node);
 			} else {
 				Stat();
 			}
@@ -567,8 +581,9 @@ public SymbolTable   tab;
 					}
 				}
 				Expect(7);
-				if (obj.kind != Kinds.proc) 
+				if (obj.kind != Kinds.proc || obj.rtype == null) 
 				SemErr("object is not a procedure");
+				else
 				tab.checkActualFormalTypes(obj,actualTypes); 
 			}
 			if (!control && obj.kind != Kinds.var)

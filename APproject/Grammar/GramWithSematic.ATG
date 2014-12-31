@@ -36,40 +36,55 @@ PRODUCTIONS
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 							 
-Fun =																			(. tab.OpenScope();  .)
+Fun =																			(. Node node; .)
+																				(. tab.OpenScope();  
+																					node = new Node(Labels.Program); 
+																					gen.initAST(node); .)
+
 		{ ProcDecl }
 																				(. tab.CloseScope(); .).
    
                                                     
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Obj obj; 
-																				   RType rtype; Node node;     .)
-			"fun"
+																				   RType rtype; Node fundecl,block,node1; Term parameter;     .)
+			"fun"																	
 			(
 			    Ident<out name>													(. proc = tab.NewObj(name, Kinds.proc, Types.undef);
+																				   fundecl = new Node(Labels.FunDecl, proc);
+																				   
 																				   tab.OpenScope(proc);                             .)
 				'(' 
 					{ Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
-																				   tab.addFormal(proc,formal);             .)
+																				   tab.addFormal(proc,formal);
+																				   parameter = new Term(formal);
+																				   fundecl.addChildren(parameter);           .)
 				    {',' Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
-																				   tab.addFormal(proc,formal);             .)
+																				   tab.addFormal(proc,formal); 
+																				   parameter = new Term(formal);
+																				   fundecl.addChildren(parameter);               .)
 					}
 					}
 				 ')' 
-				  RType<out rtype>												 (. tab.setRType(proc,rtype); .)
-		        '{' {VarDecl | Stat} '}'
-																				 (. tab.CloseScope(); .)
+				  RType<out rtype>												 (. block = new Node(Labels.Block);  
+																				    tab.setRType(proc,rtype);
+																					.)
+		        '{' {VarDecl<out node1>											 (. block.addChildren(node1); .)	 
+					| Stat} '}'
+																				 (. gen.addChildren(fundecl);
+																				    tab.CloseScope(); .)
 			  | "main"															 (. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
-																				    node = new Node(Labels.Main); 	
-																				    //gen.initAST(node);
+																				    	
+																				    
 																				    tab.OpenScope();	.)	
-				'(' ')' '{'  { VarDecl | Stat } '}'								
-																				 (.  tab.CloseScope(); .)
+				'(' ')' '{'  { VarDecl<out node1> | Stat } '}'								
+																				(.  tab.CloseScope(); .)
 			).   
 			
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                 
-AProcDecl<out Obj robj> 														(. string name; Types type; RType rtype; Obj formal;.)
+AProcDecl<out Obj robj> 														(. string name; Types type; RType rtype; Obj formal;
+																					Node node;.)
  =																				(. robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
 																				   tab.OpenScope(robj); .)	
 			"fun"'(' {Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
@@ -77,13 +92,14 @@ AProcDecl<out Obj robj> 														(. string name; Types type; RType rtype; O
 				      {',' Ident<out name> Type<out type>						(. formal = tab.NewObj(name, Kinds.var, type);
 																				   tab.addFormal(robj,formal); .)
 					  }} ')' RType<out rtype>									(. tab.setRType(robj,rtype); .)            
-		    '{' {VarDecl | Stat} '}'                       			        
+		    '{' {VarDecl<out node> | Stat} '}'                       			        
 																				(. tab.CloseScope(); .).
                                                               
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                              
-Stat																			(. Types type; string name; string name1; Obj obj, obj1, robj;
-																				   Queue<Types> actualTypes = new Queue<Types>(); .) 
+Stat             																(. Types type; string name; string name1; Obj obj, obj1, robj;
+																				   Queue<Types> actualTypes = new Queue<Types>();
+																				   Node node; .) 
 
 = 
 	Ident<out name>																(. obj = tab.Find(name); .)                                                               
@@ -97,6 +113,8 @@ Stat																			(. Types type; string name; string name1; Obj obj, obj1, 
 									 {',' CompleteExpr<out type>				(. actualTypes.Enqueue(type); .) 
 									 } } ')' '}'';'								(. if (obj1.kind != Kinds.proc) 
 																				       SemErr("object is not a procedure");
+																				   if (obj1.type == Types.fun)
+																					   SemErr("wrong return type");
 																				   tab.checkActualFormalTypes(obj1,actualTypes); 
 																				   if(obj.type != obj1.type) 
 																					   SemErr("incompatible types"); .)
@@ -110,9 +128,10 @@ Stat																			(. Types type; string name; string name1; Obj obj, obj1, 
 			                                                                 
 			| '(' { CompleteExpr<out type>										(. actualTypes.Enqueue(type); .) 
 				  { ',' CompleteExpr<out type>									(. actualTypes.Enqueue(type); .) 
-				  } } ')' ';'													(. if (obj.kind != Kinds.proc) 
-																				       SemErr("object is not a procedure");
-																				   tab.checkActualFormalTypes(obj,actualTypes); .)
+				  } } ')' ';'													(. if (obj.kind != Kinds.proc || obj.rtype == null) 
+																						SemErr("object is not a procedure");
+																				   else
+																						tab.checkActualFormalTypes(obj,actualTypes); .)
                                                                                 
 			                                                                  
 		)                                                       
@@ -142,32 +161,29 @@ Stat																			(. Types type; string name; string name1; Obj obj, obj1, 
 																				   obj.returnIsSet=true;
 																				   if( obj.type != type )
 																					   SemErr("incompatible return type"); .)                                                 
-			   |AProcDecl<out robj>                                             (.  obj = tab.getOwner(); 
+			   | AProcDecl<out robj>                                             (.  obj = tab.getOwner(); 
 																					obj.returnIsSet=true;
 																					tab.complexReturnTypeControl(obj,robj); .) 
 			                                                                  
 			)                                                                    
 	|																			(. tab.OpenScope(); .) 
-	'{' { Stat | VarDecl } '}'
+	'{' { Stat | VarDecl<out node> } '}'
 																				(. tab.CloseScope(); .).
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-VarDecl 																		(. string name; ArrayList names = new ArrayList(); 
-																					Types type; Types type1; Node node; 
+VarDecl<out Node node>															(. string name; ArrayList names = new ArrayList(); 
+																					Types type; Types type1; 
 																					Term term; Obj obj;.)
 
-=		  "var" Ident<out name>													(.  node = new Node(Labels.Decl);
-																					names.Add(name); .)	
+=		  "var" Ident<out name>													(. node =  new Node (Labels.AssigDecl);
+																				   names.Add(name); .)	
 		  (
 			',' Ident<out name>													(. names.Add(name); .) 
 			{',' Ident<out name>												(. names.Add(name); .)
 			} Type<out type> ';'												(. foreach(string n in names)
 																				   {
-						    															obj = tab.NewObj(n, Kinds.var, type); 
-																						//term =  new Term (obj);
-																						//node.addChildren(term);
-																						//gen.addChildren(node);
+						    															obj = tab.NewObj(n, Kinds.var, type);
 																					} 
 																				.)
 			
@@ -175,10 +191,9 @@ VarDecl 																		(. string name; ArrayList names = new ArrayList();
 			  
 			  (
 				';'																(. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   node =  new Node (Labels.AssigDecl);
 																				   term =  new Term (obj);
-																				   //node.addChildren(term);
-																				   //gen.addChildren(node); 
-																				   .)
+																				   node.addChildren(term);                             .)
 				| '=' 
 					(	"readln" '{''}' ';'										(. if(type != Types.integer)
 																					  SemErr("incompatible types"); 
@@ -243,9 +258,10 @@ Factor<out Types type>															(. int n; Obj obj; string name; Types type1
 		[																		(. control = true; .)
 		'(' { CompleteExpr<out type1>											(. actualTypes.Enqueue(type1); .) 
 			 { ',' CompleteExpr<out type1>										(. actualTypes.Enqueue(type1); .) 
-			 } } ')'															(. if (obj.kind != Kinds.proc) 
-																				       SemErr("object is not a procedure");
-																				   tab.checkActualFormalTypes(obj,actualTypes); .)
+			 } } ')'															(. if (obj.kind != Kinds.proc || obj.rtype == null) 
+																						SemErr("object is not a procedure");
+																				   else
+																						tab.checkActualFormalTypes(obj,actualTypes); .)
 		]																		
 																				(. if (!control && obj.kind != Kinds.var)
 																				      SemErr("variable expected"); .)
