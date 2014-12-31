@@ -21,9 +21,8 @@ namespace APproject
                 parser.Parse();
 
                 String fileName = "traslated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
-                FSCodeGen genFsharp = new FSCodeGen();
-                FSCodeGen gen = new FSCodeGen(fileName);
-                gen.translate(parser.gen.getRoot());
+                FSCodeGen genFsharp = new FSCodeGen(fileName);
+                genFsharp.translate(parser.gen.getRoot());
 
                 Console.WriteLine(parser.errors.count + " errors detected");
 				/*if (parser.errors.count == 0){
