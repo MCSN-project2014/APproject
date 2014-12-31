@@ -7,22 +7,27 @@ namespace APproject
 	{
 		//MemoryFunction funMem;
 		private Dictionary<Obj,ASTNode> function;
-		Obj main;
+		//Obj main;
 		ASTNode startNode;
 
 		public Interpreter( ASTNode node){
 			startNode = node;
-			main = new Obj{ name = "main" };
+			//main = new Obj{ name = "main" };
 			function = new Dictionary<Obj, ASTNode> ();
 		}
 			
 		public void Start (){
-			Console.WriteLine ("INTERPRETER START:");
+			Console.WriteLine ("\nINTERPRETER START:");
 			foreach (ASTNode node in startNode.children) {
 				if (node.label == Labels.FunDecl)
 					function.Add ((Obj)node.value, node);
 				if (node.label == Labels.Main) {
 					//funMem.addNameSpace (main);
+					var mem = new Memory ();
+					mem.addScope ();
+					Interpret (node, mem);
+					mem.removeScope ();
+				} else {
 					var mem = new Memory ();
 					mem.addScope ();
 					Interpret (node, mem);
@@ -48,7 +53,7 @@ namespace APproject
 						if (ret != null)
 							break;
 					}
-					if (!(ret is  Tuple<ASTNode,Memory>))
+					//if (!(ret is  Tuple<ASTNode,Memory>))
 						actualMemory.removeScope ();
 					return ret;
 				case Labels.If:
@@ -65,6 +70,17 @@ namespace APproject
 						if (ret!=null)
 							return ret;
 						condition = InterpretCondition (children [0], actualMemory);
+					}
+					break;
+				case Labels.For:
+					Interpret (children [0], actualMemory);
+					condition = InterpretCondition (children [1], actualMemory);
+					while (condition) {
+						ret = Interpret (children [3], actualMemory);
+						if (ret != null)
+							return ret;
+						Interpret (children [2], actualMemory);
+						condition = InterpretCondition (children [1], actualMemory);
 					}
 					break;
 				case Labels.Decl:
@@ -84,7 +100,12 @@ namespace APproject
 						Console.WriteLine ("FUNW@P console: " + Convert.ToString (InterpretExp (children [0], actualMemory)));
 					break;
 				case Labels.Return:
-					return InterpretExp (children [0], actualMemory);
+					object tmp = InterpretExp (children [0], actualMemory);
+					if (tmp is Tuple<ASTNode,Memory>){
+						var afunTuple = (Tuple<ASTNode,Memory>) tmp;
+						return new Tuple<ASTNode,Memory>(afunTuple.Item1,afunTuple.Item2.CloneMemory());
+					}
+					return tmp;
 				}
 			} 
 			return null;
@@ -113,7 +134,7 @@ namespace APproject
 		{
 			if (node.isTerminal ()) {
 				if (node.value is Obj)
-					return actualMemory.getValue((Obj)node.value);
+					return actualMemory.GetValue ((Obj)node.value);
 				else
 					return node.value;
 			} else {
@@ -148,7 +169,7 @@ namespace APproject
 					if (function.TryGetValue (funName, out funNode)) {
 						funMem = new Memory ();
 					} else {
-						var afun = (Tuple<ASTNode,Memory>)actualMemory.getValue (funName);
+						var afun = (Tuple<ASTNode,Memory>) actualMemory.GetValue (funName); 
 						funNode = afun.Item1;
 						funMem = afun.Item2;
 					}
@@ -159,10 +180,18 @@ namespace APproject
 						i++;
 					}
 					object ret = Interpret (funNode.children [0], funMem);
-					funMem.removeScope ();
+					//if (!(ret is Tuple<ASTNode,Memory>))
+						funMem.removeScope ();
 					return ret;
 				case Labels.Afun:
 					return new Tuple<ASTNode,Memory> (node,actualMemory);
+				case Labels.Read:
+					string read = Console.ReadLine ();
+					try{
+						return Convert.ToInt32 (read);
+					}catch(FormatException){
+						return null;
+					}
 				default:
 					return null;
 				}

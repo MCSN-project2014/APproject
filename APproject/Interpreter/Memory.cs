@@ -38,18 +38,26 @@ namespace APproject
 				mem [lastIndex].Add (var, value);
 		}
 
-		public object getValue(Obj var){
-			int count = lastIndex;
-			for (int i = count; i >= 0; i--) {
-				object value;
+		public bool TryGetValue(Obj var, out object value){
+			value = null;
+			for (int i = lastIndex; i >= 0; i--) {
 				if (mem [i].TryGetValue (var, out value))
-					return value;
+					return true;
 			}
-			return null;
+			return false;
 		}
 
-		public Memory getMemory(){
+		public object GetValue(Obj var){
+			object result;
+			if (TryGetValue(var, out result))
+				return result;
+			else
+				throw new MemoryNotFoundException();
+		}
+
+		public Memory CloneMemory(){
 			Memory funMem = new Memory ();
+			funMem.addScope ();
 			foreach (var scope in mem) {
 				foreach (var dic in scope) {
 					funMem.addUpdateValue (dic.Key, dic.Value);
@@ -59,6 +67,23 @@ namespace APproject
 		}
 
 
+	}
+
+	public class MemoryNotFoundException: Exception
+	{
+		public MemoryNotFoundException()
+		{
+		}
+
+		public MemoryNotFoundException(string message)
+			: base(message)
+		{
+		}
+
+		public MemoryNotFoundException(string message, Exception inner)
+			: base(message, inner)
+		{
+		}
 	}
 
 	/*

@@ -2,9 +2,9 @@
 
 namespace APproject
 {
-	public class EmptyClass
+	public class InterpreterException
 	{
-		public EmptyClass ()
+		public InterpreterException ()
 		{
 		}
 	}

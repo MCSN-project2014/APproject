@@ -30,7 +30,6 @@ namespace APproject
 		public virtual Types type { get{ return Types.undef;}}
 	}
 
-
 	public class Node : ASTNode
 	{
 		/// <summary>

@@ -6,12 +6,13 @@ namespace APproject
 
 	public static class InterpreterTest
 	{
-		public static void Start(test t){
+		public static void Start (test t)
+		{
 			ASTNode program = t ();
 			printAST (program);
 			Interpreter inter = new Interpreter (program);
 			inter.Start ();
-			Console.ReadKey();
+			Console.ReadKey ();
 		}
 
 		/// <summary>
@@ -23,8 +24,9 @@ namespace APproject
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode testDecFun (){
-			Node program = new Node(Labels.Program);
+		public static ASTNode testDecFun ()
+		{
+			Node program = new Node (Labels.Program);
 
 			Obj fun = new Obj{ name = "test" };
 			Node funDec = new Node (Labels.FunDecl, fun);
@@ -38,7 +40,7 @@ namespace APproject
 			Node print = new Node (Labels.Print);
 			block1.addChildren (print);
 			Node minus = new Node (Labels.Minus);
-			minus.addChildren (new Term(varA));
+			minus.addChildren (new Term (varA));
 			minus.addChildren (new Term (varB));
 			print.addChildren (minus);
 
@@ -67,8 +69,9 @@ namespace APproject
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode testAFun (){
-			Node program = new Node(Labels.Program);
+		public static ASTNode testAFun ()
+		{
+			Node program = new Node (Labels.Program);
 			Node main = new Node (Labels.Main);
 			program.addChildren (main);
 
@@ -88,7 +91,7 @@ namespace APproject
 			afun.addChildren (block);
 			Node ret = new Node (Labels.Return);
 			block.addChildren (ret);
-			ret.addChildren (new Term(varA));
+			ret.addChildren (new Term (varA));
 
 			Node print1 = new Node (Labels.Print);
 			main.addChildren (print1);
@@ -97,7 +100,7 @@ namespace APproject
 
 			Node ass = new Node (Labels.Assig);
 			main.addChildren (ass);
-			ass.addChildren (new Term(varA));
+			ass.addChildren (new Term (varA));
 			ass.addChildren (new Term (10));
 
 			Node print2 = new Node (Labels.Print);
@@ -121,8 +124,9 @@ namespace APproject
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode testReturnAFun (){
-			Node program = new Node(Labels.Program);
+		public static ASTNode testReturnAFun ()
+		{
+			Node program = new Node (Labels.Program);
 
 			Obj testfun = new Obj{ name = "test" }; 
 			Node test = new Node (Labels.FunDecl, testfun);
@@ -132,8 +136,8 @@ namespace APproject
 			Node assDec1 = new Node (Labels.AssigDecl);
 			blocktest.addChildren (assDec1);
 			Obj varA = new Obj (){ name = "a" };
-			assDec1.addChildren (new Term(varA));
-			assDec1.addChildren (new Term(7));
+			assDec1.addChildren (new Term (varA));
+			assDec1.addChildren (new Term (7));
 			Node ret = new Node (Labels.Return);
 			blocktest.addChildren (ret);
 			Node afun = new Node (Labels.Afun);
@@ -142,13 +146,13 @@ namespace APproject
 			afun.addChildren (blockAfun);
 			Node retAfun = new Node (Labels.Return);
 			blockAfun.addChildren (retAfun);
-			retAfun.addChildren (new Term(varA));
+			retAfun.addChildren (new Term (varA));
 
 			Node main = new Node (Labels.Main);
 			program.addChildren (main);
 			Node assDec2 = new Node (Labels.AssigDecl);
 			main.addChildren (assDec2);
-			var varF = new Obj(){ name = "f" };
+			var varF = new Obj (){ name = "f" };
 			assDec2.addChildren (new Term (varF));
 			Node call1 = new Node (Labels.FunCall, testfun);
 			assDec2.addChildren (call1);
@@ -172,8 +176,9 @@ namespace APproject
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode testFunRet (){
-			Node program = new Node(Labels.Program);
+		public static ASTNode testFunRet ()
+		{
+			Node program = new Node (Labels.Program);
 
 			Obj fun = new Obj{ name = "test" };
 			Node funDec = new Node (Labels.FunDecl, fun);
@@ -187,7 +192,7 @@ namespace APproject
 			Node ret = new Node (Labels.Return);
 			block1.addChildren (ret);
 			Node minus = new Node (Labels.Minus);
-			minus.addChildren (new Term(varA));
+			minus.addChildren (new Term (varA));
 			minus.addChildren (new Term (varB));
 			ret.addChildren (minus);
 
@@ -219,8 +224,9 @@ namespace APproject
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode testRecursive (){
-			Node program = new Node(Labels.Program);
+		public static ASTNode testRecursive ()
+		{
+			Node program = new Node (Labels.Program);
 
 			Obj fun = new Obj{ name = "test" };
 			Node funDec = new Node (Labels.FunDecl, fun);
@@ -234,14 +240,14 @@ namespace APproject
 			Node condition = new Node (Labels.Gt);
 			If.addChildren (condition);
 			condition.addChildren (new Term (varA));
-			condition.addChildren(new Term(10));
+			condition.addChildren (new Term (10));
 			Node blockTrue = new Node (Labels.Block);
 			If.addChildren (blockTrue);
 			Node blockFalse = new Node (Labels.Block);
 			If.addChildren (blockFalse);
 			Node ret1 = new Node (Labels.Return);
 			blockTrue.addChildren (ret1);
-			ret1.addChildren(new Term(varA));
+			ret1.addChildren (new Term (varA));
 
 			Node ret2 = new Node (Labels.Return);
 			blockFalse.addChildren (ret2);
@@ -279,8 +285,9 @@ namespace APproject
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode factorialRecursive (){
-			Node program = new Node(Labels.Program);
+		public static ASTNode factorialRecursive ()
+		{
+			Node program = new Node (Labels.Program);
 
 			Obj fun = new Obj{ name = "test" };
 			Node funDec = new Node (Labels.FunDecl, fun);
@@ -294,14 +301,14 @@ namespace APproject
 			Node condition = new Node (Labels.Eq);
 			If.addChildren (condition);
 			condition.addChildren (new Term (varA));
-			condition.addChildren(new Term(1));
+			condition.addChildren (new Term (1));
 			Node blockTrue = new Node (Labels.Block);
 			If.addChildren (blockTrue);
 			Node blockFalse = new Node (Labels.Block);
 			If.addChildren (blockFalse);
 			Node ret1 = new Node (Labels.Return);
 			blockTrue.addChildren (ret1);
-			ret1.addChildren(new Term(varA));
+			ret1.addChildren (new Term (varA));
 
 			Node ret2 = new Node (Labels.Return);
 			blockFalse.addChildren (ret2);
@@ -336,21 +343,22 @@ namespace APproject
 		/// 	println (a);
 		/// }
 		/// </summary>
-		public static ASTNode test1 (){
+		public static ASTNode test1 ()
+		{
 			Node main = new Node (Labels.Main);
-			Node If = new Node ( Labels.If);
+			Node If = new Node (Labels.If);
 			main.addChildren (If);
 			Node condition = new Node (Labels.Eq);
 			If.addChildren (condition);
-			Term term1 = new Term(true);
-			Term term2 = new Term(true);
+			Term term1 = new Term (true);
+			Term term2 = new Term (true);
 			condition.addChildren (term1);
 			condition.addChildren (term2);
 			Node block = new Node (Labels.Block);
 			If.addChildren (block);
 			Node decAss = new Node (Labels.AssigDecl);
 			block.addChildren (decAss);
-			Obj varA = new Obj();
+			Obj varA = new Obj ();
 			varA.name = "a";
 			Term num1 = new Term (3);
 			Term num2 = new Term (7);
@@ -373,19 +381,20 @@ namespace APproject
 		/// var a int = 3;
 		/// println (a);
 		/// </summary>
-		public static ASTNode test2 (){
+		public static ASTNode test2 ()
+		{
 
 			Node blockM = new Node (Labels.Main);
 
-			Obj varA = new Obj();
+			Obj varA = new Obj ();
 			varA.name = "a";
 
-			Node If = new Node ( Labels.If);
+			Node If = new Node (Labels.If);
 			blockM.addChildren (If);
 			Node condition = new Node (Labels.Gte);
 			If.addChildren (condition);
-			Term term1 = new Term(3);
-			Term term2 = new Term(1);
+			Term term1 = new Term (3);
+			Term term2 = new Term (1);
 			condition.addChildren (term1);
 			condition.addChildren (term2);
 			Node block = new Node (Labels.Block);
@@ -420,12 +429,13 @@ namespace APproject
 		/// }
 		/// println (a);
 		/// </summary>
-		public static ASTNode test3 (){
+		public static ASTNode test3 ()
+		{
 			Node blockM = new Node (Labels.Main);
 
 			Node decAss1 = new Node (Labels.AssigDecl);
 			blockM.addChildren (decAss1);
-			Obj varA = new Obj();
+			Obj varA = new Obj ();
 			varA.name = "a";
 			Term num1 = new Term (3);
 			decAss1.addChildren (new Term (varA));
@@ -435,8 +445,8 @@ namespace APproject
 			blockM.addChildren (If);
 			Node condition = new Node (Labels.Gte);
 			If.addChildren (condition);
-			Term term1 = new Term(3);
-			Term term2 = new Term(1);
+			Term term1 = new Term (3);
+			Term term2 = new Term (1);
 			condition.addChildren (term1);
 			condition.addChildren (term2);
 			Node block = new Node (Labels.Block);
@@ -465,15 +475,16 @@ namespace APproject
 		/// 	i = i +1;
 		/// }
 		/// </summary>
-		public static ASTNode testWhile (){
+		public static ASTNode testWhile ()
+		{
 			Node blockM = new Node (Labels.Main);
 
 			Node decAssI = new Node (Labels.AssigDecl);
 			blockM.addChildren (decAssI);
-			Obj varI = new Obj();
+			Obj varI = new Obj ();
 			varI.name = "i";
-			Term initI = new Term(0);
-			decAssI.addChildren (new Term(varI));
+			Term initI = new Term (0);
+			decAssI.addChildren (new Term (varI));
 			decAssI.addChildren (initI);
 
 			Node While = new Node (Labels.While);
@@ -481,12 +492,12 @@ namespace APproject
 
 			Node condition = new Node (Labels.Lte);
 			While.addChildren (condition);
-			Term term1 = new Term(10);
-			condition.addChildren (new Term(varI));
+			Term term1 = new Term (10);
+			condition.addChildren (new Term (varI));
 			condition.addChildren (term1);
 
-			Node block = new Node(Labels.Block);
-			While.addChildren(block);
+			Node block = new Node (Labels.Block);
+			While.addChildren (block);
 
 			Node print = new Node (Labels.Print);
 			block.addChildren (print);
@@ -495,23 +506,38 @@ namespace APproject
 			Node ass = new Node (Labels.Assig);
 			block.addChildren (ass);
 			Node plus = new Node (Labels.Plus);
-			ass.addChildren (new Term(varI));
+			ass.addChildren (new Term (varI));
 			plus.addChildren (new Term (varI));
 			plus.addChildren (new Term (1));
 			ass.addChildren (plus);
 
 			return blockM;
 		}
-		public static void printAST(ASTNode node){
-			if (node != null){
-				if (node.isTerminal())
-					Console.WriteLine (node);
-				else{
-					Console.WriteLine (node);
-					foreach (ASTNode n in node.children) 
-						printAST (n);
-				}
+
+		public static void printAST (ASTNode node)
+		{
+			Console.WriteLine ("\nAST PRINT:");
+			PrintAST (node, "", true);
+		}
+
+		public static void PrintAST (ASTNode node, string indent, bool last)
+		{
+			Console.Write(indent);
+			if (last)
+			{
+				Console.Write("\\-");
+				indent += "  ";
 			}
+			else
+			{
+				Console.Write("|-");
+				indent += "| ";
+			}
+			Console.WriteLine(node);
+
+			if (!node.isTerminal())
+				for (int i = 0; i < node.children.Count; i++)
+					PrintAST(node.children[i], indent, i == node.children.Count - 1);
 		}
 	}
 }
