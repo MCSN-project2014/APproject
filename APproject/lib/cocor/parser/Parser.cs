@@ -479,34 +479,46 @@ public SymbolTable   tab;
 	}
 
 	void CompleteExpr(out Types type, out ASTNode node) {
-		Types type1; 
-		Expr(out type,out node);
+		Types type1; ASTNode op, firstTerm, secondTerm; 
+		Expr(out type,out firstTerm);
+		node = firstTerm; 
 		if (la.kind == 34 || la.kind == 35) {
-			BoolOp();
-			Expr(out type1,out node);
+			BoolOp(out op);
+			node = op; 
+			Expr(out type1,out secondTerm);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
+			((Node)op).addChildren(firstTerm);
+			((Node)op).addChildren(secondTerm);
+			
+			
 		}
 	}
 
 	void Expr(out Types type,out ASTNode node) {
-		Types type1; 
-		SimpExpr(out type, out node);
+		Types type1; ASTNode op, firstTerm, secondTerm; 
+		SimpExpr(out type, out firstTerm);
+		node = firstTerm; 
 		if (StartOf(4)) {
-			RelOp();
-			SimpExpr(out type1, out node);
+			RelOp(out op);
+			node = op; 
+			SimpExpr(out type1, out secondTerm);
 			if (type != type1)
 			SemErr("incompatible types");
-			type = Types.boolean; 
+			type = Types.boolean;
+			((Node)op).addChildren(firstTerm);
+			((Node)op).addChildren(secondTerm); 
 		}
 	}
 
-	void BoolOp() {
+	void BoolOp(out ASTNode op) {
+		op = new Node(Labels.And); 
 		if (la.kind == 34) {
 			Get();
 		} else if (la.kind == 35) {
 			Get();
+			op = new Node(Labels.Or);  
 		} else SynErr(49);
 	}
 
@@ -525,7 +537,8 @@ public SymbolTable   tab;
 		}
 	}
 
-	void RelOp() {
+	void RelOp(out ASTNode op) {
+		op = new Node(Labels.Lt); 
 		switch (la.kind) {
 		case 28: {
 			Get();
@@ -533,22 +546,27 @@ public SymbolTable   tab;
 		}
 		case 29: {
 			Get();
+			op = new Node(Labels.Gt); 
 			break;
 		}
 		case 30: {
 			Get();
+			op = new Node(Labels.Eq); 
 			break;
 		}
 		case 31: {
 			Get();
+			op = new Node(Labels.NotEq); 
 			break;
 		}
 		case 32: {
 			Get();
+			op = new Node(Labels.Lte); 
 			break;
 		}
 		case 33: {
 			Get();
+			op = new Node(Labels.Gte); 
 			break;
 		}
 		default: SynErr(50); break;

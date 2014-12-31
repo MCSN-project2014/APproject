@@ -220,22 +220,28 @@ VarDecl<out Node node>															(. string name; ArrayList names = new Array
 		  
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; .)
-= Expr<out type,out node>											
-  [ BoolOp							
-	Expr<out type1,out node>													 (. if (type != type1)
+CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, firstTerm, secondTerm; .)
+= Expr<out type,out firstTerm>													 (. node = firstTerm; .)
+  [ BoolOp<out op>																 (. node = op; .)
+	Expr<out type1,out secondTerm>													 (. if (type != type1)
 																						SemErr("incompatible types");
-																					type = Types.boolean; .)
+																					type = Types.boolean; 
+																					((Node)op).addChildren(firstTerm);
+																					((Node)op).addChildren(secondTerm);
+																					
+																					.)
   ].
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Expr<out Types type,out ASTNode node>											 (. Types type1; .)
-= SimpExpr<out type, out node> 
-  [ RelOp
-	SimpExpr<out type1, out node>												 (. if (type != type1)
+Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, firstTerm, secondTerm; .)
+= SimpExpr<out type, out firstTerm>												 (. node = firstTerm; .)
+  [ RelOp<out op>																 (. node = op; .)
+	SimpExpr<out type1, out secondTerm>											 (. if (type != type1)
 																	         		    SemErr("incompatible types");
-																					type = Types.boolean; .) 
+																					type = Types.boolean;
+																					((Node)op).addChildren(firstTerm);
+																					((Node)op).addChildren(secondTerm); .) 
   ].
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
@@ -329,24 +335,24 @@ AddOp<out ASTNode op>
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-RelOp
- =																				
+RelOp<out ASTNode op>
+ =																(. op = new Node(Labels.Lt); .)				
 	(																			
-	   '<'																			
-	 | '>' 
-	 | "==" 
-	 | "!=" 
-	 | "<=" 
-	 | ">="
+	   '<'																		
+	 | '>'														(. op = new Node(Labels.Gt); .)
+	 | "=="														(. op = new Node(Labels.Eq); .)
+	 | "!="														(. op = new Node(Labels.NotEq); .)
+	 | "<="														(. op = new Node(Labels.Lte); .)	
+	 | ">="														(. op = new Node(Labels.Gte); .)
    ). 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-BoolOp
- =																				
+BoolOp<out ASTNode op>
+ =																(. op = new Node(Labels.And); .)														
 	(																			
 	    "&&" 
-	  | "||"
+	  | "||"													(. op = new Node(Labels.Or);  .)
 	).
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
