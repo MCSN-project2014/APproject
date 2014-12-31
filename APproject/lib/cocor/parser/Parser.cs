@@ -145,6 +145,7 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(9);
+			fundecl.addChildren(0,block);
 			gen.addChildren(fundecl);
 			tab.CloseScope(); 
 		} else if (la.kind == 10) {
@@ -247,7 +248,7 @@ public SymbolTable   tab;
 			if (la.kind == 14) {
 				Get();
 				obj = tab.NewObj((string)names[0], Kinds.var, type);
-				node =  new Node (Labels.AssigDecl);
+				node =  new Node (Labels.Decl);
 				term =  new Term (obj);
 				node.addChildren(term);                             
 			} else if (la.kind == 11) {
@@ -259,7 +260,12 @@ public SymbolTable   tab;
 					Expect(14);
 					if(type != Types.integer)
 					SemErr("incompatible types"); 
-					tab.NewObj((string)names[0], Kinds.var, type); 
+					obj = tab.NewObj((string)names[0], Kinds.var, type);
+					node =  new Node (Labels.AssigDecl);
+					term =  new Term (obj);
+					Node readln = new Node(Labels.Read);
+					node.addChildren(term);
+					node.addChildren(readln); 
 				} else if (StartOf(2)) {
 					CompleteExpr(out type1);
 					Expect(14);

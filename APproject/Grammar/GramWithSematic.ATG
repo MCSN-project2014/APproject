@@ -71,7 +71,8 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal; Ob
 																					.)
 		        '{' {VarDecl<out node1>											 (. block.addChildren(node1); .)	 
 					| Stat} '}'
-																				 (. gen.addChildren(fundecl);
+																				 (. fundecl.addChildren(0,block);
+																					gen.addChildren(fundecl);
 																				    tab.CloseScope(); .)
 			  | "main"															 (. obj = tab.NewObj("Main", Kinds.proc, Types.undef);
 																				    	
@@ -191,13 +192,18 @@ VarDecl<out Node node>															(. string name; ArrayList names = new Array
 			  
 			  (
 				';'																(. obj = tab.NewObj((string)names[0], Kinds.var, type);
-																				   node =  new Node (Labels.AssigDecl);
+																				   node =  new Node (Labels.Decl);
 																				   term =  new Term (obj);
 																				   node.addChildren(term);                             .)
 				| '=' 
-					(	"readln" '{''}' ';'										(. if(type != Types.integer)
+					(	"readln" '{''}'';'										(. if(type != Types.integer)
 																					  SemErr("incompatible types"); 
-																				   tab.NewObj((string)names[0], Kinds.var, type); .)	
+																				   obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   node =  new Node (Labels.AssigDecl);
+																				   term =  new Term (obj);
+																				   Node readln = new Node(Labels.Read);
+																				   node.addChildren(term);
+																				   node.addChildren(readln); .)	
 
 					    |CompleteExpr<out type1>';'								(. if (type != type1) 
 																					   SemErr("incompatible types");
@@ -210,7 +216,7 @@ VarDecl<out Node node>															(. string name; ArrayList names = new Array
 		  
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-CompleteExpr<out Types type>													 (. Types type1; .)
+CompleteExpr<out Types type>									 (. Types type1; .)
 = Expr<out type> 
   [ BoolOp
 	Expr<out type1>																 (. if (type != type1)
