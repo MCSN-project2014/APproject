@@ -1,10 +1,10 @@
 
-fun add() fun(int) bool
+fun add() fun(int int) fun () fun () bool
 {
-	var x int;
-	var y bool;
-	return fun(x int) int{
-	
+	var sum int;
+	return fun(x int, y int) fun () fun (int) bool{
+		x = sum + 1;	
+		
 	}
 }
 
