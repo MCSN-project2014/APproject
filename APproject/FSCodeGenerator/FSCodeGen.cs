@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APproject.FSCodeGenerator
+namespace APproject
 {
     ///<summary>
     ///This class converts an AST of funW@P into the corresponding F#
@@ -39,6 +39,11 @@ namespace APproject.FSCodeGenerator
                     Console.WriteLine("Error while creating the new file " + outputFileName + ".fs");
                 }
             }
+        }
+
+        public FSCodeGen()
+        {
+            // TODO: Complete member initialization
         }
 
         ///<summary>
