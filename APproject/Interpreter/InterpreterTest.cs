@@ -480,7 +480,9 @@ namespace APproject
 		/// </summary>
 		public static ASTNode testWhile ()
 		{
+			Node prog = new Node (Labels.Program);
 			Node blockM = new Node (Labels.Main);
+			prog.addChildren (blockM);
 
 			Node decAssI = new Node (Labels.AssigDecl);
 			blockM.addChildren (decAssI);

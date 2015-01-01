@@ -34,12 +34,12 @@ namespace APproject
 					mem.addScope ();
 					Interpret (node, mem);
 					mem.removeScope ();
-				} else {
+				} /*else {
 					var mem = new Memory ();
 					mem.addScope ();
 					Interpret (node, mem);
 					mem.removeScope ();
-				}
+				}*/
 			}
 			}catch(InterpreterException e){
 				Console.WriteLine (e.Message);
