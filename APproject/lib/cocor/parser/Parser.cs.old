@@ -160,13 +160,14 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (la.kind == 20) {
 					VarDecl(out node1);
-					((Node)fundecl).addChildren(node1); 
+					((Node)block).addChildren(node1);    
 				} else {
 					Stat(out node1);
 					((Node)block).addChildren(node1);    
 				}
 			}
 			Expect(9);
+			((Node)fundecl).addChildren(0,block);
 			gen.addChildren((Node)fundecl);
 			tab.CloseScope(); 
 		} else SynErr(39);
@@ -312,15 +313,27 @@ public SymbolTable   tab;
 					obj1 = tab.Find(name1);	
 					node1 = new Node(Labels.FunCall, obj1); 
 					Expect(5);
-					while (StartOf(2)) {
-						CompleteExpr(out type, out node1);
-						actualTypes.Enqueue(type); 
-						((Node)node1).addChildren(node1);	
+					while (StartOf(3)) {
+						if (StartOf(2)) {
+							CompleteExpr(out type, out node1);
+							actualTypes.Enqueue(type); 
+							((Node)node1).addChildren(node1);	
+						} else {
+							AProcDecl(out robj, out node1);
+							actyalTypes.Enqueue(Types.fun);
+							((Node)node).addChildren(node1); 
+						}
 						while (la.kind == 6) {
 							Get();
-							CompleteExpr(out type, out node1);
-							actualTypes.Enqueue(type);
-							((Node)node1).addChildren(node1); 
+							if (StartOf(2)) {
+								CompleteExpr(out type, out node1);
+								actualTypes.Enqueue(type);
+								((Node)node1).addChildren(node1); 
+							} else if (la.kind == 4) {
+								AProcDecl(out robj, out node1);
+								actualTypes.Enqueue(Types.fun);
+								((Node)node).addChildren(node1); 
+							} else SynErr(45);
 						}
 					}
 					Expect(7);
@@ -354,19 +367,31 @@ public SymbolTable   tab;
 					((Node)node).addChildren(new Term(obj)); 
 					((Node)node).addChildren(new Node(Labels.Read));
 					
-				} else SynErr(45);
+				} else SynErr(46);
 			} else if (la.kind == 5) {
 				Get();
 				node = new Node(Labels.FunCall, obj); 
-				while (StartOf(2)) {
-					CompleteExpr(out type, out node1);
-					actualTypes.Enqueue(type);
-					((Node)node).addChildren(node1); 
+				while (StartOf(3)) {
+					if (StartOf(2)) {
+						CompleteExpr(out type, out node1);
+						actualTypes.Enqueue(type);
+						((Node)node).addChildren(node1); 
+					} else {
+						AProcDecl(out robj, out node1);
+						actualTypes.Enqueue(Types.fun);
+						((Node)node).addChildren(node1); 
+					}
 					while (la.kind == 6) {
 						Get();
-						CompleteExpr(out type, out node1);
-						actualTypes.Enqueue(type); 
-						((Node)node).addChildren(node1); 
+						if (StartOf(2)) {
+							CompleteExpr(out type, out node1);
+							actualTypes.Enqueue(type); 
+							((Node)node).addChildren(node1); 
+						} else if (la.kind == 4) {
+							AProcDecl(out robj, out node1);
+							actualTypes.Enqueue(Types.fun);
+							((Node)node).addChildren(node1); 
+						} else SynErr(47);
 					}
 				}
 				Expect(7);
@@ -375,7 +400,7 @@ public SymbolTable   tab;
 				SemErr("object is not a procedure");
 				else
 				tab.checkActualFormalTypes(obj,actualTypes); 
-			} else SynErr(46);
+			} else SynErr(48);
 			break;
 		}
 		case 16: {
@@ -389,7 +414,7 @@ public SymbolTable   tab;
 			tab.OpenScope(); 
 			Expect(8);
 			while (StartOf(1)) {
-				if (StartOf(3)) {
+				if (StartOf(4)) {
 					Stat(out node1);
 					((Node)thenBlock).addChildren(node1);
 				} else {
@@ -405,7 +430,7 @@ public SymbolTable   tab;
 				Node elseBlock = new Node(Labels.Block); 
 				Expect(8);
 				while (StartOf(1)) {
-					if (StartOf(3)) {
+					if (StartOf(4)) {
 						Stat(out node1);
 						((Node)elseBlock).addChildren(node1);
 					} else {
@@ -429,7 +454,7 @@ public SymbolTable   tab;
 			tab.OpenScope(); 
 			Expect(8);
 			while (StartOf(1)) {
-				if (StartOf(3)) {
+				if (StartOf(4)) {
 					Stat(out node1);
 					((Node)whileBlock).addChildren(node1);
 				} else {
@@ -476,7 +501,7 @@ public SymbolTable   tab;
 			SemErr("incompatible types"); 
 			Expect(8);
 			while (StartOf(1)) {
-				if (StartOf(3)) {
+				if (StartOf(4)) {
 					Stat(out node1);
 					((Node)forBlock).addChildren(node1);
 				} else {
@@ -525,10 +550,10 @@ public SymbolTable   tab;
 				obj.returnIsSet=true;
 				tab.complexReturnTypeControl(obj,robj);
 				} 
-			} else SynErr(47);
+			} else SynErr(49);
 			break;
 		}
-		default: SynErr(48); break;
+		default: SynErr(50); break;
 		}
 	}
 
@@ -596,7 +621,7 @@ public SymbolTable   tab;
 		Types type1; ASTNode op, firstSimpExpr, secondSimpExpr; 
 		SimpExpr(out type, out firstSimpExpr);
 		node = firstSimpExpr; 
-		if (StartOf(4)) {
+		if (StartOf(5)) {
 			RelOp(out op);
 			node = op; 
 			SimpExpr(out type1, out secondSimpExpr);
@@ -615,7 +640,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 35) {
 			Get();
 			op = new Node(Labels.Or);  
-		} else SynErr(49);
+		} else SynErr(51);
 	}
 
 	void SimpExpr(out Types type, out ASTNode node) {
@@ -665,7 +690,7 @@ public SymbolTable   tab;
 			op = new Node(Labels.Gte); 
 			break;
 		}
-		default: SynErr(50); break;
+		default: SynErr(52); break;
 		}
 	}
 
@@ -691,11 +716,11 @@ public SymbolTable   tab;
 		} else if (la.kind == 22) {
 			Get();
 			op = new Node(Labels.Minus); 
-		} else SynErr(51);
+		} else SynErr(53);
 	}
 
 	void Factor(out Types type, out ASTNode node) {
-		int n; Obj obj; string name; Types type1; bool control = false;
+		int n; Obj obj,robj; string name; Types type1; bool control = false;
 		Queue<Types> actualTypes = new Queue<Types>(); ASTNode node1; 
 		type = Types.undef;
 		node = null;
@@ -708,15 +733,27 @@ public SymbolTable   tab;
 				control = true; 
 				node = new Node(Labels.FunCall); 
 				Get();
-				while (StartOf(2)) {
-					CompleteExpr(out type1, out node1);
-					actualTypes.Enqueue(type1);
-					((Node)node).addChildren(node1); 
+				while (StartOf(3)) {
+					if (StartOf(2)) {
+						CompleteExpr(out type1, out node1);
+						actualTypes.Enqueue(type1);
+						((Node)node).addChildren(node1); 
+					} else {
+						AProcDecl(out robj, out node1);
+						actualTypes.Enqueue(Types.fun);
+						((Node)node).addChildren(node1); 
+					}
 					while (la.kind == 6) {
 						Get();
-						CompleteExpr(out type1, out node1);
-						actualTypes.Enqueue(type1); 
-						((Node)node).addChildren(node1); 
+						if (StartOf(2)) {
+							CompleteExpr(out type1, out node1);
+							actualTypes.Enqueue(type1); 
+							((Node)node).addChildren(node1); 
+						} else if (la.kind == 4) {
+							AProcDecl(out robj, out node1);
+							actyalTypes.Enqueue(Types.fun);
+							((Node)node).addChildren(node1); 
+						} else SynErr(54);
 					}
 				}
 				Expect(7);
@@ -748,7 +785,7 @@ public SymbolTable   tab;
 			Get();
 			node = new Term(false);
 			type = Types.boolean; 
-		} else SynErr(52);
+		} else SynErr(55);
 	}
 
 	void MulOp(out ASTNode op) {
@@ -758,7 +795,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 37) {
 			Get();
 			op = new Node(Labels.Div); 
-		} else SynErr(53);
+		} else SynErr(56);
 	}
 
 
@@ -776,6 +813,7 @@ public SymbolTable   tab;
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,T,T,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,T,T, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,x,x, x,x,x,x}
 
@@ -840,11 +878,14 @@ public class Errors {
 			case 46: s = "invalid Stat"; break;
 			case 47: s = "invalid Stat"; break;
 			case 48: s = "invalid Stat"; break;
-			case 49: s = "invalid BoolOp"; break;
-			case 50: s = "invalid RelOp"; break;
-			case 51: s = "invalid AddOp"; break;
-			case 52: s = "invalid Factor"; break;
-			case 53: s = "invalid MulOp"; break;
+			case 49: s = "invalid Stat"; break;
+			case 50: s = "invalid Stat"; break;
+			case 51: s = "invalid BoolOp"; break;
+			case 52: s = "invalid RelOp"; break;
+			case 53: s = "invalid AddOp"; break;
+			case 54: s = "invalid Factor"; break;
+			case 55: s = "invalid Factor"; break;
+			case 56: s = "invalid MulOp"; break;
 
 			default: s = "error " + n; break;
 		}
