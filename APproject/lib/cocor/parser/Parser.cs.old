@@ -103,8 +103,8 @@ public SymbolTable   tab;
 	}
 
 	void ProcDecl() {
-		Types type; string name; Obj proc; Obj formal; Obj obj; 
-		RType rtype; Node fundecl,block,vardeclnode; Term parameter;     
+		Types type; string name; Obj proc; Obj formal;
+		RType rtype; Node fundecl,block,vardeclnode,statnode; Term parameter;     
 		Expect(4);
 		if (la.kind == 1) {
 			Ident(out name);
@@ -131,17 +131,17 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(7);
-			RType(out rtype);
 			block = new Node(Labels.Block);  
-			tab.setRType(proc,rtype);
-			
+			RType(out rtype);
+			tab.setRType(proc,rtype);        
 			Expect(8);
 			while (StartOf(1)) {
 				if (la.kind == 21) {
 					VarDecl(out vardeclnode);
 					block.addChildren(vardeclnode); 
 				} else {
-					Stat();
+					Stat(out statnode);
+					block.addChildren(statnode);    
 				}
 			}
 			Expect(9);
@@ -152,20 +152,21 @@ public SymbolTable   tab;
 			Get();
 			tab.NewObj("Main", Kinds.proc, Types.undef);
 			fundecl = new Node(Labels.Main);
-			
 			tab.OpenScope();	
+			block = new Node(Labels.Block);  
 			Expect(5);
 			Expect(7);
 			Expect(8);
 			while (StartOf(1)) {
 				if (la.kind == 21) {
 					VarDecl(out vardeclnode);
+					fundecl.addChildren(vardeclnode); 
 				} else {
-					Stat();
+					Stat(out statnode);
+					block.addChildren(statnode);    
 				}
 			}
 			Expect(9);
-			fundecl.addChildren(vardeclnode);
 			gen.addChildren(fundecl);
 			tab.CloseScope(); 
 		} else SynErr(39);
@@ -224,7 +225,7 @@ public SymbolTable   tab;
 	void VarDecl(out Node node) {
 		string name; ArrayList names = new ArrayList(); 
 		Types type; Types type1; 
-		Term term; Obj obj; ASTNode exprnode;
+		Term term; Obj obj,afobj; ASTNode afunnode,exprnode;
 		Expect(21);
 		Ident(out name);
 		node =  new Node (Labels.AssigDecl);
@@ -274,23 +275,31 @@ public SymbolTable   tab;
 					if (type != type1) 
 					SemErr("incompatible types");
 					obj = tab.NewObj((string)names[0], Kinds.var, type); 
-					node =  new Node (Labels.Decl);
+					node =  new Node (Labels.AssigDecl);
 					term =  new Term (obj);
 					node.addChildren(term);
 					node.addChildren(exprnode); 
 				} else if (la.kind == 4) {
-					AProcDecl(out obj);
+					AProcDecl(out afobj,out afunnode);
+					if (type != Types.fun) 
+					SemErr("incompatible types");
+					obj = tab.NewObj((string)names[0], Kinds.var, type); 
+					node =  new Node (Labels.AssigDecl);
+					term =  new Term (obj);
+					node.addChildren(term);
+					node.addChildren(afunnode);   
 				} else SynErr(42);
 			} else SynErr(43);
 		} else SynErr(44);
 	}
 
-	void Stat() {
+	void Stat(out Node node) {
 		Types type; string name; string name1; Obj obj, obj1, robj;
 		Queue<Types> actualTypes = new Queue<Types>();
-		Node node; ASTNode exprnode; 
+		ASTNode exprnode,node1; 
 		switch (la.kind) {
 		case 1: {
+			node = new Node(Labels.Assig); 
 			Ident(out name);
 			obj = tab.Find(name); 
 			if (la.kind == 11) {
@@ -302,11 +311,14 @@ public SymbolTable   tab;
 					Expect(8);
 					Expect(13);
 					Ident(out name1);
-					obj1 = tab.Find(name1); 
+					node =  new Node(Labels.Async);
+					node1 = new Node(Labels.FunCall);
+					obj1 = tab.Find(name1);			
 					Expect(5);
 					while (StartOf(2)) {
 						CompleteExpr(out type, out exprnode);
 						actualTypes.Enqueue(type); 
+						((Node)node1).addChildren(exprnode);	
 						while (la.kind == 6) {
 							Get();
 							CompleteExpr(out type, out exprnode);
@@ -327,16 +339,25 @@ public SymbolTable   tab;
 					CompleteExpr(out type, out exprnode);
 					Expect(14);
 					if (type != obj.type)
-					SemErr("incompatible types"); 
+					SemErr("incompatible types");
+					else{
+					((Node)node).addChildren(new Term(obj));
+					((Node)node).addChildren(exprnode);
+					}	 
 				} else if (la.kind == 4) {
-					AProcDecl(out robj);
+					AProcDecl(out robj, out node1);
+					((Node)node).addChildren(new Term(obj));
+					((Node)node).addChildren(node1); 
 				} else if (la.kind == 15) {
 					Get();
 					Expect(8);
 					Expect(9);
 					Expect(14);
 					if(obj.type != Types.integer) 
-					SemErr("incompatible types"); 
+					SemErr("incompatible types");
+					((Node)node).addChildren(new Term(obj)); 
+					((Node)node).addChildren(new Node(Labels.Read));
+					
 				} else SynErr(45);
 			} else if (la.kind == 5) {
 				Get();
@@ -363,10 +384,10 @@ public SymbolTable   tab;
 			CompleteExpr(out type, out exprnode);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
-			Stat();
+			Stat(out node);
 			if (la.kind == 17) {
 				Get();
-				Stat();
+				Stat(out node);
 			}
 			break;
 		}
@@ -375,7 +396,7 @@ public SymbolTable   tab;
 			CompleteExpr(out type, out exprnode);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
-			Stat();
+			Stat(out node);
 			break;
 		}
 		case 19: {
@@ -397,7 +418,7 @@ public SymbolTable   tab;
 			obj=tab.Find(name1); 
 			if (type != obj.type)
 			SemErr("incompatible types");
-			Stat();
+			Stat(out node);
 			break;
 		}
 		case 20: {
@@ -420,7 +441,7 @@ public SymbolTable   tab;
 				if( obj.type != type )
 				SemErr("incompatible return type"); 
 			} else if (la.kind == 4) {
-				AProcDecl(out robj);
+				AProcDecl(out robj,out node1);
 				obj = tab.getOwner(); 
 				obj.returnIsSet=true;
 				tab.complexReturnTypeControl(obj,robj); 
@@ -432,7 +453,7 @@ public SymbolTable   tab;
 			Get();
 			while (StartOf(1)) {
 				if (StartOf(3)) {
-					Stat();
+					Stat(out node);
 				} else {
 					VarDecl(out node);
 				}
@@ -445,9 +466,10 @@ public SymbolTable   tab;
 		}
 	}
 
-	void AProcDecl(out Obj robj) {
+	void AProcDecl(out Obj robj, out ASTNode node) {
 		string name; Types type; RType rtype; Obj formal;
-		Node node;
+		Node block, vardeclnode, statnode; Term parameter;
+		node = new Node(Labels.Afun);
 		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
 		tab.OpenScope(robj); 
 		Expect(4);
@@ -457,26 +479,34 @@ public SymbolTable   tab;
 			Type(out type);
 			formal = tab.NewObj(name, Kinds.var, type); 
 			tab.addFormal(robj,formal); 
+			parameter = new Term(formal);
+			((Node)node).addChildren(parameter);
 			while (la.kind == 6) {
 				Get();
 				Ident(out name);
 				Type(out type);
 				formal = tab.NewObj(name, Kinds.var, type);
 				tab.addFormal(robj,formal); 
+				parameter = new Term(formal);
+				((Node)node).addChildren(parameter); 
 			}
 		}
 		Expect(7);
 		RType(out rtype);
+		block = new Node(Labels.Block);
 		tab.setRType(robj,rtype); 
 		Expect(8);
 		while (StartOf(1)) {
 			if (la.kind == 21) {
-				VarDecl(out node);
+				VarDecl(out vardeclnode);
+				block.addChildren(vardeclnode); 
 			} else {
-				Stat();
+				Stat(out statnode);
+				block.addChildren(statnode);    
 			}
 		}
 		Expect(9);
+		((Node)node).addChildren(0,block);
 		tab.CloseScope(); 
 	}
 
