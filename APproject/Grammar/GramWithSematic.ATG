@@ -128,14 +128,14 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																				   node1 = new Node(Labels.FunCall, obj1); .)
 								 '(' { (
 									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
-																				   ((Node)node1).addChildren(node1);	.) 
+																				   ((Node)node).addChildren(node1);	.) 
 										  | AProcDecl<out robj, out node1>		(. actualTypes.Enqueue(Types.fun);
 																				   ((Node)node).addChildren(node1); .)
 										)
 
 									 {','(
 										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
-																				   ((Node)node1).addChildren(node1); .) 
+																				   ((Node)node).addChildren(node1); .) 
 										   | AProcDecl<out robj, out node1>	    (. actualTypes.Enqueue(Types.fun);
 																				   ((Node)node).addChildren(node1); .)
 										  )
@@ -153,7 +153,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(node1); .)
 
-					| AProcDecl<out robj, out node1>							(. ((Node)node).addChildren(new Term(obj));
+					| AProcDecl<out robj, out node1>';'							(. ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(node1); .)
 
 					| "readln" '{''}' ';'									    (. if(obj.type != Types.integer) 
@@ -262,7 +262,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																						if( obj.type != type )
 																							SemErr("incompatible return type");
 																					} .)                                                 
-			   | AProcDecl<out robj,out node1>                                   (. ((Node)node).addChildren(node1);
+			   | AProcDecl<out robj,out node1> ';'                                  (. ((Node)node).addChildren(node1);
 																					tab.getOwner(out obj,out controlofblock);
 																					if(obj != null){ 
 																						if(controlofblock)
@@ -311,7 +311,7 @@ VarDecl<out ASTNode node>														(. string name; ArrayList names = new Arr
 																				   ((Node)node).addChildren(new Term (obj));
 																				   ((Node)node).addChildren(node1); .)	
 																				   	 
-						| AProcDecl<out afobj,out node1>						(. if (type != Types.fun) 
+						| AProcDecl<out afobj,out node1> ';'					(. if (type != Types.fun) 
 																					   SemErr("incompatible types");
 					 															   obj = tab.NewObj((string)names[0], Kinds.var, type); 
 																				   node =  new Node (Labels.AssigDecl);
@@ -326,13 +326,13 @@ VarDecl<out ASTNode node>														(. string name; ArrayList names = new Arr
 
 CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, firstExpr, secondExpr; .)
 = Expr<out type,out firstExpr>													 (. node = firstExpr; .)
-  [ BoolOp<out op>																 (. node = op; .)
+  { BoolOp<out op>																 (. node = op; .)
 	Expr<out type1,out secondExpr>												 (. if (type != type1)
 																						SemErr("incompatible types");
 																					type = Types.boolean; 
 																					((Node)op).addChildren(firstExpr);
 																					((Node)op).addChildren(secondExpr); .)
-  ].
+  }.
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
@@ -352,9 +352,9 @@ SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op,
 = Term<out type, out firstTerm>													 (. node = firstTerm; .)	 
   { AddOp<out op>																 (. node = op; .)
     Term<out type1,out secondTerm>												 (. if (type != Types.integer || type1 != Types.integer)
-																						  SemErr("integer type expected"); 
-																						((Node)op).addChildren(firstTerm);
-																						((Node)op).addChildren(secondTerm); .)
+																					   SemErr("integer type expected"); 
+																					((Node)op).addChildren(firstTerm);
+																					((Node)op).addChildren(secondTerm); .)
   }. 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  

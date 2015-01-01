@@ -280,6 +280,7 @@ public SymbolTable   tab;
 					((Node)node).addChildren(node1); 
 				} else if (la.kind == 4) {
 					AProcDecl(out afobj,out node1);
+					Expect(14);
 					if (type != Types.fun) 
 					SemErr("incompatible types");
 					obj = tab.NewObj((string)names[0], Kinds.var, type); 
@@ -317,7 +318,7 @@ public SymbolTable   tab;
 						if (StartOf(2)) {
 							CompleteExpr(out type, out node1);
 							actualTypes.Enqueue(type); 
-							((Node)node1).addChildren(node1);	
+							((Node)node).addChildren(node1);	
 						} else {
 							AProcDecl(out robj, out node1);
 							actualTypes.Enqueue(Types.fun);
@@ -328,7 +329,7 @@ public SymbolTable   tab;
 							if (StartOf(2)) {
 								CompleteExpr(out type, out node1);
 								actualTypes.Enqueue(type);
-								((Node)node1).addChildren(node1); 
+								((Node)node).addChildren(node1); 
 							} else if (la.kind == 4) {
 								AProcDecl(out robj, out node1);
 								actualTypes.Enqueue(Types.fun);
@@ -355,6 +356,7 @@ public SymbolTable   tab;
 					((Node)node).addChildren(node1); 
 				} else if (la.kind == 4) {
 					AProcDecl(out robj, out node1);
+					Expect(14);
 					((Node)node).addChildren(new Term(obj));
 					((Node)node).addChildren(node1); 
 				} else if (la.kind == 15) {
@@ -547,6 +549,7 @@ public SymbolTable   tab;
 				} 
 			} else if (la.kind == 4) {
 				AProcDecl(out robj,out node1);
+				Expect(14);
 				((Node)node).addChildren(node1);
 				tab.getOwner(out obj,out controlofblock);
 				if(obj != null){ 
@@ -609,7 +612,7 @@ public SymbolTable   tab;
 		Types type1; ASTNode op, firstExpr, secondExpr; 
 		Expr(out type,out firstExpr);
 		node = firstExpr; 
-		if (la.kind == 34 || la.kind == 35) {
+		while (la.kind == 34 || la.kind == 35) {
 			BoolOp(out op);
 			node = op; 
 			Expr(out type1,out secondExpr);
