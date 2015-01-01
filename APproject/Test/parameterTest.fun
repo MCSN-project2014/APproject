@@ -2,14 +2,16 @@
 fun add(y int) int
 {
   var x int ;
-  return x + 5;
+  if x > 5 {
+	return x + 5;
+  }
 }
 
 fun main(){
 	var x int;
 	var y int;
-	var z fun = fun() int {
-				var x int;
-				return x;
-				}
+	var z fun= fun()int{
+		x=x+y;
+		return 5;
+	}
 }

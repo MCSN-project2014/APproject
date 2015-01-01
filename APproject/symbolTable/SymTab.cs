@@ -57,7 +57,8 @@ namespace APproject
             scop.kind = Kinds.scope;
 	        scop.locals = null; 
 	        scop.nextAdr = 0;
-			scop.next = topScope; 
+			scop.next = topScope;
+            scop.owner = null;
             topScope = scop; 
 			curLevel++;
 		}
@@ -85,12 +86,15 @@ namespace APproject
 		/// close the current scope
         /// <summary>
 		public void CloseScope () {
-            Obj obj = getOwner();
-            if (obj != null && !obj.returnIsSet)
+
+
+            if (topScope.owner != null && !topScope.owner.returnIsSet)
             {
                 parser.SemErr("return expected");
             }
-			topScope = topScope.next; curLevel--;
+            topScope = topScope.next; curLevel--;
+            
+			
 		}
 
         /// <summary>
@@ -192,10 +196,35 @@ namespace APproject
         /// return the owner of the current scope
         /// <summary>
 
-        public Obj getOwner()
+        public void getOwner(out Obj owner, out bool control)
         {
-            return topScope.owner;
+            Obj scope;
+            scope = topScope;
+
+            owner = null;
+            control = false;
+           
+            if (scope.owner != null)
+            {
+                control = true;
+                owner = scope.owner;
+            }
+            else { 
+                while (scope.next != null)
+                {
+                    scope = scope.next;
+                    if (scope.owner != null)
+                        control = false;
+                        owner = scope.owner;
+
+                }
+            }
+            
+           
+            
         }
+
+       
 
         /// <summary>
         /// Add a formal formal to procedure
@@ -265,6 +294,8 @@ namespace APproject
 			parser.SemErr(name + " is undeclared");
 			return undefObj;
 		}
+
+        
 
 	} // end SymbolTable
 
