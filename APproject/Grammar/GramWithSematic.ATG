@@ -140,7 +140,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																				   ((Node)call).addChildren(node1); .)
 										  )
 									 } } ')'									
-											 '}'';'								(. node.addChildren(call); .)
+											 '}'';'								(. ((Node)node).addChildren(call); .)
 																				(. if (obj1.kind != Kinds.proc) 
 																				       SemErr("object is not a procedure");
 																				   if (obj1.type == Types.fun)

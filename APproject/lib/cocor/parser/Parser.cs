@@ -312,36 +312,37 @@ public SymbolTable   tab;
 					Ident(out name1);
 					node =  new Node(Labels.Async);
 					obj1 = tab.Find(name1);	
-					node1 = new Node(Labels.FunCall, obj1); 
+					Node call = new Node(Labels.FunCall, obj1); 
 					Expect(5);
 					while (StartOf(3)) {
 						if (StartOf(2)) {
 							CompleteExpr(out type, out node1);
 							actualTypes.Enqueue(type); 
-							((Node)node).addChildren(node1);	
+							((Node)call).addChildren(node1);	
 						} else {
 							AProcDecl(out robj, out node1);
 							actualTypes.Enqueue(Types.fun);
-							((Node)node).addChildren(node1); 
+							((Node)call).addChildren(node1); 
 						}
 						while (la.kind == 6) {
 							Get();
 							if (StartOf(2)) {
 								CompleteExpr(out type, out node1);
 								actualTypes.Enqueue(type);
-								((Node)node).addChildren(node1); 
+								((Node)call).addChildren(node1); 
 							} else if (la.kind == 4) {
 								AProcDecl(out robj, out node1);
 								actualTypes.Enqueue(Types.fun);
-								((Node)node).addChildren(node1); 
+								((Node)call).addChildren(node1); 
 							} else SynErr(45);
 						}
 					}
 					Expect(7);
 					Expect(9);
 					Expect(14);
+					((Node)node).addChildren(call); 
 					if (obj1.kind != Kinds.proc) 
-					SemErr("object is not a procedure");
+					   SemErr("object is not a procedure");
 					if (obj1.type == Types.fun)
 					SemErr("wrong return type");
 					tab.checkActualFormalTypes(obj1, actualTypes); 
