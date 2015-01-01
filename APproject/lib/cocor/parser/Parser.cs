@@ -160,13 +160,14 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (la.kind == 20) {
 					VarDecl(out node1);
-					((Node)fundecl).addChildren(node1); 
+					((Node)block).addChildren(node1);    
 				} else {
 					Stat(out node1);
 					((Node)block).addChildren(node1);    
 				}
 			}
 			Expect(9);
+			((Node)fundecl).addChildren(0,block);
 			gen.addChildren((Node)fundecl);
 			tab.CloseScope(); 
 		} else SynErr(39);
@@ -491,11 +492,13 @@ public SymbolTable   tab;
 		case 21: {
 			Get();
 			Expect(8);
-			CompleteExpr(out type, out node1);
+			node = new Node(Labels.Print); 
+			while (StartOf(2)) {
+				CompleteExpr(out type, out node1);
+				((Node)node).addChildren(node1); 
+			}
 			Expect(9);
 			Expect(14);
-			node = new Node(Labels.Print);
-			((Node)node).addChildren(node1); 
 			break;
 		}
 		case 13: {

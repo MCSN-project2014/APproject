@@ -78,10 +78,11 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 																				    fundecl = new Node(Labels.Main);
 																				    tab.OpenScope();	.)
 																				 (. Node block = new Node(Labels.Block);  .) 	
-				'(' ')' '{'  { VarDecl<out node1>								 (.	((Node)fundecl).addChildren(node1); .)
+				'(' ')' '{'  { VarDecl<out node1>								 (.	((Node)block).addChildren(node1);    .)
 							  | Stat<out node1>      							 (. ((Node)block).addChildren(node1);    .) 		
 						 }  '}'	
-						    													 (. gen.addChildren((Node)fundecl);
+						    													 (. ((Node)fundecl).addChildren(0,block);
+																					gen.addChildren((Node)fundecl);
 																				    tab.CloseScope(); .)
 			).   
 			
@@ -219,8 +220,10 @@ Stat<out ASTNode node>														(. Types type,type1; string name; string nam
 		   | VarDecl<out node1>																(. ((Node)forBlock).addChildren(node1); .)	 
 	  } '}'																					(. tab.CloseScope(); .)
 																				
-    | "println"'{'CompleteExpr<out type, out node1>'}'';'						(.  node = new Node(Labels.Print);
-																				   ((Node)node).addChildren(node1); .)
+    | "println"'{'																(.  node = new Node(Labels.Print); .)
+				  {CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
+				  }'}'';'						
+																				  
 		
 	| "return"																	(. node = new Node(Labels.Return);
 																				   bool controlofblock; .)
