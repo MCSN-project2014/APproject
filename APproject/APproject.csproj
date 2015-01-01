@@ -23,7 +23,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="AfterBuild" command="" pauseExternalConsole="True" />
-        <Command type="Execute" command="${ProjectDir}/bin/Debug/APproject.exe ${ProjectDir}/Test/parameterTest.fun" />
+        <Command type="Execute" command="${ProjectDir}/bin/Debug/APproject.exe ${ProjectDir}/Test/testLuca.fun" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -47,6 +47,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Downloads\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTGenerator\ASTGenerator.cs" />
@@ -75,6 +79,7 @@
     <None Include="lib\cocor\Scanner.frame" />
     <None Include="Test\parameterTest.fun" />
     <None Include="Test\vardeclTest.fun" />
+    <None Include="Test\testLuca.fun" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />

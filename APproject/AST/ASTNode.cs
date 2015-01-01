@@ -48,7 +48,7 @@ namespace APproject
 		}
 
 		/// <summary>
-		/// Given the label of the node and a value (use only for function declaration), create a new istance of the class Node.
+		/// Given the label of the node and a value (use only for function declaration and function call), create a new istance of the class Node.
 		/// </summary>
 		/// <param name="l">L.</param>
 		public Node (Labels l, object value){
