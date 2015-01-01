@@ -184,7 +184,7 @@ Stat<out ASTNode node>														(. Types type,type1; string name; string nam
 	   } '}'																		(. tab.CloseScope(); .)
 	  ] 
 	                                 
-	| "While" CompleteExpr<out type, out node1>									    (. node = new Node(Labels.While);
+	| "while" CompleteExpr<out type, out node1>									    (. node = new Node(Labels.While);
 																					   ((Node)node).addChildren(node1);
 																					   Node whileBlock =new Node(Labels.Block);
 																					   if (type != Types.boolean) 
