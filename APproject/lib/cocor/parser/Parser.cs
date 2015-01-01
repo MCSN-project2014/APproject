@@ -301,6 +301,7 @@ public SymbolTable   tab;
 		case 1: {
 			Ident(out name);
 			obj = tab.Find(name); 
+			
 			if (la.kind == 11) {
 				Get();
 				if ( obj.kind != Kinds.var )
@@ -310,7 +311,7 @@ public SymbolTable   tab;
 					Expect(8);
 					Expect(13);
 					Ident(out name1);
-					node =  new Node(Labels.Async);
+					Node async =  new Node(Labels.Async);
 					obj1 = tab.Find(name1);	
 					Node call = new Node(Labels.FunCall, obj1); 
 					Expect(5);
@@ -340,7 +341,9 @@ public SymbolTable   tab;
 					Expect(7);
 					Expect(9);
 					Expect(14);
-					((Node)node).addChildren(call); 
+					((Node)async).addChildren(call);
+					((Node)node).addChildren(new Term(obj));
+					((Node)node).addChildren(async); 
 					if (obj1.kind != Kinds.proc) 
 					   SemErr("object is not a procedure");
 					if (obj1.type == Types.fun)

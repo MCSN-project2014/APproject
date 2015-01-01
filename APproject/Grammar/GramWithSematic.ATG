@@ -117,13 +117,14 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																			       ASTNode node1;  
 																			       node = new Node(Labels.Assig); .) 
 =																				
-	Ident<out name>																(. obj = tab.Find(name); .)                                                               
+	Ident<out name>																(. obj = tab.Find(name); 
+																					.)                                                               
 		(                                                                    
 			'='																	(. if ( obj.kind != Kinds.var )
 																					   SemErr("cannot assign to procedure"); .)
 				(                                                            
 				                                                               
-				      "async" '{' "return" Ident<out name1>						(. node =  new Node(Labels.Async);
+				      "async" '{' "return" Ident<out name1>						(. Node async =  new Node(Labels.Async);
 																				   obj1 = tab.Find(name1);	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
 								 '(' { (
@@ -140,7 +141,9 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																				   ((Node)call).addChildren(node1); .)
 										  )
 									 } } ')'									
-											 '}'';'								(. ((Node)node).addChildren(call); .)
+											 '}'';'								(. ((Node)async).addChildren(call);
+																				   ((Node)node).addChildren(new Term(obj));
+																				   ((Node)node).addChildren(async); .)
 																				(. if (obj1.kind != Kinds.proc) 
 																				       SemErr("object is not a procedure");
 																				   if (obj1.type == Types.fun)
