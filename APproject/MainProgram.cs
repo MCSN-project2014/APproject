@@ -19,6 +19,7 @@ namespace APproject
                 parser.tab = new SymbolTable(parser);
                 parser.gen = new ASTGenerator();
                 parser.Parse();
+                InterpreterTest.printAST(parser.gen.getRoot());
 
                 //String fileName = "traslated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
                 //FSCodeGen genFsharp = new FSCodeGen(fileName);
@@ -26,7 +27,7 @@ namespace APproject
                
                 Console.WriteLine(parser.errors.count + " errors detected");
 				/*if (parser.errors.count == 0){
-					InterpreterTest.printAST(parser.gen.getRoot());
+					
 					Interpreter inter = new Interpreter (parser.gen.getRoot());
 					inter.Start ();
 				}*/

@@ -1,23 +1,15 @@
 
-fun add() fun(int int) fun () fun (int) bool
+fun add(y int) int
 {
-	var sum int;
-	return fun(x int, y int) fun () fun (int) bool{
-		x = sum + 1;	
-		return fun() fun (int) bool{
-		
-			return fun (y int)  bool{
-					var x bool;
-				return x;		
-			}
-		}
-		
-	}
+  var x int ;
+  return x + 5;
 }
 
 fun main(){
 	var x int;
 	var y int;
-	var z fun;
-	z = add();
+	var z fun = fun() int {
+				var x int;
+				return x;
+				}
 }
