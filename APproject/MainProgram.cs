@@ -40,7 +40,7 @@ namespace APproject
 
 			//ASTNode tesNode = InterpreterTest.factorialRecursive ();
 			//InterpreterTest.printAST (tesNode);
-
+			/*
 			var setting = new JsonSerializerSettings () {
 				ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
 				NullValueHandling = NullValueHandling.Ignore
@@ -54,7 +54,7 @@ namespace APproject
 			new Interpreter (deserialize (ret, new Dictionary<string, Obj>(), new Dictionary<string, Obj>())).Start ();
 
 			//InterpreterTest.Start (InterpreterTest.testAsync);
-
+			*/
 		}
 
 
