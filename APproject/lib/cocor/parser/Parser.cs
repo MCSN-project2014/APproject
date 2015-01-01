@@ -160,13 +160,14 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (la.kind == 20) {
 					VarDecl(out node1);
-					((Node)fundecl).addChildren(node1); 
+					((Node)block).addChildren(node1);    
 				} else {
 					Stat(out node1);
 					((Node)block).addChildren(node1);    
 				}
 			}
 			Expect(9);
+			((Node)fundecl).addChildren(0,block);
 			gen.addChildren((Node)fundecl);
 			tab.CloseScope(); 
 		} else SynErr(39);
@@ -240,6 +241,7 @@ public SymbolTable   tab;
 			}
 			Type(out type);
 			Expect(14);
+			node =  new Node (Labels.Decl);
 			foreach(string n in names)
 			{
 			obj = tab.NewObj(n, Kinds.var, type);
@@ -490,11 +492,13 @@ public SymbolTable   tab;
 		case 21: {
 			Get();
 			Expect(8);
-			CompleteExpr(out type, out node1);
+			node = new Node(Labels.Print); 
+			while (StartOf(2)) {
+				CompleteExpr(out type, out node1);
+				((Node)node).addChildren(node1); 
+			}
 			Expect(9);
 			Expect(14);
-			node = new Node(Labels.Print);
-			((Node)node).addChildren(node1); 
 			break;
 		}
 		case 13: {
@@ -806,7 +810,7 @@ public class Errors {
 			case 15: s = "\"readln\" expected"; break;
 			case 16: s = "\"if\" expected"; break;
 			case 17: s = "\"else\" expected"; break;
-			case 18: s = "\"While\" expected"; break;
+			case 18: s = "\"while\" expected"; break;
 			case 19: s = "\"for\" expected"; break;
 			case 20: s = "\"var\" expected"; break;
 			case 21: s = "\"println\" expected"; break;

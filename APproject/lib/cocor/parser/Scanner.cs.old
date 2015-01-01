@@ -365,7 +365,7 @@ public class Scanner {
 			case "readln": t.kind = 15; break;
 			case "if": t.kind = 16; break;
 			case "else": t.kind = 17; break;
-			case "While": t.kind = 18; break;
+			case "while": t.kind = 18; break;
 			case "for": t.kind = 19; break;
 			case "var": t.kind = 20; break;
 			case "println": t.kind = 21; break;
