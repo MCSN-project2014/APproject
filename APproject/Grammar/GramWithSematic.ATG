@@ -196,13 +196,15 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																					(. tab.OpenScope(); .) 
 	 '{' { Stat<out node1>															(. ((Node)thenBlock).addChildren(node1);.) 
 		   | VarDecl<out node1>														(. ((Node)thenBlock).addChildren(node1); .)	 
-	  } '}'																			(. tab.CloseScope(); .)
+	  } '}'																			(. ((Node)node).addChildren(thenBlock);
+																						tab.CloseScope(); .)
 
 	  [																				(. tab.OpenScope(); .)
 	   "else"																		(. Node elseBlock = new Node(Labels.Block); .)
 	  '{' {    Stat<out node1>														(. ((Node)elseBlock).addChildren(node1);.) 
 			| VarDecl<out node1>													(. ((Node)elseBlock).addChildren(node1); .)	 	
-	   } '}'																		(. tab.CloseScope(); .)
+	   } '}'																		(. ((Node)node).addChildren(elseBlock);
+																					   tab.CloseScope(); .)
 	  ] 
 	                                 
 	| "while" CompleteExpr<out type, out node1>									    (. node = new Node(Labels.While);
@@ -213,7 +215,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 	   																				(. tab.OpenScope(); .) 
 	 '{' { Stat<out node1>															(. ((Node)whileBlock).addChildren(node1);.) 
 		   | VarDecl<out node1>														(. ((Node)whileBlock).addChildren(node1); .)	 
-	  } '}'																			(. tab.CloseScope(); .)
+	  } '}'																			(.  ((Node)node).addChildren(whileBlock);
+																						tab.CloseScope(); .)
 	                                
 	| "for"																				    (. tab.OpenScope(); 
 																							   node = new Node(Labels.For); .) 
@@ -238,7 +241,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 			  																		
 	 '{' { Stat<out node1>																	(. ((Node)forBlock).addChildren(node1);.) 
 		   | VarDecl<out node1>																(. ((Node)forBlock).addChildren(node1); .)	 
-	  } '}'																					(. tab.CloseScope(); .)
+	  } '}'																					(. ((Node)node).addChildren(forBlock);
+																								tab.CloseScope(); .)
 																				
     | "println"'{'																(.  node = new Node(Labels.Print); .)
 				  {CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
@@ -376,7 +380,7 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   node = new Term(obj); 
 																				   type = obj.type; .) 
 		[																		(. control = true; 
-																				   node = new Node(Labels.FunCall); .)
+																				   node = new Node(Labels.FunCall, obj); .)
 		'(' { (
 				 CompleteExpr<out type1, out node1>								(. actualTypes.Enqueue(type1);
 																				   ((Node)node).addChildren(node1); .) 

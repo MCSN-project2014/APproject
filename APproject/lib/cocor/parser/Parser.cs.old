@@ -320,7 +320,7 @@ public SymbolTable   tab;
 							((Node)node1).addChildren(node1);	
 						} else {
 							AProcDecl(out robj, out node1);
-							actyalTypes.Enqueue(Types.fun);
+							actualTypes.Enqueue(Types.fun);
 							((Node)node).addChildren(node1); 
 						}
 						while (la.kind == 6) {
@@ -423,6 +423,7 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(9);
+			((Node)node).addChildren(thenBlock);
 			tab.CloseScope(); 
 			if (la.kind == 17) {
 				tab.OpenScope(); 
@@ -439,6 +440,7 @@ public SymbolTable   tab;
 					}
 				}
 				Expect(9);
+				((Node)node).addChildren(elseBlock);
 				tab.CloseScope(); 
 			}
 			break;
@@ -463,6 +465,7 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(9);
+			node.addChildren(whileBlock);
 			tab.CloseScope(); 
 			break;
 		}
@@ -510,6 +513,7 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(9);
+			((Node)node).addChildren(forBlock);
 			tab.CloseScope(); 
 			break;
 		}
@@ -731,7 +735,7 @@ public SymbolTable   tab;
 			type = obj.type; 
 			if (la.kind == 5) {
 				control = true; 
-				node = new Node(Labels.FunCall); 
+				node = new Node(Labels.FunCall, obj); 
 				Get();
 				while (StartOf(3)) {
 					if (StartOf(2)) {
@@ -751,7 +755,7 @@ public SymbolTable   tab;
 							((Node)node).addChildren(node1); 
 						} else if (la.kind == 4) {
 							AProcDecl(out robj, out node1);
-							actyalTypes.Enqueue(Types.fun);
+							actualTypes.Enqueue(Types.fun);
 							((Node)node).addChildren(node1); 
 						} else SynErr(54);
 					}

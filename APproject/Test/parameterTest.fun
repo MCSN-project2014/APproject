@@ -1,8 +1,8 @@
 
 
 
+
 fun main(){
 	var x int;
-	x = 5;
-	println{x};
+	var y int = 5+3+5+7;
 }
