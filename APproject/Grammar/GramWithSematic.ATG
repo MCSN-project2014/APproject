@@ -36,10 +36,10 @@ PRODUCTIONS
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 							 
-Fun =																			(. Node node; .)
+Fun =																			(. ASTNode node; .)
 																				(. tab.OpenScope();  
 																					node = new Node(Labels.Program); 
-																					gen.initAST(node); .)
+																					gen.initAST((Node) node); .)
 
 		{ ProcDecl }
 																				(. tab.CloseScope(); .).
@@ -47,7 +47,7 @@ Fun =																			(. Node node; .)
                                                     
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 ProcDecl =																		(. Types type; string name; Obj proc; Obj formal;
-																				   RType rtype; Node fundecl,block,vardeclnode,statnode; Term parameter;     .)
+																				   RType rtype; ASTNode fundecl,block,vardeclnode,statnode; Term parameter;     .)
 			"fun"																	
 			(
 			    Ident<out name>													(. proc = tab.NewObj(name, Kinds.proc, Types.undef);
@@ -58,36 +58,36 @@ ProcDecl =																		(. Types type; string name; Obj proc; Obj formal;
 					{ Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
 																				   tab.addFormal(proc,formal);
 																				   parameter = new Term(formal);
-																				   fundecl.addChildren(parameter);           .)
+																				   ((Node)fundecl).addChildren(parameter);           .)
 				    {',' Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
 																				   tab.addFormal(proc,formal); 
 																				   parameter = new Term(formal);
-																				   fundecl.addChildren(parameter);               .)
+																				   ((Node)fundecl).addChildren(parameter);               .)
 					}
 					}
 				 ')'															(. block = new Node(Labels.Block);  .)
 				  RType<out rtype>												(. tab.setRType(proc,rtype);        .)
-		        '{' {   VarDecl<out vardeclnode>								(. block.addChildren(vardeclnode); .)	 
-					  | Stat<out statnode>										(. block.addChildren(statnode);    .) 
+		        '{' {   VarDecl<out vardeclnode>								(. ((Node)block).addChildren(vardeclnode); .)	 
+					  | Stat<out statnode>										(. ((Node)block).addChildren(statnode);    .) 
 				 } '}'																
-																			    (. fundecl.addChildren(0,block);
-																				   gen.addChildren(fundecl);
+																			    (. ((Node)fundecl).addChildren(0,block);
+																				   gen.addChildren((Node)fundecl);
 																				   tab.CloseScope(); .)
 			  | "main"															(. tab.NewObj("Main", Kinds.proc, Types.undef);
 																				   fundecl = new Node(Labels.Main);
 																				   tab.OpenScope();	.)
 																				 (. block = new Node(Labels.Block);  .) 	
-				'(' ')' '{'  { VarDecl<out vardeclnode>							 (.	fundecl.addChildren(vardeclnode); .)
-							  | Stat<out statnode>      						 (. block.addChildren(statnode);    .) 		
+				'(' ')' '{'  { VarDecl<out vardeclnode>							 (.	((Node)fundecl).addChildren(vardeclnode); .)
+							  | Stat<out statnode>      						 (. ((Node)block).addChildren(statnode);    .) 		
 						 }  '}'
-						    													 (. gen.addChildren(fundecl);
+						    													 (. gen.addChildren((Node)fundecl);
 																				    tab.CloseScope(); .)
 			).   
 			
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                 
-AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types type; RType rtype; Obj formal;
-																					Node block, vardeclnode, statnode; Term parameter;.)
+AProcDecl<out Obj robj, out ASTNode node> 									       (. string name; Types type; RType rtype; Obj formal;
+																					  ASTNode block, vardeclnode, statnode; Term parameter;.)
  =																				(. node = new Node(Labels.Afun);
 																				   robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
 																				   tab.OpenScope(robj); .)	
@@ -102,15 +102,15 @@ AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types typ
 					  }} ')' RType<out rtype>									(. block = new Node(Labels.Block);
 																				   tab.setRType(robj,rtype); .) 
 																				              
-		    '{' {	VarDecl<out vardeclnode>									(. block.addChildren(vardeclnode); .)	
-					| Stat<out statnode>                         			    (. block.addChildren(statnode);    .)  
+		    '{' {	VarDecl<out vardeclnode>									(. ((Node)block).addChildren(vardeclnode); .)	
+					| Stat<out statnode>                         			    (. ((Node)block).addChildren(statnode);    .)  
 			 } '}'	  
 																				(. ((Node)node).addChildren(0,block);
 																				   tab.CloseScope(); .).
                                                               
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                              
-Stat<out Node node>															(. Types type; string name; string name1; Obj obj, obj1, robj;
+Stat<out ASTNode node>															(. Types type; string name; string name1; Obj obj, obj1, robj;
 																			   Queue<Types> actualTypes = new Queue<Types>();
 																			   ASTNode exprnode,node1;  
 																			   node = new Node(Labels.Assig); .) 
@@ -150,8 +150,13 @@ Stat<out Node node>															(. Types type; string name; string name1; Obj 
 				                                                              
 				)                                                            
 			                                                                 
-			| '(' { CompleteExpr<out type, out exprnode>										(. actualTypes.Enqueue(type); .) 
-				  { ',' CompleteExpr<out type, out exprnode>									(. actualTypes.Enqueue(type); .) 
+			| '('																(. node = new Node(Labels.FunCall);
+																				   ((Node)node).addChildren(new Term(obj)); .)
+																				   
+				  { CompleteExpr<out type, out exprnode>						(. actualTypes.Enqueue(type);
+																				   ((Node)node).addChildren(exprnode);.) 
+				  { ',' CompleteExpr<out type, out exprnode>					(. actualTypes.Enqueue(type); 
+																				   ((Node)node).addChildren(exprnode);.) 
 				  } } ')' ';'													(. if (obj.kind != Kinds.proc || obj.rtype == null) 
 																						SemErr("object is not a procedure");
 																				   else
@@ -160,13 +165,33 @@ Stat<out Node node>															(. Types type; string name; string name1; Obj 
 			                                                                  
 		)                                                       
 		                                                                     
-	| "if" CompleteExpr<out type, out exprnode>												(. if (type != Types.boolean) 
-																					  SemErr("boolean type expected"); .)
-	   Stat<out node> [ "else"	Stat<out node> ] 
+	| "if" CompleteExpr<out type, out exprnode>										(. node = new Node(Labels.If);
+																					   ((Node)node).addChildren(exprnode);
+																					   Node thenBlock = new Node(Labels.Block);
+																					   if (type != Types.boolean) 
+																						  SemErr("boolean type expected"); .)
+																					(. tab.OpenScope(); .) 
+	 '{' { Stat<out node1>															(. ((Node)thenBlock).addChildren(node1);.) 
+		   | VarDecl<out node1>														(. ((Node)thenBlock).addChildren(node1); .)	 
+	  } '}'																			(. tab.CloseScope(); .)
+
+	  [																				(. tab.OpenScope(); .)
+	   "else"																		(. Node elseBlock = new Node(Labels.Block); .)
+	  '{' {    Stat<out node1>														(. ((Node)elseBlock).addChildren(node1);.) 
+			| VarDecl<out node1>													(. ((Node)elseBlock).addChildren(node1); .)	 	
+	   } '}'																		(. tab.CloseScope(); .)
+	  ] 
 	                                 
-	| "While" CompleteExpr<out type, out exprnode>											(. if (type != Types.boolean) 
-																					  SemErr("boolean type expected"); .) 
-	   Stat<out node>                                  
+	| "While" CompleteExpr<out type, out exprnode>									(. node = new Node(Labels.While);
+																					   ((Node)node).addChildren(exprnode);
+																					   Node whileBlock =new Node(Labels.Block);
+																					   if (type != Types.boolean) 
+																					   SemErr("boolean type expected"); .) 
+	   																				(. tab.OpenScope(); .) 
+	 '{' { Stat<out node1>															(. ((Node)whileBlock).addChildren(node1);.) 
+		   | VarDecl<out node1>														(. ((Node)whileBlock).addChildren(node1); .)	 
+	  } '}'																			(. tab.CloseScope(); .)
+	                                
 	| "for" Ident<out name> '=' CompleteExpr<out type, out exprnode>';'						(. obj=tab.Find(name);
 																				   if (type != obj.type)
 																					  SemErr("incompatible types"); .)
@@ -177,26 +202,26 @@ Stat<out Node node>															(. Types type; string name; string name1; Obj 
 					    															  SemErr("incompatible types");.)				
 			Stat<out node>
 																				
-    | "println" '{'{ print } '}' ';'
-	| "return" 
+    | "println"'{'  '}'';'														(. node = new Node(Labels.Print);  .)
+		
+	| "return"																	(. node = new Node(Labels.Return); .)
 			(  
     			                                                               
-   				CompleteExpr<out type, out exprnode> ';'						(. obj = tab.getOwner();
+   				CompleteExpr<out type, out exprnode> ';'						(. ((Node)node).addChildren(exprnode);
+																				   obj = tab.getOwner();
 																				   obj.returnIsSet=true;
 																				   if( obj.type != type )
 																					   SemErr("incompatible return type"); .)                                                 
-			   | AProcDecl<out robj,out node1>                                   (. obj = tab.getOwner(); 
+			   | AProcDecl<out robj,out node1>                                   (. ((Node)node).addChildren(node1);
+																					obj = tab.getOwner(); 
 																					obj.returnIsSet=true;
 																					tab.complexReturnTypeControl(obj,robj); .) 
 			                                                                  
-			)                                                                    
-	|																			(. tab.OpenScope(); .) 
-	'{' { Stat<out node> | VarDecl<out node> } '}'
-																				(. tab.CloseScope(); .).
+			).
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-VarDecl<out Node node>														(. string name; ArrayList names = new ArrayList(); 
+VarDecl<out ASTNode node>														(. string name; ArrayList names = new ArrayList(); 
 																					Types type; Types type1; 
 																					Term term; Obj obj,afobj; ASTNode afunnode,exprnode;.)
 
@@ -217,7 +242,7 @@ VarDecl<out Node node>														(. string name; ArrayList names = new ArrayL
 				';'																(. obj  =  tab.NewObj((string)names[0], Kinds.var, type);
 																				   node =  new Node (Labels.Decl);
 																				   term =  new Term (obj);
-																				   node.addChildren(term);                             .)
+																				   ((Node)node).addChildren(term);                             .)
 				| '=' 
 					(	"readln" '{''}'';'										(. if(type != Types.integer)
 																					  SemErr("incompatible types"); 
@@ -225,23 +250,23 @@ VarDecl<out Node node>														(. string name; ArrayList names = new ArrayL
 																				   node =  new Node (Labels.AssigDecl);
 																				   term =  new Term (obj);
 																				   Node readln = new Node(Labels.Read);
-																				   node.addChildren(term);
-																				   node.addChildren(readln); .)	
+																				   ((Node)node).addChildren(term);
+																				   ((Node)node).addChildren(readln); .)	
 
 					    |CompleteExpr<out type1, out exprnode>';'				(. if (type != type1) 
 																					   SemErr("incompatible types");
 					 															   obj = tab.NewObj((string)names[0], Kinds.var, type); 
 																				   node =  new Node (Labels.AssigDecl);
 																				   term =  new Term (obj);
-																				   node.addChildren(term);
-																				   node.addChildren(exprnode); .)		 
+																				   ((Node)node).addChildren(term);
+																				   ((Node)node).addChildren(exprnode); .)		 
 						| AProcDecl<out afobj,out afunnode>						(. if (type != Types.fun) 
 																					   SemErr("incompatible types");
 					 															   obj = tab.NewObj((string)names[0], Kinds.var, type); 
 																				   node =  new Node (Labels.AssigDecl);
 																				   term =  new Term (obj);
-																				   node.addChildren(term);
-																				   node.addChildren(afunnode);   .)
+																				   ((Node)node).addChildren(term);
+																				   ((Node)node).addChildren(afunnode);   .)
 					)
 			  )
 		  
@@ -249,7 +274,7 @@ VarDecl<out Node node>														(. string name; ArrayList names = new ArrayL
 		  
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, firstTerm, secondTerm; .)
+CompleteExpr<out Types type, out ASTNode node>									     (. Types type1; ASTNode op, firstTerm, secondTerm; .)
 = Expr<out type,out firstTerm>													 (. node = firstTerm; .)
   [ BoolOp<out op>																 (. node = op; .)
 	Expr<out type1,out secondTerm>													 (. if (type != type1)
@@ -297,13 +322,14 @@ Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, fi
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Factor<out Types type, out ASTNode node>										(. int n; Obj obj; string name; Types type1; bool control = false;
-																				   Queue<Types> actualTypes = new Queue<Types>(); ASTNode exprnode; .) 
+Factor<out Types type, out ASTNode node>									(. int n; Obj obj; string name; Types type1; bool control = false;
+																			   Queue<Types> actualTypes = new Queue<Types>(); ASTNode exprnode; .) 
 
 =																				(. type = Types.undef;
 																				   node = new Node(Labels.Block);.)
 	(																		    
-		Ident<out name>															(. obj = tab.Find(name); 
+		Ident<out name>															(. obj = tab.Find(name);
+																				   node = new Term(obj); 
 																				   type = obj.type; .) 
 		[																		(. control = true; .)
 		'(' { CompleteExpr<out type1, out exprnode>											(. actualTypes.Enqueue(type1); .) 

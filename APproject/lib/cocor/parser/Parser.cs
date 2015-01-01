@@ -92,10 +92,10 @@ public SymbolTable   tab;
 
 	
 	void Fun() {
-		Node node; 
+		ASTNode node; 
 		tab.OpenScope();  
 		node = new Node(Labels.Program); 
-		gen.initAST(node); 
+		gen.initAST((Node) node); 
 		while (la.kind == 4) {
 			ProcDecl();
 		}
@@ -104,7 +104,7 @@ public SymbolTable   tab;
 
 	void ProcDecl() {
 		Types type; string name; Obj proc; Obj formal;
-		RType rtype; Node fundecl,block,vardeclnode,statnode; Term parameter;     
+		RType rtype; ASTNode fundecl,block,vardeclnode,statnode; Term parameter;     
 		Expect(4);
 		if (la.kind == 1) {
 			Ident(out name);
@@ -119,7 +119,7 @@ public SymbolTable   tab;
 				formal = tab.NewObj(name, Kinds.var, type); 
 				tab.addFormal(proc,formal);
 				parameter = new Term(formal);
-				fundecl.addChildren(parameter);           
+				((Node)fundecl).addChildren(parameter);           
 				while (la.kind == 6) {
 					Get();
 					Ident(out name);
@@ -127,7 +127,7 @@ public SymbolTable   tab;
 					formal = tab.NewObj(name, Kinds.var, type); 
 					tab.addFormal(proc,formal); 
 					parameter = new Term(formal);
-					fundecl.addChildren(parameter);               
+					((Node)fundecl).addChildren(parameter);               
 				}
 			}
 			Expect(7);
@@ -138,15 +138,15 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (la.kind == 21) {
 					VarDecl(out vardeclnode);
-					block.addChildren(vardeclnode); 
+					((Node)block).addChildren(vardeclnode); 
 				} else {
 					Stat(out statnode);
-					block.addChildren(statnode);    
+					((Node)block).addChildren(statnode);    
 				}
 			}
 			Expect(9);
-			fundecl.addChildren(0,block);
-			gen.addChildren(fundecl);
+			((Node)fundecl).addChildren(0,block);
+			gen.addChildren((Node)fundecl);
 			tab.CloseScope(); 
 		} else if (la.kind == 10) {
 			Get();
@@ -160,14 +160,14 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (la.kind == 21) {
 					VarDecl(out vardeclnode);
-					fundecl.addChildren(vardeclnode); 
+					((Node)fundecl).addChildren(vardeclnode); 
 				} else {
 					Stat(out statnode);
-					block.addChildren(statnode);    
+					((Node)block).addChildren(statnode);    
 				}
 			}
 			Expect(9);
-			gen.addChildren(fundecl);
+			gen.addChildren((Node)fundecl);
 			tab.CloseScope(); 
 		} else SynErr(39);
 	}
@@ -222,7 +222,7 @@ public SymbolTable   tab;
 		} else SynErr(41);
 	}
 
-	void VarDecl(out Node node) {
+	void VarDecl(out ASTNode node) {
 		string name; ArrayList names = new ArrayList(); 
 		Types type; Types type1; 
 		Term term; Obj obj,afobj; ASTNode afunnode,exprnode;
@@ -253,7 +253,7 @@ public SymbolTable   tab;
 				obj  =  tab.NewObj((string)names[0], Kinds.var, type);
 				node =  new Node (Labels.Decl);
 				term =  new Term (obj);
-				node.addChildren(term);                             
+				((Node)node).addChildren(term);                             
 			} else if (la.kind == 11) {
 				Get();
 				if (la.kind == 15) {
@@ -267,8 +267,8 @@ public SymbolTable   tab;
 					node =  new Node (Labels.AssigDecl);
 					term =  new Term (obj);
 					Node readln = new Node(Labels.Read);
-					node.addChildren(term);
-					node.addChildren(readln); 
+					((Node)node).addChildren(term);
+					((Node)node).addChildren(readln); 
 				} else if (StartOf(2)) {
 					CompleteExpr(out type1, out exprnode);
 					Expect(14);
@@ -277,8 +277,8 @@ public SymbolTable   tab;
 					obj = tab.NewObj((string)names[0], Kinds.var, type); 
 					node =  new Node (Labels.AssigDecl);
 					term =  new Term (obj);
-					node.addChildren(term);
-					node.addChildren(exprnode); 
+					((Node)node).addChildren(term);
+					((Node)node).addChildren(exprnode); 
 				} else if (la.kind == 4) {
 					AProcDecl(out afobj,out afunnode);
 					if (type != Types.fun) 
@@ -286,14 +286,14 @@ public SymbolTable   tab;
 					obj = tab.NewObj((string)names[0], Kinds.var, type); 
 					node =  new Node (Labels.AssigDecl);
 					term =  new Term (obj);
-					node.addChildren(term);
-					node.addChildren(afunnode);   
+					((Node)node).addChildren(term);
+					((Node)node).addChildren(afunnode);   
 				} else SynErr(42);
 			} else SynErr(43);
 		} else SynErr(44);
 	}
 
-	void Stat(out Node node) {
+	void Stat(out ASTNode node) {
 		Types type; string name; string name1; Obj obj, obj1, robj;
 		Queue<Types> actualTypes = new Queue<Types>();
 		ASTNode exprnode,node1;  
@@ -361,13 +361,17 @@ public SymbolTable   tab;
 				} else SynErr(45);
 			} else if (la.kind == 5) {
 				Get();
+				node = new Node(Labels.FunCall);
+				((Node)node).addChildren(new Term(obj)); 
 				while (StartOf(2)) {
 					CompleteExpr(out type, out exprnode);
-					actualTypes.Enqueue(type); 
+					actualTypes.Enqueue(type);
+					((Node)node).addChildren(exprnode);
 					while (la.kind == 6) {
 						Get();
 						CompleteExpr(out type, out exprnode);
 						actualTypes.Enqueue(type); 
+						((Node)node).addChildren(exprnode);
 					}
 				}
 				Expect(7);
@@ -382,21 +386,64 @@ public SymbolTable   tab;
 		case 16: {
 			Get();
 			CompleteExpr(out type, out exprnode);
+			node = new Node(Labels.If);
+			((Node)node).addChildren(exprnode);
+			Node thenBlock = new Node(Labels.Block);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
-			Stat(out node);
+			tab.OpenScope(); 
+			Expect(8);
+			while (StartOf(1)) {
+				if (StartOf(3)) {
+					Stat(out node1);
+					((Node)thenBlock).addChildren(node1);
+				} else {
+					VarDecl(out node1);
+					((Node)thenBlock).addChildren(node1); 
+				}
+			}
+			Expect(9);
+			tab.CloseScope(); 
 			if (la.kind == 17) {
+				tab.OpenScope(); 
 				Get();
-				Stat(out node);
+				Node elseBlock = new Node(Labels.Block); 
+				Expect(8);
+				while (StartOf(1)) {
+					if (StartOf(3)) {
+						Stat(out node1);
+						((Node)elseBlock).addChildren(node1);
+					} else {
+						VarDecl(out node1);
+						((Node)elseBlock).addChildren(node1); 
+					}
+				}
+				Expect(9);
+				tab.CloseScope(); 
 			}
 			break;
 		}
 		case 18: {
 			Get();
 			CompleteExpr(out type, out exprnode);
+			node = new Node(Labels.While);
+			((Node)node).addChildren(exprnode);
+			Node whileBlock =new Node(Labels.Block);
 			if (type != Types.boolean) 
 			SemErr("boolean type expected"); 
-			Stat(out node);
+			tab.OpenScope(); 
+			Expect(8);
+			while (StartOf(1)) {
+				if (StartOf(3)) {
+					Stat(out node1);
+					((Node)whileBlock).addChildren(node1);
+				} else {
+					VarDecl(out node1);
+					((Node)whileBlock).addChildren(node1); 
+				}
+			}
+			Expect(9);
+			tab.CloseScope(); 
 			break;
 		}
 		case 19: {
@@ -424,42 +471,29 @@ public SymbolTable   tab;
 		case 20: {
 			Get();
 			Expect(8);
-			while (la.kind == 3) {
-				Get();
-			}
 			Expect(9);
 			Expect(14);
+			node = new Node(Labels.Print);  
 			break;
 		}
 		case 13: {
 			Get();
+			node = new Node(Labels.Return); 
 			if (StartOf(2)) {
 				CompleteExpr(out type, out exprnode);
 				Expect(14);
+				((Node)node).addChildren(exprnode);
 				obj = tab.getOwner();
 				obj.returnIsSet=true;
 				if( obj.type != type )
 				SemErr("incompatible return type"); 
 			} else if (la.kind == 4) {
 				AProcDecl(out robj,out node1);
+				((Node)node).addChildren(node1);
 				obj = tab.getOwner(); 
 				obj.returnIsSet=true;
 				tab.complexReturnTypeControl(obj,robj); 
 			} else SynErr(47);
-			break;
-		}
-		case 8: {
-			tab.OpenScope(); 
-			Get();
-			while (StartOf(1)) {
-				if (StartOf(3)) {
-					Stat(out node);
-				} else {
-					VarDecl(out node);
-				}
-			}
-			Expect(9);
-			tab.CloseScope(); 
 			break;
 		}
 		default: SynErr(48); break;
@@ -468,7 +502,7 @@ public SymbolTable   tab;
 
 	void AProcDecl(out Obj robj, out ASTNode node) {
 		string name; Types type; RType rtype; Obj formal;
-		Node block, vardeclnode, statnode; Term parameter;
+		ASTNode block, vardeclnode, statnode; Term parameter;
 		node = new Node(Labels.Afun);
 		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
 		tab.OpenScope(robj); 
@@ -499,10 +533,10 @@ public SymbolTable   tab;
 		while (StartOf(1)) {
 			if (la.kind == 21) {
 				VarDecl(out vardeclnode);
-				block.addChildren(vardeclnode); 
+				((Node)block).addChildren(vardeclnode); 
 			} else {
 				Stat(out statnode);
-				block.addChildren(statnode);    
+				((Node)block).addChildren(statnode);    
 			}
 		}
 		Expect(9);
@@ -637,7 +671,8 @@ public SymbolTable   tab;
 		node = new Node(Labels.Block);
 		if (la.kind == 1) {
 			Ident(out name);
-			obj = tab.Find(name); 
+			obj = tab.Find(name);
+			node = new Term(obj); 
 			type = obj.type; 
 			if (la.kind == 5) {
 				control = true; 
@@ -702,9 +737,9 @@ public SymbolTable   tab;
 	
 	static readonly bool[,] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
-		{x,T,x,x, x,x,x,x, T,x,x,x, x,T,x,x, T,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
-		{x,T,x,x, x,x,x,x, T,x,x,x, x,T,x,x, T,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,x,x, x,x,x,x}
 
 	};

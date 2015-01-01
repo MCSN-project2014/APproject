@@ -2,6 +2,7 @@
 fun add(y int) int
 {
   var x int ;
+  return x + 5;
 }
 
 fun main(){
@@ -9,5 +10,6 @@ fun main(){
 	var y int;
 	var z fun = fun() int {
 				var x int;
+				return x;
 				}
 }
