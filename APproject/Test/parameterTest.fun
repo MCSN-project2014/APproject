@@ -2,6 +2,7 @@
 fun add(y int) int
 {
   var x int ;
+  var z, t,c int;
   if x > 5 {
 	return x + 5;
   }

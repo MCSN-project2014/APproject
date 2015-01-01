@@ -254,7 +254,8 @@ VarDecl<out ASTNode node>														(. string name; ArrayList names = new Arr
 		  (
 			',' Ident<out name>													(. names.Add(name); .) 
 			{',' Ident<out name>												(. names.Add(name); .)
-			} Type<out type> ';'												(. foreach(string n in names)
+			} Type<out type> ';'												(. node =  new Node (Labels.Decl);
+																				   foreach(string n in names)
 																				   {
 						    															obj = tab.NewObj(n, Kinds.var, type);
 																						((Node)node).addChildren(new Term (obj)); 

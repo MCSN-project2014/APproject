@@ -806,7 +806,7 @@ public class Errors {
 			case 15: s = "\"readln\" expected"; break;
 			case 16: s = "\"if\" expected"; break;
 			case 17: s = "\"else\" expected"; break;
-			case 18: s = "\"While\" expected"; break;
+			case 18: s = "\"while\" expected"; break;
 			case 19: s = "\"for\" expected"; break;
 			case 20: s = "\"var\" expected"; break;
 			case 21: s = "\"println\" expected"; break;

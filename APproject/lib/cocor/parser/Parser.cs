@@ -240,6 +240,7 @@ public SymbolTable   tab;
 			}
 			Type(out type);
 			Expect(14);
+			node =  new Node (Labels.Decl);
 			foreach(string n in names)
 			{
 			obj = tab.NewObj(n, Kinds.var, type);
