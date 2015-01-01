@@ -331,9 +331,12 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj; string name;
 		Ident<out name>															(. obj = tab.Find(name);
 																				   node = new Term(obj); 
 																				   type = obj.type; .) 
-		[																		(. control = true; .)
-		'(' { CompleteExpr<out type1, out exprnode>											(. actualTypes.Enqueue(type1); .) 
-			 { ',' CompleteExpr<out type1, out exprnode>										(. actualTypes.Enqueue(type1); .) 
+		[																		(. control = true; 
+																				   node = new Node(Labels.FunCall); .)
+		'(' { CompleteExpr<out type1, out exprnode>								(. actualTypes.Enqueue(type1);
+																				   ((Node)node).addChildren(exprnode); .) 
+			 { ',' CompleteExpr<out type1, out exprnode>						(. actualTypes.Enqueue(type1); 
+																				   ((Node)node).addChildren(exprnode);.) 
 			 } } ')'															(. if (obj.kind != Kinds.proc || obj.rtype == null) 
 																						SemErr("object is not a procedure");
 																				   else
@@ -347,8 +350,10 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj; string name;
 		| '-'Factor<out type,out node>											(. if (type != Types.integer) 
 																					   SemErr("integer type expected");
 																				   type = Types.integer; .)
-		| "true"																(. type = Types.boolean; .)
-		| "false"																(. type = Types.boolean; .)
+		| "true"																(. node = new Term("true");
+																				   type = Types.boolean; .)
+		| "false"																(. node = new Term("false");
+																				   type = Types.boolean; .)
 	).	 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/

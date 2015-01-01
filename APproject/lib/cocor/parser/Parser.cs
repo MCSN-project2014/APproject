@@ -676,14 +676,17 @@ public SymbolTable   tab;
 			type = obj.type; 
 			if (la.kind == 5) {
 				control = true; 
+				node = new Node(Labels.FunCall); 
 				Get();
 				while (StartOf(2)) {
 					CompleteExpr(out type1, out exprnode);
-					actualTypes.Enqueue(type1); 
+					actualTypes.Enqueue(type1);
+					((Node)node).addChildren(exprnode); 
 					while (la.kind == 6) {
 						Get();
 						CompleteExpr(out type1, out exprnode);
 						actualTypes.Enqueue(type1); 
+						((Node)node).addChildren(exprnode);
 					}
 				}
 				Expect(7);
@@ -707,9 +710,11 @@ public SymbolTable   tab;
 			type = Types.integer; 
 		} else if (la.kind == 23) {
 			Get();
+			node = new Term("true");
 			type = Types.boolean; 
 		} else if (la.kind == 24) {
 			Get();
+			node = new Term("false");
 			type = Types.boolean; 
 		} else SynErr(52);
 	}

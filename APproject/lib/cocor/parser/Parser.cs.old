@@ -671,7 +671,8 @@ public SymbolTable   tab;
 		node = new Node(Labels.Block);
 		if (la.kind == 1) {
 			Ident(out name);
-			obj = tab.Find(name); 
+			obj = tab.Find(name);
+			node = new Term(obj); 
 			type = obj.type; 
 			if (la.kind == 5) {
 				control = true; 
