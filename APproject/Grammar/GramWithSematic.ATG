@@ -112,10 +112,10 @@ AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types typ
                                                               
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                              
-Stat<out ASTNode node>														(. Types type,type1; string name; string name1; Obj obj, obj1, robj;
-																			   Queue<Types> actualTypes = new Queue<Types>();
-																			   ASTNode node1;  
-																			   node = new Node(Labels.Assig); .) 
+Stat<out ASTNode node>															(. Types type,type1; string name; string name1; Obj obj, obj1, robj;
+																				   Queue<Types> actualTypes = new Queue<Types>();
+																			       ASTNode node1;  
+																			       node = new Node(Labels.Assig); .) 
 =																				
 	Ident<out name>																(. obj = tab.Find(name); .)                                                               
 		(                                                                    
@@ -126,11 +126,21 @@ Stat<out ASTNode node>														(. Types type,type1; string name; string nam
 				      "async" '{' "return" Ident<out name1>						(. node =  new Node(Labels.Async);
 																				   obj1 = tab.Find(name1);	
 																				   node1 = new Node(Labels.FunCall, obj1); .)
-								 '(' { CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+								 '(' { (
+									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
 																				   ((Node)node1).addChildren(node1);	.) 
-									 {',' CompleteExpr<out type, out node1>	    (. actualTypes.Enqueue(type);
-																					((Node)node1).addChildren(node1); .) 
-									 } } ')' '}'';'								(. if (obj1.kind != Kinds.proc) 
+										  | AProcDecl<out robj, out node1>		(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)node).addChildren(node1); .)
+										)
+
+									 {','(
+										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
+																				   ((Node)node1).addChildren(node1); .) 
+										   | AProcDecl<out robj, out node1>	    (. actualTypes.Enqueue(Types.fun);
+																				   ((Node)node).addChildren(node1); .)
+										  )
+									 } } ')'
+											 '}'';'								(. if (obj1.kind != Kinds.proc) 
 																				       SemErr("object is not a procedure");
 																				   if (obj1.type == Types.fun)
 																					   SemErr("wrong return type");
@@ -156,10 +166,20 @@ Stat<out ASTNode node>														(. Types type,type1; string name; string nam
 			                                                                 
 			| '('																(. node = new Node(Labels.FunCall, obj); .)
 																				   
-				  { CompleteExpr<out type, out node1>							(. actualTypes.Enqueue(type);
-																				   ((Node)node).addChildren(node1); .) 
-				  { ',' CompleteExpr<out type, out node1>						(. actualTypes.Enqueue(type); 
-																				   ((Node)node).addChildren(node1); .) 
+				  { ( 
+					    CompleteExpr<out type, out node1>						(. actualTypes.Enqueue(type);
+																				   ((Node)node).addChildren(node1); .)
+					   | AProcDecl<out robj, out node1>							(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)node).addChildren(node1); .)
+					 
+					 )											 
+				  { ','
+				      ( 
+						CompleteExpr<out type, out node1>						(. actualTypes.Enqueue(type); 
+																				   ((Node)node).addChildren(node1); .)
+						| AProcDecl<out robj, out node1>						(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)node).addChildren(node1); .)
+					  ) 
 				  } } ')' ';'													(. if (obj.kind != Kinds.proc || obj.rtype == null) 
 																						SemErr("object is not a procedure");
 																				   else
@@ -346,7 +366,7 @@ Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, fi
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Factor<out Types type, out ASTNode node>									(. int n; Obj obj; string name; Types type1; bool control = false;
+Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string name; Types type1; bool control = false;
 																			   Queue<Types> actualTypes = new Queue<Types>(); ASTNode node1; .) 
 
 =																				(. type = Types.undef;
@@ -357,10 +377,22 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj; string name;
 																				   type = obj.type; .) 
 		[																		(. control = true; 
 																				   node = new Node(Labels.FunCall); .)
-		'(' { CompleteExpr<out type1, out node1>								(. actualTypes.Enqueue(type1);
+		'(' { (
+				 CompleteExpr<out type1, out node1>								(. actualTypes.Enqueue(type1);
 																				   ((Node)node).addChildren(node1); .) 
-			 { ',' CompleteExpr<out type1, out node1>							(. actualTypes.Enqueue(type1); 
-																				   ((Node)node).addChildren(node1); .) 
+				| AProcDecl<out robj, out node1>								(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)node).addChildren(node1); .)
+			  
+			  )
+
+			 { ','
+				(
+				  CompleteExpr<out type1, out node1>							(. actualTypes.Enqueue(type1); 
+																				   ((Node)node).addChildren(node1); .)
+				  | AProcDecl<out robj, out node1>								(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)node).addChildren(node1); .)
+			  
+			   ) 
 			 } } ')'															(. if (obj.kind != Kinds.proc || obj.rtype == null) 
 																						SemErr("object is not a procedure");
 																				   else
