@@ -171,12 +171,12 @@ namespace APproject
 		/// 	return a-b;
 		/// }
 		/// fun main(){
-		/// 	var c int = test(7,3);
+		/// 	var c int = async{return test(7,3)};
 		/// 	print(c);
 		/// }
 		/// </summary>
 		/// <returns>The dec fun.</returns>
-		public static ASTNode testFunRet ()
+		public static ASTNode testAsync ()
 		{
 			Node program = new Node (Labels.Program);
 
@@ -189,12 +189,12 @@ namespace APproject
 			Obj varB = new Obj{ name = "b" };
 			funDec.addChildren (new Term (varA));
 			funDec.addChildren (new Term (varB));
-			Node ret = new Node (Labels.Return);
-			block1.addChildren (ret);
+			Node ret1 = new Node (Labels.Return);
+			block1.addChildren (ret1);
 			Node minus = new Node (Labels.Minus);
-			minus.addChildren (new Term (varA));
-			minus.addChildren (new Term (varB));
-			ret.addChildren (minus);
+			ret1.addChildren (minus);
+			minus.addChildren(new Term(varA));
+			minus.addChildren(new Term(varB));
 
 			Node main = new Node (Labels.Main);
 			program.addChildren (main);
@@ -202,13 +202,16 @@ namespace APproject
 			main.addChildren (assDec);
 			var varC = new Obj{ name = "c" };
 			assDec.addChildren (new Term (varC));
+			Node async = new Node (Labels.Async);
+			assDec.addChildren (async);
 			Node call = new Node (Labels.FunCall, fun);
+			async.addChildren (call);
 			call.addChildren (new Term (7));
 			call.addChildren (new Term (3));
-			assDec.addChildren (call);
 			Node print = new Node (Labels.Print);
 			main.addChildren (print);
 			print.addChildren (new Term (varC));
+
 			return program;
 		}
 

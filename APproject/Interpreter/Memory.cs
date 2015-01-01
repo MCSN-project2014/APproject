@@ -10,7 +10,6 @@ namespace APproject
 
 		public Memory (){
 			mem = new List<Dictionary<Obj,object>>();
-			//addScope();
 		}
 
 		public void addScope(){
@@ -49,10 +48,13 @@ namespace APproject
 
 		public object GetValue(Obj var){
 			object result;
-			if (TryGetValue(var, out result))
-				return result;
+			if (TryGetValue (var, out result))
+				if (result != null)
+					return result;
+				else
+					throw new VariableNotInizialized (var.name);
 			else
-				throw new MemoryNotFoundException();
+				throw new VariableNotFoundException();
 		}
 
 		public Memory CloneMemory(){
@@ -69,71 +71,20 @@ namespace APproject
 
 	}
 
-	public class MemoryNotFoundException: Exception
+	public class VariableNotFoundException: Exception
 	{
-		public MemoryNotFoundException()
+		public VariableNotFoundException()
 		{
 		}
 
-		public MemoryNotFoundException(string message)
+		public VariableNotFoundException(string message)
 			: base(message)
 		{
 		}
 
-		public MemoryNotFoundException(string message, Exception inner)
+		public VariableNotFoundException(string message, Exception inner)
 			: base(message, inner)
 		{
 		}
 	}
-
-	/*
-	public class Memory
-	{
-		private Dictionary<Obj,List<Dictionary<Obj,object>>> mem;
-		public Obj actualFun {
-			set {
-				actualFun = value;
-				List<Dictionary<Obj,object>> scope;
-				if (mem.TryGetValue (actualFun, out scope))
-					funScope = scope;
-				else funScope = null;
-			}
-			get { return actualFun; }
-		}
-		private List<Dictionary<Obj,object>> funScope;
-		private int iFunScope {get{return funScope.Count-1;}}
-
-		public Memory (Obj fun){
-			mem = new Dictionary<Obj,List<Dictionary<Obj,object>>>();
-			addFunction (fun);
-		}
-
-		public void addFunction (Obj fun){
-			mem.Add(fun, new List<Dictionary<Obj, object>>());
-			actualFun = fun;
-			addScope ();
-		}
-
-		public void addScope(){
-			funScope.Add(new Dictionary<Obj,object>());
-		}
-
-		public void removeScope(){
-			funScope.RemoveAt(iFunScope);
-		}
-
-		public void addValue(Obj var, object value){
-			funScope[iFunScope].Add (var, value);
-		}
-
-		public object getValue(Obj var){
-			int count = funScope.Count;
-			for (int i = count; i >= 0; i--) {
-				object value;
-				if (funScope[i].TryGetValue (var, out value))
-					return value;
-			}
-			return null;
-		}
-	}*/
 }

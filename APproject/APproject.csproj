@@ -58,14 +58,13 @@
     <Compile Include="symbolTable\SymTab.cs" />
     <Compile Include="treeGenerator\Node.cs" />
     <Compile Include="treeGenerator\TreeGen.cs" />
-    <Compile Include="Interpreter\Interpreter.cs" />
     <Compile Include="Interpreter\Memory.cs" />
     <Compile Include="AST\ASTNode.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
     <Compile Include="Interpreter\InterpreterTest.cs" />
-    <Compile Include="Interpreter\MemoryFunction.cs" />
     <Compile Include="Interpreter\InterpreterException.cs" />
+    <Compile Include="Interpreter\Interpreter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

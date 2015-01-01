@@ -10,7 +10,7 @@ namespace APproject
 						For, If, While, Block,
 						Assig, Decl, AssigDecl, 
 						Return, Async, Print, Read,  
-						Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq, NotEq, And, Or,
+						Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq, NotEq, And, Or, Negativ,
 						FunCall};
 
 	public abstract class ASTNode{
@@ -24,6 +24,11 @@ namespace APproject
 
 		protected Labels _label;
 		public Labels label{ get { return _label; } }
+
+		protected int _line;
+		protected int _column;
+		public int line{ get {return _line;}}
+		public int column{ get {return _column;}}
 
 		public abstract bool isTerminal ();
 
@@ -51,6 +56,24 @@ namespace APproject
 			_children = new List<ASTNode> ();
 			_label = l;
 			_value = value;
+		}
+
+		public Node (Labels l, int line, int column){
+			parent = null;
+			_children = new List<ASTNode> ();
+			_label = l;
+			_value = value;
+			_line = line;
+			_column = column;
+		}
+
+		public Node (Labels l, object value, int line, int column){
+			parent = null;
+			_children = new List<ASTNode> ();
+			_label = l;
+			_value = value;
+			_line = line;
+			_column = column;
 		}
 
 		/// <summary>
@@ -89,6 +112,12 @@ namespace APproject
 		/// <param name="integer">Integer.</param>
 		public Term(object value){
 			_value = value;
+		}
+
+		public Term(object value, int line, int column){
+			_value = value;
+			_line = line;
+			_column = column;
 		}
 
 		/// <summary>

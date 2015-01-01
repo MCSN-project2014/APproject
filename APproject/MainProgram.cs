@@ -37,7 +37,8 @@ namespace APproject
                 Console.Write("-- No source file specified");
             }
 
-			//InterpreterTest.Start (InterpreterTest.testAFun);
+			//InterpreterTest.Start (InterpreterTest.testAsync);
+
 		}
 	}
 }

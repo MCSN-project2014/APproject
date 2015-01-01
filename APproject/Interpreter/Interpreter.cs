@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace APproject
 {
 	public class Interpreter
 	{
+		const string CONSOL_PRINT = "FUNW@P console: ";
+		const string CONSOL_READ = "FUNW@P read: ";
+		const string CONSOL_INFO = "FUNW@P info: ";
+
 		//MemoryFunction funMem;
 		private Dictionary<Obj,ASTNode> function;
 		//Obj main;
@@ -18,6 +24,7 @@ namespace APproject
 			
 		public void Start (){
 			Console.WriteLine ("\nINTERPRETER START:");
+			try{
 			foreach (ASTNode node in startNode.children) {
 				if (node.label == Labels.FunDecl)
 					function.Add ((Obj)node.value, node);
@@ -33,6 +40,9 @@ namespace APproject
 					Interpret (node, mem);
 					mem.removeScope ();
 				}
+			}
+			}catch(InterpreterException e){
+				Console.WriteLine (e.Message);
 			}
 		}
 
@@ -53,8 +63,7 @@ namespace APproject
 						if (ret != null)
 							break;
 					}
-					//if (!(ret is  Tuple<ASTNode,Memory>))
-						actualMemory.removeScope ();
+					actualMemory.removeScope ();
 					return ret;
 				case Labels.If:
 					condition = InterpretCondition (children [0], actualMemory);
@@ -95,9 +104,9 @@ namespace APproject
 					break;
 				case Labels.Print:
 					if (children [0].isTerminal () && children [0].value is string)
-						Console.WriteLine ("FUNW@P console: " + children [0].value);
+						Console.WriteLine (CONSOL_PRINT + children [0].value);
 					else
-						Console.WriteLine ("FUNW@P console: " + Convert.ToString (InterpretExp (children [0], actualMemory)));
+						Console.WriteLine (CONSOL_PRINT + Convert.ToString (InterpretExp (children [0], actualMemory)));
 					break;
 				case Labels.Return:
 					object tmp = InterpretExp (children [0], actualMemory);
@@ -133,69 +142,101 @@ namespace APproject
 		private object InterpretExp (ASTNode node, Memory actualMemory)
 		{
 			if (node.isTerminal ()) {
-				if (node.value is Obj)
-					return actualMemory.GetValue ((Obj)node.value);
-				else
+				if (node.value is Obj) {
+					object value = actualMemory.GetValue ((Obj)node.value);
+					if (value is Task<object>) {
+						//((Task<object>)value).Wait();
+						Console.WriteLine(CONSOL_INFO + "waiting the calculation of variable '"+node+"'...");
+						return ((Task<object>)value).Result;
+					}else
+						return value;
+				}else
 					return node.value;
 			} else {
 				List<ASTNode> children = node.children;
 				switch (node.label) {
 				case Labels.Plus:
-					return (int) InterpretExp (children [0], actualMemory) + (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0], actualMemory) + InterpretExpInt (children [1],actualMemory);
 				case Labels.Minus:
-					return (int) InterpretExp (children [0],actualMemory) - (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) - InterpretExpInt (children [1],actualMemory);
 				case Labels.Mul:
-					return (int) InterpretExp (children [0],actualMemory) * (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) * InterpretExpInt (children [1],actualMemory);
 				case Labels.Div:
-					return (int) InterpretExp (children [0],actualMemory) / (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) / InterpretExpInt (children [1],actualMemory);
 				case Labels.Eq:
 					var tmp = InterpretExp (children [0],actualMemory);
 					if (tmp is bool)
-						return (bool) tmp == (bool) InterpretExp (children [1],actualMemory);
+						return (bool) tmp == InterpretCondition (children [1],actualMemory);
 					else
-						return (int) InterpretExp (children [0],actualMemory) == (int) InterpretExp (children [1],actualMemory);
+						return (int) tmp == InterpretExpInt (children [1],actualMemory);
+				case Labels.NotEq:
+					var tmp1 = InterpretExp (children [0], actualMemory);
+					if (tmp1 is bool)
+						return (bool) tmp1 == InterpretCondition (children [1],actualMemory);
+					else
+						return (int) tmp1 == InterpretExpInt (children [1],actualMemory);				
 				case Labels.Gt:
-					return (int) InterpretExp (children [0],actualMemory) > (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) > InterpretExpInt (children [1],actualMemory);
 				case Labels.Gte:
-					return (int) InterpretExp (children [0],actualMemory) >= (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) >= InterpretExpInt (children [1],actualMemory);
 				case Labels.Lt:
-					return (int) InterpretExp (children [0],actualMemory) < (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) < InterpretExpInt (children [1],actualMemory);
 				case Labels.Lte:
-					return (int) InterpretExp (children [0],actualMemory) <= (int) InterpretExp (children [1],actualMemory);
+					return InterpretExpInt (children [0],actualMemory) <= InterpretExpInt (children [1],actualMemory);
+				case Labels.And:
+					return InterpretCondition (children [0], actualMemory) && InterpretCondition (children [1], actualMemory);
+				case Labels.Or:
+					return InterpretCondition (children [0], actualMemory) || InterpretCondition (children [1], actualMemory);
 				case Labels.FunCall:
-					Obj funName = (Obj)node.value;
-					ASTNode funNode;
-					Memory funMem;
-					if (function.TryGetValue (funName, out funNode)) {
-						funMem = new Memory ();
-					} else {
-						var afun = (Tuple<ASTNode,Memory>) actualMemory.GetValue (funName); 
-						funNode = afun.Item1;
-						funMem = afun.Item2;
-					}
-					funMem.addScope ();
-					int i = 1;
-					foreach (ASTNode actual in children) {
-						funMem.addUpdateValue ((Obj)funNode.children [i].value, InterpretExp (actual, actualMemory));
-						i++;
-					}
-					object ret = Interpret (funNode.children [0], funMem);
-					//if (!(ret is Tuple<ASTNode,Memory>))
-						funMem.removeScope ();
-					return ret;
+					return FunctionCall (FunParameterPassing(node,actualMemory));
 				case Labels.Afun:
 					return new Tuple<ASTNode,Memory> (node,actualMemory);
 				case Labels.Read:
-					string read = Console.ReadLine ();
+					Console.Write (CONSOL_READ);
+					string read = Console.ReadLine();
 					try{
 						return Convert.ToInt32 (read);
 					}catch(FormatException){
-						return null;
+						throw new ReadNotIntegerValue ();
 					}
+				case Labels.Async:
+					var fun = FunParameterPassing (node.children[0], actualMemory);
+					Task<object> task = Task.Run (() => {
+						//Thread.Sleep(2000);
+						return FunctionCall (fun);
+					});
+					return task;
 				default:
 					return null;
 				}
 			}
 		}
+
+		private Tuple<ASTNode,Memory> FunParameterPassing(ASTNode node, Memory actualMemory){
+			Obj funName = (Obj)node.value;
+			ASTNode funNode;
+			Memory funMem;
+			if (function.TryGetValue (funName, out funNode)) {
+				funMem = new Memory ();
+			} else {
+				var afun = (Tuple<ASTNode,Memory>) actualMemory.GetValue (funName); 
+				funNode = afun.Item1;
+				funMem = afun.Item2;
+			}
+			funMem.addScope ();
+			int i = 1;
+			foreach (ASTNode actual in node.children) {
+				funMem.addUpdateValue ((Obj)funNode.children [i].value, InterpretExp (actual, actualMemory));
+				i++;
+			}
+			return new Tuple<ASTNode,Memory> (funNode, funMem);
+		}
+
+		private object FunctionCall(Tuple<ASTNode,Memory> fun){
+			object ret = Interpret (fun.Item1.children [0], fun.Item2);
+			fun.Item2.removeScope ();
+			return ret;
+		}
+
 	}
 }
