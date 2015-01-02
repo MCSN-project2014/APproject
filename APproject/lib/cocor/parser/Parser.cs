@@ -640,9 +640,8 @@ public SymbolTable   tab;
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean;
-			
-			((Node)op).addChildren(secondSimpExpr);
-			((Node)op).addChildren(firstSimpExpr); 
+			((Node)op).addChildren(firstSimpExpr);
+			((Node)op).addChildren(secondSimpExpr); 
 		}
 	}
 

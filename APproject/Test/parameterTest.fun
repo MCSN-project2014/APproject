@@ -1,8 +1,8 @@
 
 
 fun main(){
-	var y int = 5-3+5+7;
-	if 6<5{
+	var y int = 5-7;
+	
 		println{y};
-	}
+	
 }
