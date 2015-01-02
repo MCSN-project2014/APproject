@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace funwapi
+namespace funwaps
 {
-	class MainClass
+	class FunwapsMain
 	{
 		public static void Main (string[] args)
 		{
