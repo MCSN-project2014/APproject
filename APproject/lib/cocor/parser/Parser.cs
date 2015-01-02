@@ -623,9 +623,9 @@ public SymbolTable   tab;
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
-			
+			((Node)op).addChildren(firstExpr);
 			((Node)op).addChildren(secondExpr);
-			((Node)op).addChildren(firstExpr); 
+			
 		}
 	}
 
@@ -665,9 +665,9 @@ public SymbolTable   tab;
 			SimpExpr(out type1,out secondTerm);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected"); 
-			
+			((Node)op).addChildren(firstTerm);
 			((Node)op).addChildren(secondTerm);
-			((Node)op).addChildren(firstTerm); 
+			
 		}
 	}
 
@@ -717,9 +717,9 @@ public SymbolTable   tab;
 			Term(out type1,out secondfactor);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected");
-			
+			((Node)op).addChildren(firstfactor);
 			((Node)op).addChildren(secondfactor);
-			((Node)op).addChildren(firstfactor); 
+			
 		}
 	}
 
