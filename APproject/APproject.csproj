@@ -37,7 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>APproject.FSCodeGenerator.FSCodeGenTestModule</StartupObject>
+    <StartupObject>APproject.MainProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -69,6 +69,7 @@
     <Compile Include="Interpreter\InterpreterTest.cs" />
     <Compile Include="Interpreter\InterpreterException.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
+    <Compile Include="testJson.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
