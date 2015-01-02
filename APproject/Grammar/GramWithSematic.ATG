@@ -334,8 +334,9 @@ CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode 
 	CompleteExpr<out type1,out secondExpr>										 (. if (type != type1)
 																						SemErr("incompatible types");
 																					type = Types.boolean; 
-																					((Node)op).addChildren(firstExpr);
-																					((Node)op).addChildren(secondExpr); .)
+																					
+																					((Node)op).addChildren(secondExpr);
+																					((Node)op).addChildren(firstExpr); .)
   }.
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
@@ -346,8 +347,9 @@ Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, fir
 	Expr<out type1, out secondSimpExpr>										     (. if (type != type1)
 																	         		    SemErr("incompatible types");
 																					type = Types.boolean;
-																					((Node)op).addChildren(firstSimpExpr);
-																					((Node)op).addChildren(secondSimpExpr); .) 
+																					
+																					((Node)op).addChildren(secondSimpExpr);
+																					((Node)op).addChildren(firstSimpExpr); .) 
   ].
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
@@ -357,8 +359,9 @@ SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op,
   { AddOp<out op>																 (. node = op; .)
     SimpExpr<out type1,out secondTerm>											 (. if (type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected"); 
-																					((Node)op).addChildren(firstTerm);
-																					((Node)op).addChildren(secondTerm); .)
+																					
+																					((Node)op).addChildren(secondTerm);
+																					((Node)op).addChildren(firstTerm); .)
   }. 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
@@ -368,8 +371,9 @@ Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, fi
   { MulOp<out op>																(. node = op; .)
     Term<out type1,out secondfactor>											(. if (type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected");
-																					   ((Node)op).addChildren(firstfactor);
-																					   ((Node)op).addChildren(secondfactor); .)
+																					   
+																					   ((Node)op).addChildren(secondfactor);
+																					   ((Node)op).addChildren(firstfactor); .)
   }.
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
