@@ -18,11 +18,15 @@ namespace APproject
         private StreamWriter fileWriter;
         private int indentationLevel; //it stores the number of \t needed to get the perfect indentation ;)
         private string fileName;
+        private int asyncTasksCounter;
+        Memory memory;
 
         public FSCodeGen(string outputFileName)
         {
             indentationLevel = 0;
+            asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
+            memory = new Memory();
 
             if (outputFileName == string.Empty)
             {
@@ -456,13 +460,20 @@ namespace APproject
 
         public void translateAsync(ASTNode n)
         {
-            /*
-            safeWrite("Async.RunSynchronously(async { return ");
+
+            /* var a int = async{...}
+             * b = async{...}
+             * a + b
+             * safeWrite("Async.RunSynchronously(async { return ");
             translateRecursive(n.children.ElementAt(0));
             safeWrite("})");
             */
-            
-            safeWrite("Async.StartTask( async { return ");
+            string taskName = "task" + (asyncTasksCounter++);
+            safeWrite("let " + taskName + " = Async.StartAsTask( async{ return");
+
+            // insert taskName in memory with name of the variable 
+            // associate result to variable
+            // use the variable
             translateRecursive(n.children.ElementAt(0));
             safeWrite("})");
 
