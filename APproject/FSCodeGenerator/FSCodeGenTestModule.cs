@@ -104,11 +104,11 @@ namespace APproject.FSCodeGenerator
              * */
 
             Node program = new Node(Labels.Program);
-            String sumObj = "sum";
+            Obj sumObj = new Obj() { name = "sum" };
             Node sumDec = new Node(Labels.FunDecl, sumObj);
             Node block = new Node(Labels.Block);
             Node returnType = new Node(Labels.Return);
-            returnType.addChildren(new Term(new Obj { name = "int" }));
+            returnType.addChildren(new Term(new Obj() { name = "int"}));
             Node returnSum = new Node(Labels.Return);
             Node sumOp = new Node(Labels.Plus);
             Obj varx = new Obj { name = "x", type = Types.integer };
@@ -138,10 +138,9 @@ namespace APproject.FSCodeGenerator
             assY.addChildren(valueY);
             Node assFunSum = new Node(Labels.AssigDecl);
             Term R = new Term(new Obj { name = "r" });
-            Node sumCall = new Node(Labels.FunCall);
-            sumCall.addChildren(new Term(new Obj { name = "sum" }));
-            sumCall.addChildren(new Term(new Obj { name = "x" }));
-            sumCall.addChildren(new Term(new Obj { name = "y" }));
+            Node sumCall = new Node(Labels.FunCall, sumObj);
+            sumCall.addChildren(new Term("x"));
+            sumCall.addChildren(new Term("y"));
             assFunSum.addChildren(R);
             assFunSum.addChildren(sumCall);
 
@@ -279,7 +278,7 @@ namespace APproject.FSCodeGenerator
         {
             String fileName = "traslated_file";
             FSCodeGen gen = new FSCodeGen(fileName);
-            printAST(root);
+           // printAST(root);
             gen.translate(root);
             Console.ReadKey();
         }
@@ -288,9 +287,9 @@ namespace APproject.FSCodeGenerator
         {
 
             // test(createASTif());
-            // test(createASTfunDecl());
+             test(createASTfunDecl());
             // test(createASTfor());
-            test(createASTasync());
+           // test(createASTasync());
             //test(createASTafun());
 
 
