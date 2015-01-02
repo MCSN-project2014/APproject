@@ -421,6 +421,8 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   type = Types.boolean; .)
 		| "false"																(. node = new Term(false);
 																				   type = Types.boolean; .)
+		|'(' CompleteExpr<out type1, out node1> ')'								(. node = node1;
+																				   type = type1; .)
 	).	 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/

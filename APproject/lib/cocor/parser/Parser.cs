@@ -735,7 +735,8 @@ public SymbolTable   tab;
 		Queue<Types> actualTypes = new Queue<Types>(); ASTNode node1; 
 		type = Types.undef;
 		node = null;
-		if (la.kind == 1) {
+		switch (la.kind) {
+		case 1: {
 			Ident(out name);
 			obj = tab.Find(name);
 			node = new Term(obj); 
@@ -775,12 +776,16 @@ public SymbolTable   tab;
 			}
 			if (!control && obj.kind != Kinds.var)
 			  SemErr("variable expected"); 
-		} else if (la.kind == 2) {
+			break;
+		}
+		case 2: {
 			Get();
 			n = Convert.ToInt32(t.val);
 			node =  new Term(n);
 			type = Types.integer; 
-		} else if (la.kind == 22) {
+			break;
+		}
+		case 22: {
 			Get();
 			Factor(out type,out node1);
 			node = new Node(Labels.Negativ);
@@ -788,15 +793,30 @@ public SymbolTable   tab;
 			if (type != Types.integer) 
 			SemErr("integer type expected");
 			type = Types.integer; 
-		} else if (la.kind == 23) {
+			break;
+		}
+		case 23: {
 			Get();
 			node = new Term(true);
 			type = Types.boolean; 
-		} else if (la.kind == 24) {
+			break;
+		}
+		case 24: {
 			Get();
 			node = new Term(false);
 			type = Types.boolean; 
-		} else SynErr(55);
+			break;
+		}
+		case 5: {
+			Get();
+			CompleteExpr(out type1, out node1);
+			Expect(7);
+			node = node1;
+			type = type1; 
+			break;
+		}
+		default: SynErr(55); break;
+		}
 	}
 
 	void MulOp(out ASTNode op) {
@@ -823,8 +843,8 @@ public SymbolTable   tab;
 	static readonly bool[,] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
-		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
-		{x,T,T,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,T,T,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,T,T,x, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,T,T, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
 		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,x,x, x,x,x,x}
 
