@@ -45,11 +45,6 @@ namespace APproject
             }
         }
 
-        public FSCodeGen()
-        {
-            // TODO: Complete member initialization
-        }
-
         ///<summary>
         /// This method calls the necessary ones in order to translate 
         /// the AST into F# code.
@@ -206,10 +201,14 @@ namespace APproject
         /// <param name="n">the Main node</param>
         public void translateMain(ASTNode n)
         {
+            memory.addScope();
+
             foreach ( Node c in n.children )
             {
                 translateRecursive(c);
             }
+
+            memory.removeScope();
             
         }
         /// <summary>
@@ -220,6 +219,8 @@ namespace APproject
         public void translateBlock(ASTNode n)
         {   
             List<ASTNode> children = n.children;
+           
+            memory.addScope();
 
             indentationLevel++;
             foreach( Node c in children)
@@ -228,7 +229,9 @@ namespace APproject
                 translateRecursive(c);
                 safeWrite("\n");
             }
-            indentationLevel--;   
+            indentationLevel--;
+
+            memory.removeScope();
         }
 
         /// <summary>
