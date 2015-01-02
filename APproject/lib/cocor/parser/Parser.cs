@@ -422,7 +422,7 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (StartOf(4)) {
 					Stat(out node1);
-					((Node)thenBlock).addChildren(node1);
+					((Node)thenBlock).addChildren(node1); 
 				} else {
 					VarDecl(out node1);
 					((Node)thenBlock).addChildren(node1); 
@@ -619,7 +619,7 @@ public SymbolTable   tab;
 		while (la.kind == 34 || la.kind == 35) {
 			BoolOp(out op);
 			node = op; 
-			Expr(out type1,out secondExpr);
+			CompleteExpr(out type1,out secondExpr);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
@@ -635,7 +635,7 @@ public SymbolTable   tab;
 		if (StartOf(5)) {
 			RelOp(out op);
 			node = op; 
-			SimpExpr(out type1, out secondSimpExpr);
+			Expr(out type1, out secondSimpExpr);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean;
@@ -661,7 +661,7 @@ public SymbolTable   tab;
 		while (la.kind == 22 || la.kind == 27) {
 			AddOp(out op);
 			node = op; 
-			Term(out type1,out secondTerm);
+			SimpExpr(out type1,out secondTerm);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected"); 
 			((Node)op).addChildren(firstTerm);
@@ -712,7 +712,7 @@ public SymbolTable   tab;
 		while (la.kind == 36 || la.kind == 37) {
 			MulOp(out op);
 			node = op; 
-			Factor(out type1,out secondfactor);
+			Term(out type1,out secondfactor);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected");
 			((Node)op).addChildren(firstfactor);

@@ -301,6 +301,7 @@ public SymbolTable   tab;
 		case 1: {
 			Ident(out name);
 			obj = tab.Find(name); 
+			
 			if (la.kind == 11) {
 				Get();
 				if ( obj.kind != Kinds.var )
@@ -341,6 +342,7 @@ public SymbolTable   tab;
 					Expect(9);
 					Expect(14);
 					((Node)async).addChildren(call);
+					((Node)node).addChildren(new Term(obj));
 					((Node)node).addChildren(async); 
 					if (obj1.kind != Kinds.proc) 
 					   SemErr("object is not a procedure");
@@ -420,7 +422,7 @@ public SymbolTable   tab;
 			while (StartOf(1)) {
 				if (StartOf(4)) {
 					Stat(out node1);
-					((Node)thenBlock).addChildren(node1);
+					((Node)thenBlock).addChildren(node1); 
 				} else {
 					VarDecl(out node1);
 					((Node)thenBlock).addChildren(node1); 
@@ -617,7 +619,7 @@ public SymbolTable   tab;
 		while (la.kind == 34 || la.kind == 35) {
 			BoolOp(out op);
 			node = op; 
-			Expr(out type1,out secondExpr);
+			CompleteExpr(out type1,out secondExpr);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 

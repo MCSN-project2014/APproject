@@ -6,8 +6,9 @@ fun add(x int, y int) int {
 
 fun main(){
 	var x int = 7;
-	var y int = 5+3+5+7;
-	var result int;
-	result = async{return add(x,y)};
+	var y int = 5-3+5+7;
+	println{y};
+	var z bool = true || true && false;
+	
 
 }

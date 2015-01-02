@@ -198,7 +198,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																					   if (type != Types.boolean) 
 																						  SemErr("boolean type expected"); .)
 																					(. tab.OpenScope(); .) 
-	 '{' { Stat<out node1>															(. ((Node)thenBlock).addChildren(node1);.) 
+	 '{' { Stat<out node1>															(. ((Node)thenBlock).addChildren(node1); .) 
 		   | VarDecl<out node1>														(. ((Node)thenBlock).addChildren(node1); .)	 
 	  } '}'																			(. ((Node)node).addChildren(thenBlock);
 																						tab.CloseScope(); .)
@@ -331,7 +331,7 @@ VarDecl<out ASTNode node>														(. string name; ArrayList names = new Arr
 CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, firstExpr, secondExpr; .)
 = Expr<out type,out firstExpr>													 (. node = firstExpr; .)
   { BoolOp<out op>																 (. node = op; .)
-	Expr<out type1,out secondExpr>												 (. if (type != type1)
+	CompleteExpr<out type1,out secondExpr>										 (. if (type != type1)
 																						SemErr("incompatible types");
 																					type = Types.boolean; 
 																					((Node)op).addChildren(firstExpr);
@@ -343,7 +343,7 @@ CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode 
 Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, firstSimpExpr, secondSimpExpr; .)
 = SimpExpr<out type, out firstSimpExpr>											 (. node = firstSimpExpr; .)
   [ RelOp<out op>																 (. node = op; .)
-	SimpExpr<out type1, out secondSimpExpr>										 (. if (type != type1)
+	Expr<out type1, out secondSimpExpr>										     (. if (type != type1)
 																	         		    SemErr("incompatible types");
 																					type = Types.boolean;
 																					((Node)op).addChildren(firstSimpExpr);
@@ -355,7 +355,7 @@ Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, fir
 SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op, firstTerm, secondTerm; .)
 = Term<out type, out firstTerm>													 (. node = firstTerm; .)	 
   { AddOp<out op>																 (. node = op; .)
-    Term<out type1,out secondTerm>												 (. if (type != Types.integer || type1 != Types.integer)
+    SimpExpr<out type1,out secondTerm>											 (. if (type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected"); 
 																					((Node)op).addChildren(firstTerm);
 																					((Node)op).addChildren(secondTerm); .)
@@ -366,7 +366,7 @@ SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op,
 Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, firstfactor, secondfactor; .)
 = Factor<out type, out firstfactor>												(. node = firstfactor; .)
   { MulOp<out op>																(. node = op; .)
-    Factor<out type1,out secondfactor>											(. if (type != Types.integer || type1 != Types.integer)
+    Term<out type1,out secondfactor>											(. if (type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected");
 																					   ((Node)op).addChildren(firstfactor);
 																					   ((Node)op).addChildren(secondfactor); .)
