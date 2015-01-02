@@ -81,8 +81,10 @@ namespace APproject
 		/// </summary>
 		/// <param name="node">Node.</param>
 		public void addChildren (ASTNode node){
-			node.parent = this;
-			children.Add (node);
+			if (node != null) {
+				node.parent = this;
+				children.Add (node);
+			}
 		}
 
 		/// <summary>

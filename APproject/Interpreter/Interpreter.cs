@@ -193,10 +193,11 @@ namespace APproject
 					return new Tuple<ASTNode,Memory> (node,actualMemory);
 				case Labels.Read:
 					Console.Write (CONSOL_READ);
-					string read = Console.ReadLine();
-					try{
+					string read = Console.ReadLine ();
+					try {
+						Console.Write ("\n");
 						return Convert.ToInt32 (read);
-					}catch(FormatException){
+					} catch (FormatException) {
 						throw new ReadNotIntegerValue ();
 					}
 				case Labels.Async:
