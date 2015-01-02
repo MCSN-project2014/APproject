@@ -27,6 +27,7 @@ namespace funwaps
 				new Interpreter (root).Start ();
 			} else
 				Console.WriteLine ("no input");
+
 		}
 	}
 }

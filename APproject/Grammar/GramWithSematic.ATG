@@ -18,6 +18,8 @@ COMPILER Fun
 CHARACTERS
   letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
   digit = "0123456789".
+  CharInLine = ANY - '\r' - '\n'.
+  AnyButDoubleQuote = CharInLine - '\"'.
   cr  = '\r'.
   lf  = '\n'.
   tab = '\t'.
@@ -25,12 +27,14 @@ CHARACTERS
 TOKENS
   ident  = letter {letter | digit}.
   number = digit {digit}.
-  print  = '"'{letter | digit }'"'.
+  string = '"' {AnyButDoubleQuote | "\\\""} '"'.
 
 COMMENTS FROM "/*" TO "*/" NESTED
 COMMENTS FROM "//" TO lf
 
+
 IGNORE cr + lf + tab
+
 
 PRODUCTIONS
 
@@ -249,8 +253,10 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																								tab.CloseScope(); .)
 																				
     | "println"'{'																(.  node = new Node(Labels.Print); .)
-				  {CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
-				  }'}'';'						
+				  ( CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
+				    |string													    (. ((Node)node).addChildren(new Term(t.val)); .)
+				  )
+				  '}' ';'						
 																				  
 		
 	| "return"																	(. node = new Node(Labels.Return);

@@ -1,7 +1,7 @@
 
 
 fun main(){
-	var y int = 5-4+3;
-	println{y};
+		var x int= 6+8;
+        println{"hola zio"};
 	
 }
