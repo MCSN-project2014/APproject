@@ -243,13 +243,17 @@ namespace APproject
             List<ASTNode> children = n.children; 
             int numElement = children.Count;
             safeWrite("let ");
-            safeWrite( n.value.ToString()+" ");
-            if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){
-                translateParameters(2 , n);
-                safeWrite(" : ");
-                translateRecursive(children.ElementAt(1)); 
-                safeWrite( " = \n ");
-                translateRecursive(children.ElementAt(0));
+            if (n.value.GetType() == typeof(Obj))  
+                {
+                safeWrite(((Obj)n.value).name + " ");   //name of the function 
+              
+                if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){    
+                    translateParameters(2 , n);
+                    safeWrite(" : ");
+                    translateRecursive(children.ElementAt(1));   // the return type
+                    safeWrite( " = \n ");
+                    translateRecursive(children.ElementAt(0));
+                }
             }
 
             if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
@@ -347,6 +351,7 @@ namespace APproject
         public void translateDecl(ASTNode n)
         {   
             safeWrite("let mutable ");
+
             translateRecursive(n.children.ElementAt(0));
 
             if (n.children.ElementAt(0).type == Types.integer)
@@ -385,9 +390,12 @@ namespace APproject
         public void translateFunCall( ASTNode n)
         {
             List<ASTNode> children = n.children;
-            translateRecursive( children.ElementAt(0)); // contains the name of function;
-            
-            for (int i = 1; i < children.Count(); i++)
+            if (n.value.GetType() == typeof(Obj))
+            {
+              safeWrite(((Obj)n.value).name + " ");
+            }
+
+            for (int i = 0; i < children.Count(); i++)  // parameters of the function
             {
                 safeWrite(" ");
                 translateRecursive(children.ElementAt(i));
@@ -462,10 +470,16 @@ namespace APproject
 
         public void translateAsync(ASTNode n)
         {
+            /*
             safeWrite("Async.RunSynchronously(async { return ");
             translateRecursive(n.children.ElementAt(0));
             safeWrite("})");
+            */
             
+            safeWrite("Async.StartTask( async { return ");
+            translateRecursive(n.children.ElementAt(0));
+            safeWrite("})");
+
         }
 
         /// <summary>

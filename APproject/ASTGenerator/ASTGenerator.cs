@@ -31,5 +31,10 @@ namespace APproject
         {
             return root;
         }
+
+        public void addChildren( Node node , int index)
+        {
+            AST.addChildren(index, node);
+        }
     }
 }
