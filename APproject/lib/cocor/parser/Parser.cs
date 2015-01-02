@@ -13,7 +13,7 @@ public class Parser {
 	public const int _EOF = 0;
 	public const int _ident = 1;
 	public const int _number = 2;
-	public const int _print = 3;
+	public const int _string = 3;
 	public const int maxT = 38;
 
 	const bool T = true;
@@ -527,10 +527,13 @@ public SymbolTable   tab;
 			Get();
 			Expect(8);
 			node = new Node(Labels.Print); 
-			while (StartOf(2)) {
+			if (StartOf(2)) {
 				CompleteExpr(out type, out node1);
 				((Node)node).addChildren(node1); 
-			}
+			} else if (la.kind == 3) {
+				Get();
+				((Node)node).addChildren(new Term(t.val)); 
+			} else SynErr(49);
 			Expect(9);
 			Expect(14);
 			break;
@@ -561,10 +564,10 @@ public SymbolTable   tab;
 				obj.returnIsSet=true;
 				tab.complexReturnTypeControl(obj,robj);
 				} 
-			} else SynErr(49);
+			} else SynErr(50);
 			break;
 		}
-		default: SynErr(50); break;
+		default: SynErr(51); break;
 		}
 	}
 
@@ -649,7 +652,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 35) {
 			Get();
 			op = new Node(Labels.Or);  
-		} else SynErr(51);
+		} else SynErr(52);
 	}
 
 	void SimpExpr(out Types type, out ASTNode node) {
@@ -699,7 +702,7 @@ public SymbolTable   tab;
 			op = new Node(Labels.Gte); 
 			break;
 		}
-		default: SynErr(52); break;
+		default: SynErr(53); break;
 		}
 	}
 
@@ -724,7 +727,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 22) {
 			Get();
 			op = new Node(Labels.Minus); 
-		} else SynErr(53);
+		} else SynErr(54);
 	}
 
 	void Factor(out Types type, out ASTNode node) {
@@ -762,7 +765,7 @@ public SymbolTable   tab;
 							AProcDecl(out robj, out node1);
 							actualTypes.Enqueue(Types.fun);
 							((Node)node).addChildren(node1); 
-						} else SynErr(54);
+						} else SynErr(55);
 					}
 				}
 				Expect(7);
@@ -812,7 +815,7 @@ public SymbolTable   tab;
 			type = type1; 
 			break;
 		}
-		default: SynErr(55); break;
+		default: SynErr(56); break;
 		}
 	}
 
@@ -823,7 +826,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 37) {
 			Get();
 			op = new Node(Labels.Div); 
-		} else SynErr(56);
+		} else SynErr(57);
 	}
 
 
@@ -860,7 +863,7 @@ public class Errors {
 			case 0: s = "EOF expected"; break;
 			case 1: s = "ident expected"; break;
 			case 2: s = "number expected"; break;
-			case 3: s = "print expected"; break;
+			case 3: s = "string expected"; break;
 			case 4: s = "\"fun\" expected"; break;
 			case 5: s = "\"(\" expected"; break;
 			case 6: s = "\",\" expected"; break;
@@ -908,12 +911,13 @@ public class Errors {
 			case 48: s = "invalid Stat"; break;
 			case 49: s = "invalid Stat"; break;
 			case 50: s = "invalid Stat"; break;
-			case 51: s = "invalid BoolOp"; break;
-			case 52: s = "invalid RelOp"; break;
-			case 53: s = "invalid AddOp"; break;
-			case 54: s = "invalid Factor"; break;
+			case 51: s = "invalid Stat"; break;
+			case 52: s = "invalid BoolOp"; break;
+			case 53: s = "invalid RelOp"; break;
+			case 54: s = "invalid AddOp"; break;
 			case 55: s = "invalid Factor"; break;
-			case 56: s = "invalid MulOp"; break;
+			case 56: s = "invalid Factor"; break;
+			case 57: s = "invalid MulOp"; break;
 
 			default: s = "error " + n; break;
 		}
