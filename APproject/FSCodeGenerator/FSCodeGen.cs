@@ -19,14 +19,14 @@ namespace APproject
         private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
         private string fileName;
         private int asyncTasksCounter;
-        Environment memory;
+        Environment environment;
 
         public FSCodeGen(string outputFileName)
         {
             indentationLevel = 0;
             asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
-            memory = new Environment();
+            environment = new Environment();
 
             if (outputFileName == string.Empty)
             {
@@ -201,14 +201,14 @@ namespace APproject
         /// <param name="n">the Main node</param>
         public void translateMain(ASTNode n)
         {
-            memory.addScope();
+            environment.addScope();
 
             foreach ( Node c in n.children )
             {
                 translateRecursive(c);
             }
 
-            memory.removeScope();
+            environment.removeScope();
             
         }
         /// <summary>
@@ -220,7 +220,7 @@ namespace APproject
         {   
             List<ASTNode> children = n.children;
            
-            memory.addScope();
+            environment.addScope();
 
             indentationLevel++;
             foreach( Node c in children)
@@ -231,7 +231,7 @@ namespace APproject
             }
             indentationLevel--;
 
-            memory.removeScope();
+            environment.removeScope();
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace APproject
         {
             string functionName = ((Obj)n.value).name;
 
-            memory.addUpdateValue((Obj)n.value, n.value);
+            environment.addUpdateValue((Obj)n.value, n.value);
 
             safeWrite("let ");
             safeWrite(functionName);
