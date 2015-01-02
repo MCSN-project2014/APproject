@@ -172,9 +172,9 @@ namespace APproject
 				case Labels.NotEq:
 					var tmp1 = InterpretExp (children [0], actualMemory);
 					if (tmp1 is bool)
-						return (bool) tmp1 == InterpretCondition (children [1],actualMemory);
+						return (bool) tmp1 != InterpretCondition (children [1],actualMemory);
 					else
-						return (int) tmp1 == InterpretExpInt (children [1],actualMemory);				
+						return (int) tmp1 != InterpretExpInt (children [1],actualMemory);				
 				case Labels.Gt:
 					return InterpretExpInt (children [0],actualMemory) > InterpretExpInt (children [1],actualMemory);
 				case Labels.Gte:

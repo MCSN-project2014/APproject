@@ -38,9 +38,11 @@ namespace APproject
                 Console.Write("-- No source file specified");
             }
 
+			/*
 			//ASTNode tesNode = InterpreterTest.factorialRecursive ();
 			//InterpreterTest.printAST (tesNode);
-			/*
+			//InterpreterTest.Start (InterpreterTest.testReturnAFun);
+
 			var setting = new JsonSerializerSettings () {
 				ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
 				NullValueHandling = NullValueHandling.Ignore
