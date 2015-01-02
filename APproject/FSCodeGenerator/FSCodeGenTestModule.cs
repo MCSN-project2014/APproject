@@ -107,15 +107,12 @@ namespace APproject.FSCodeGenerator
             Obj sumObj = new Obj() { name = "sum" };
             Node sumDec = new Node(Labels.FunDecl, sumObj);
             Node block = new Node(Labels.Block);
-            Node returnType = new Node(Labels.Return);
-            returnType.addChildren(new Term(new Obj() { name = "int"}));
             Node returnSum = new Node(Labels.Return);
             Node sumOp = new Node(Labels.Plus);
             Obj varx = new Obj { name = "x", type = Types.integer };
             Obj vary = new Obj { name = "y" };
             returnSum.addChildren(sumOp);
             sumDec.addChildren(block);
-            sumDec.addChildren(returnType);
             sumDec.addChildren(new Term(varx));
             sumDec.addChildren(new Term(vary));
             block.addChildren(sumOp);
@@ -287,10 +284,10 @@ namespace APproject.FSCodeGenerator
         {
 
             // test(createASTif());
-             test(createASTfunDecl());
-            // test(createASTfor());
-           // test(createASTasync());
-            //test(createASTafun());
+           //  test(createASTfunDecl());
+           //  test(createASTfor());
+            test(createASTasync());
+           // test(createASTafun());
 
 
 

@@ -230,39 +230,25 @@ namespace APproject
         /// <summary>
         /// This method translates a function declaration in F#.
         /// The first child is the block Node, 
-        /// the second is the return type (if there),
         /// the other children are the parameters of the function.
         /// </summary>
         /// <param name="n">Node representing a function declaration.</param>
         /// 
         public void translateFunDecl(ASTNode n)
-        {   // fun add ( x int, y int ) 
-            //{  return  x + y 
-            // }
+        {  
 
-            List<ASTNode> children = n.children; 
-            int numElement = children.Count;
             safeWrite("let ");
-            if (n.value.GetType() == typeof(Obj))  
-                {
-                safeWrite(((Obj)n.value).name + " ");   //name of the function 
-              
-                if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){    
-                    translateParameters(2 , n);
-                    safeWrite(" : ");
-                    translateRecursive(children.ElementAt(1));   // the return type
-                    safeWrite( " = \n ");
-                    translateRecursive(children.ElementAt(0));
-                }
-            }
-
-            if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            if (n.value.GetType() == typeof(Obj))
             {
+                safeWrite(((Obj)n.value).name);
                 translateParameters(1, n);
                 safeWrite(" = \n");
-                translateRecursive(children.ElementAt(0));
+                translateRecursive(n.children.ElementAt(0));
+
+               
             }
         }
+     
 
         /// <summary>
         /// This is a helper method, translating the function
