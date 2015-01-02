@@ -1,7 +1,7 @@
 
 
 fun main(){
-	var y int = 4-(5+9)-4;
+	var y int = 5-4+3;
 	println{y};
 	
 }

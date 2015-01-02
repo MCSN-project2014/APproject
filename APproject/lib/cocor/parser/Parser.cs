@@ -614,34 +614,31 @@ public SymbolTable   tab;
 
 	void CompleteExpr(out Types type, out ASTNode node) {
 		Types type1; ASTNode op, firstExpr, secondExpr; 
-		Expr(out type,out firstExpr);
-		node = firstExpr; 
+		Expr(out type,out node);
 		while (la.kind == 34 || la.kind == 35) {
 			BoolOp(out op);
-			node = op; 
-			CompleteExpr(out type1,out secondExpr);
+			Expr(out type1,out secondExpr);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
-			((Node)op).addChildren(firstExpr);
+			((Node)op).addChildren(node);
 			((Node)op).addChildren(secondExpr);
-			
+			node = op; 
 		}
 	}
 
 	void Expr(out Types type,out ASTNode node) {
 		Types type1; ASTNode op, firstSimpExpr, secondSimpExpr; 
-		SimpExpr(out type, out firstSimpExpr);
-		node = firstSimpExpr; 
+		SimpExpr(out type, out node);
 		if (StartOf(5)) {
 			RelOp(out op);
-			node = op; 
-			Expr(out type1, out secondSimpExpr);
+			SimpExpr(out type1, out secondSimpExpr);
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean;
-			((Node)op).addChildren(firstSimpExpr);
+			((Node)op).addChildren(node);
 			((Node)op).addChildren(secondSimpExpr); 
+			node = op; 
 		}
 	}
 
@@ -656,17 +653,16 @@ public SymbolTable   tab;
 	}
 
 	void SimpExpr(out Types type, out ASTNode node) {
-		Types type1; ASTNode op, firstTerm, secondTerm; 
-		Term(out type, out firstTerm);
-		node = firstTerm; 
+		Types type1; ASTNode op, secondTerm; 
+		Term(out type, out node);
 		while (la.kind == 22 || la.kind == 27) {
 			AddOp(out op);
-			node = op; 
-			SimpExpr(out type1,out secondTerm);
+			Term(out type1,out secondTerm);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected"); 
-			((Node)op).addChildren(firstTerm);
+			((Node)op).addChildren(node);
 			((Node)op).addChildren(secondTerm);
+			node = op;
 			
 		}
 	}
@@ -709,17 +705,15 @@ public SymbolTable   tab;
 
 	void Term(out Types type, out ASTNode node) {
 		Types type1; ASTNode op, firstfactor, secondfactor; 
-		Factor(out type, out firstfactor);
-		node = firstfactor; 
+		Factor(out type, out node);
 		while (la.kind == 36 || la.kind == 37) {
 			MulOp(out op);
-			node = op; 
-			Term(out type1,out secondfactor);
+			Factor(out type1,out secondfactor);
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected");
-			((Node)op).addChildren(firstfactor);
+			((Node)op).addChildren(node);
 			((Node)op).addChildren(secondfactor);
-			
+			node = op;    
 		}
 	}
 
