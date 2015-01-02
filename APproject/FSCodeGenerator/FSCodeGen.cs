@@ -16,17 +16,17 @@ namespace APproject
     public class FSCodeGen
     {
         private StreamWriter fileWriter;
-        private int indentationLevel; //it stores the number of \t needed to get the perfect indentation ;)
+        private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
         private string fileName;
         private int asyncTasksCounter;
-        Memory memory;
+        Environment memory;
 
         public FSCodeGen(string outputFileName)
         {
             indentationLevel = 0;
             asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
-            memory = new Memory();
+            memory = new Environment();
 
             if (outputFileName == string.Empty)
             {
@@ -242,18 +242,17 @@ namespace APproject
         /// <param name="n">Node representing a function declaration.</param>
         /// 
         public void translateFunDecl(ASTNode n)
-        {  
+        {
+            string functionName = ((Obj)n.value).name;
+
+            memory.addUpdateValue((Obj)n.value, n.value);
 
             safeWrite("let ");
-            if (n.value.GetType() == typeof(Obj))
-            {
-                safeWrite(((Obj)n.value).name);
-                translateParameters(1, n);
-                safeWrite(" = \n");
-                translateRecursive(n.children.ElementAt(0));
+            safeWrite(functionName);
+            translateParameters(1, n);
+            safeWrite(" = \n");
+            translateRecursive(n.children.ElementAt(0));
 
-               
-            }
         }
      
 

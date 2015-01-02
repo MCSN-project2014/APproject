@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace APproject
 {
-	public class Memory
+	public class Environment
 	{
 		private List<Dictionary<string,object>> mem;
 		private int lastIndex {get{return mem.Count-1;}}
@@ -12,7 +12,7 @@ namespace APproject
 		/// Initializes a new instance of the Memory class.
 		/// Before use the object, it is necessary to call the addScope method, to create a inizial scope.
 		/// </summary>
-		public Memory (){
+		public Environment (){
 			mem = new List<Dictionary<string,object>>();
 		}
 
@@ -36,8 +36,8 @@ namespace APproject
 		/// <param name="var">Variable.</param>
 		/// <param name="fun">Fun.</param>
 		/// <param name="mem">Mem.</param>
-		public void addUpdateValue (Obj var , ASTNode fun, Memory mem){
-			addUpdateValue(var.name, new Tuple<ASTNode,Memory>(fun,mem));
+		public void addUpdateValue (Obj var , ASTNode fun, Environment mem){
+			addUpdateValue(var.name, new Tuple<ASTNode,Environment>(fun,mem));
 		}
 
 		/// <summary>
@@ -103,8 +103,8 @@ namespace APproject
 		/// Clones the actual memory in a new one.
 		/// </summary>
 		/// <returns>The memory.</returns>
-		public Memory CloneMemory(){
-			Memory funMem = new Memory ();
+		public Environment CloneMemory(){
+			Environment funMem = new Environment ();
 			funMem.addScope ();
 			foreach (var scope in mem) {
 				foreach (var dic in scope) {

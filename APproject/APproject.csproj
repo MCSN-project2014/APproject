@@ -68,8 +68,6 @@
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
-    <Compile Include="treeGenerator\Node.cs" />
-    <Compile Include="treeGenerator\TreeGen.cs" />
     <Compile Include="Interpreter\Memory.cs" />
     <Compile Include="AST\ASTNode.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGen.cs" />

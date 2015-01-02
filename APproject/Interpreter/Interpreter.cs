@@ -30,7 +30,7 @@ namespace APproject
 					function.Add ((Obj)node.value, node);
 				if (node.label == Labels.Main) {
 					//funMem.addNameSpace (main);
-					var mem = new Memory ();
+					var mem = new Environment ();
 					mem.addScope ();
 					Interpret (node, mem);
 					mem.removeScope ();
@@ -46,7 +46,7 @@ namespace APproject
 			}
 		}
 
-		private object Interpret (ASTNode node, Memory actualMemory){
+		private object Interpret (ASTNode node, Environment actualMemory){
 			if (!node.isTerminal ()) {
 				List<ASTNode> children = node.children;
 				bool condition;
@@ -110,9 +110,9 @@ namespace APproject
 					break;
 				case Labels.Return:
 					object tmp = InterpretExp (children [0], actualMemory);
-					if (tmp is Tuple<ASTNode,Memory>){
-						var afunTuple = (Tuple<ASTNode,Memory>) tmp;
-						return new Tuple<ASTNode,Memory>(afunTuple.Item1,afunTuple.Item2.CloneMemory());
+					if (tmp is Tuple<ASTNode,Environment>){
+						var afunTuple = (Tuple<ASTNode,Environment>) tmp;
+						return new Tuple<ASTNode,Environment>(afunTuple.Item1,afunTuple.Item2.CloneMemory());
 					}
 					return tmp;
 				}
@@ -120,26 +120,26 @@ namespace APproject
 			return null;
 		}
 
-		private void Assignment(List<ASTNode> children, Memory actualMemory){
+		private void Assignment(List<ASTNode> children, Environment actualMemory){
 			object value = InterpretExp (children [1], actualMemory);
 			Obj variable = (Obj) children[0].value;
-			if (value is Tuple<ASTNode,Memory>) {
-				var tuple = (Tuple<ASTNode,Memory>)value;
+			if (value is Tuple<ASTNode,Environment>) {
+				var tuple = (Tuple<ASTNode,Environment>)value;
 				actualMemory.addUpdateValue (variable, tuple.Item1, tuple.Item2);
 			}else
 				actualMemory.addUpdateValue (variable, value);
 		}
 
-		private bool InterpretCondition (ASTNode node, Memory actualMemory)
+		private bool InterpretCondition (ASTNode node, Environment actualMemory)
 		{
 			return (bool) InterpretExp(node,actualMemory);
 		}
 
-		private int InterpretExpInt (ASTNode node, Memory actualMemory){
+		private int InterpretExpInt (ASTNode node, Environment actualMemory){
 			return (int) InterpretExp(node,actualMemory);
 		}
 
-		private object InterpretExp (ASTNode node, Memory actualMemory)
+		private object InterpretExp (ASTNode node, Environment actualMemory)
 		{
 			if (node.isTerminal ()) {
 				if (node.value is Obj) {
@@ -190,7 +190,7 @@ namespace APproject
 				case Labels.FunCall:
 					return FunctionCall (FunParameterPassing(node,actualMemory));
 				case Labels.Afun:
-					return new Tuple<ASTNode,Memory> (node,actualMemory);
+					return new Tuple<ASTNode,Environment> (node,actualMemory);
 				case Labels.Read:
 					Console.Write (CONSOL_READ);
 					string read = Console.ReadLine ();
@@ -213,14 +213,14 @@ namespace APproject
 			}
 		}
 
-		private Tuple<ASTNode,Memory> FunParameterPassing(ASTNode node, Memory actualMemory){
+		private Tuple<ASTNode,Environment> FunParameterPassing(ASTNode node, Environment actualMemory){
 			Obj funName = (Obj)node.value;
 			ASTNode funNode;
-			Memory funMem;
+			Environment funMem;
 			if (function.TryGetValue (funName, out funNode)) {
-				funMem = new Memory ();
+				funMem = new Environment ();
 			} else {
-				var afun = (Tuple<ASTNode,Memory>) actualMemory.GetValue (funName); 
+				var afun = (Tuple<ASTNode,Environment>) actualMemory.GetValue (funName); 
 				funNode = afun.Item1;
 				funMem = afun.Item2;
 			}
@@ -230,10 +230,10 @@ namespace APproject
 				funMem.addUpdateValue ((Obj)funNode.children [i].value, InterpretExp (actual, actualMemory));
 				i++;
 			}
-			return new Tuple<ASTNode,Memory> (funNode, funMem);
+			return new Tuple<ASTNode,Environment> (funNode, funMem);
 		}
 
-		private object FunctionCall(Tuple<ASTNode,Memory> fun){
+		private object FunctionCall(Tuple<ASTNode,Environment> fun){
 			object ret = Interpret (fun.Item1.children [0], fun.Item2);
 			fun.Item2.removeScope ();
 			return ret;
