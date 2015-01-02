@@ -53,7 +53,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>APproject.FSCodeGenerator.FSCodeGenTestModule</StartupObject>
+    <StartupObject>APproject.MainProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -94,11 +94,13 @@
     <None Include="lib\cocor\Parser.frame" />
     <None Include="lib\cocor\Scanner.frame" />
     <None Include="Test\parameterTest.fun" />
+    <None Include="Test\testGenerator.fun" />
     <None Include="Test\vardeclTest.fun" />
     <None Include="Test\testLuca.fun" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
+    <Content Include="Test\translated_file.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

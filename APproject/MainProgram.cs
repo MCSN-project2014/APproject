@@ -20,45 +20,51 @@ namespace APproject
                 parser.tab = new SymbolTable(parser);
                 parser.gen = new ASTGenerator();
                 parser.Parse();
-                
-                //String fileName = "traslated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
-                //FSCodeGen genFsharp = new FSCodeGen(fileName);
-                //genFsharp.translate(parser.gen.getRoot());
-               
+
+                String fileName = "translated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
+                FSCodeGen genFsharp = new FSCodeGen(fileName);
+
+                genFsharp.translate(parser.gen.getRoot());
+
+                /*
                 //Console.WriteLine(parser.errors.count + " errors detected");
-				if (parser.errors.count == 0){
-					InterpreterTest.printAST(parser.gen.getRoot());
-					Interpreter inter = new Interpreter (parser.gen.getRoot());
-					inter.Start ();
-				}
+                if (parser.errors.count == 0){
+                    InterpreterTest.printAST(parser.gen.getRoot());
+                    Interpreter inter = new Interpreter (parser.gen.getRoot());
+                    inter.Start ();
+                }
                 Console.Read();
+                 
             }
             else
             {
                 Console.Write("-- No source file specified");
             }
+                        
+                 
+                 * /
+             
+            /*
+            //ASTNode tesNode = InterpreterTest.factorialRecursive ();
+            //InterpreterTest.printAST (tesNode);
+            //InterpreterTest.Start (InterpreterTest.testReturnAFun);
 
-			/*
-			//ASTNode tesNode = InterpreterTest.factorialRecursive ();
-			//InterpreterTest.printAST (tesNode);
-			//InterpreterTest.Start (InterpreterTest.testReturnAFun);
+            var setting = new JsonSerializerSettings () {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore
+            };
 
-			var setting = new JsonSerializerSettings () {
-				ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-				NullValueHandling = NullValueHandling.Ignore
-			};
+            var json = JsonConvert.SerializeObject(InterpreterTest.testReturnAFun (),setting);
+            //Console.WriteLine(json);
 
-			var json = JsonConvert.SerializeObject(InterpreterTest.testReturnAFun (),setting);
-			//Console.WriteLine(json);
+            dynamic ret = JsonConvert.DeserializeObject<dynamic>(json);
+            InterpreterTest.printAST(deserialize (ret, new Dictionary<string, Obj>(), new Dictionary<string, Obj>()));
+            new Interpreter (deserialize (ret, new Dictionary<string, Obj>(), new Dictionary<string, Obj>())).Start ();
 
-			dynamic ret = JsonConvert.DeserializeObject<dynamic>(json);
-			InterpreterTest.printAST(deserialize (ret, new Dictionary<string, Obj>(), new Dictionary<string, Obj>()));
-			new Interpreter (deserialize (ret, new Dictionary<string, Obj>(), new Dictionary<string, Obj>())).Start ();
-
-			//InterpreterTest.Start (InterpreterTest.testAsync);
-			*/
-		}
-
+            //InterpreterTest.Start (InterpreterTest.testAsync);
+            */
+            }
+        }
 
 
 		private static ASTNode deserialize(dynamic ret, Dictionary<string,Obj> variables, Dictionary<string,Obj> functions){

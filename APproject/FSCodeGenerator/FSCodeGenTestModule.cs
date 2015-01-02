@@ -275,18 +275,17 @@ namespace APproject.FSCodeGenerator
         {
             String fileName = "traslated_file";
             FSCodeGen gen = new FSCodeGen(fileName);
-           // printAST(root);
+            printAST(root);
             gen.translate(root);
             Console.ReadKey();
         }
 
         static void Main(string[] args)
         {
-
             // test(createASTif());
            //  test(createASTfunDecl());
-           //  test(createASTfor());
-            test(createASTasync());
+             test(createASTfor());
+           // test(createASTasync());
            // test(createASTafun());
 
 
