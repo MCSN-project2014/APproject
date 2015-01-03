@@ -13,6 +13,7 @@ fun outadd() fun( int ) int {
 		return sum;
 	};
 }
+*/
 
 fun fib ( n int ) int {
 	var a int ; 
@@ -20,11 +21,13 @@ fun fib ( n int ) int {
 
 	a = async { return fib( n-1 ) };
 	b = async { return fib( n-1 ) };
-	return a + b
+	return a + b;
 }
-*/
+
 
 fun main (){
+
+
 /*
 var t  bool = true ;
 var s  int ;
@@ -34,7 +37,6 @@ if ( t == false ) {
 	s = 0;
 	}
 else {s = 1;}
-*/
 
 for var i int =0 ; i < 32 ; i= i+1 {
 	var t bool ; 
@@ -59,7 +61,6 @@ for var i int =0 ; i < 32 ; i= i+1 {
  
 }
 
-/*
 var adder fun = outadd();
 
 var anotheradd fun = outadd();

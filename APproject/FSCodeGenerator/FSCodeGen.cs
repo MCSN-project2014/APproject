@@ -359,6 +359,7 @@ namespace APproject
             translateRecursive(children.ElementAt(0));
             safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
+            safeWrite("\n");
         }
 
         /// <summary>
