@@ -422,7 +422,7 @@ namespace APproject
         {
             safeWrite("\n");
             indent(indentationLevel);
-            safeWrite("printfn(");
+            safeWrite("Console.WriteLine(");
             translateRecursive(n.children.ElementAt(0));
             safeWrite(")\n");
         }
