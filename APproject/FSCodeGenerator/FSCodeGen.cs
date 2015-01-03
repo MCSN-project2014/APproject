@@ -203,6 +203,7 @@ namespace APproject
         {
             environment.addScope();
 
+           
             foreach ( Node c in n.children )
             {
                 translateRecursive(c);
@@ -222,16 +223,26 @@ namespace APproject
            
             environment.addScope();
 
-            indentationLevel++;
-            foreach( Node c in children)
-            {
-                indent(indentationLevel);
-                translateRecursive(c);
-                
-            }
-            indentationLevel--;
-            safeWrite("\n");
-            environment.removeScope();
+             if (n.parent.label != Labels.Main)
+             {
+                indentationLevel++;
+                foreach( Node c in children)
+                {
+                    indent(indentationLevel);
+                    translateRecursive(c);  
+                }
+                indentationLevel--;
+                safeWrite("\n");
+             }
+             else
+             {
+                 foreach (Node c in children)
+                 {
+                   translateRecursive(c);
+                 }
+             }
+  
+           environment.removeScope();
         }
 
         /// <summary>
