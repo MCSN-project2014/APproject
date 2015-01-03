@@ -269,14 +269,20 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 			(  
     			                                                               
    				CompleteExpr<out type, out node1> ';'						    (. ((Node)node).addChildren(node1);
-																				   
 																				   tab.getOwner(out obj , out controlofblock);
+																				   if (node1.label == Labels.FunCall){
+																						if(((Obj)node1.value).name == obj.name){
+																							node1.recursive = true;
+																						}
+																				   }
+																				   
 																				   if(obj != null){
 																						if(controlofblock)
 																							obj.returnIsSet=true;
 																						if( obj.type != type )
 																							SemErr("incompatible return type");
-																					} .)                                                 
+																					} .)
+																					                                                 
 			   | AProcDecl<out robj,out node1> ';'                                  (. ((Node)node).addChildren(node1);
 																					tab.getOwner(out obj,out controlofblock);
 																					if(obj != null){ 

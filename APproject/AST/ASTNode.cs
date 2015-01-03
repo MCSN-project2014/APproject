@@ -23,7 +23,7 @@ namespace APproject
 		public List<ASTNode> children{ get { return _children; } }
 
 		protected Labels _label;
-		public Labels label{ get { return _label; } }
+		public Labels label{ get { return _label; }  }
 
 		protected int _line;
 		protected int _column;
@@ -31,7 +31,7 @@ namespace APproject
         // indicates whether a function is recursive or not
         protected bool _recursive;
 
-        public bool recursive { get { return _recursive; } }
+        public bool recursive { get { return _recursive; } set { _recursive = value; } }
 		public int line{ get {return _line;}}
 		public int column{ get {return _column;}}
 
@@ -61,6 +61,7 @@ namespace APproject
 			_children = new List<ASTNode> ();
 			_label = l;
 			_value = value;
+            _recursive = false;
 		}
 
 		public Node (Labels l, int line, int column){
@@ -79,6 +80,7 @@ namespace APproject
 			_value = value;
 			_line = line;
 			_column = column;
+            _recursive = false;
 		}
 
 		/// <summary>

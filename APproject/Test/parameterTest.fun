@@ -9,7 +9,5 @@ fun main(){
 		var z fun;
 		z = z();
 		x = async{return add()};	
-        println("hola zio");
-
-		
+        println("hola zio");		
 }

@@ -552,8 +552,13 @@ public SymbolTable   tab;
 				CompleteExpr(out type, out node1);
 				Expect(14);
 				((Node)node).addChildren(node1);
-				//if (node1)
 				tab.getOwner(out obj , out controlofblock);
+				if (node1.label == Labels.FunCall){
+				if(((Obj)node1.value).name == obj.name){
+				node1.recursive = true;
+				}
+				}
+				
 				if(obj != null){
 				if(controlofblock)
 				obj.returnIsSet=true;
