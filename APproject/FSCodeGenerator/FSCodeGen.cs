@@ -260,14 +260,24 @@ namespace APproject
             string functionName = ((Obj)n.value).name;
 
             //environment.addUpdateValue((Obj)n.value, n.value);
-
-            safeWrite("let ");
-            safeWrite(functionName);
-            translateParameters(1, n);
-            safeWrite(" = \n");
-            translateRecursive(n.children.ElementAt(0));
-            safeWrite("\n");
-
+            if (n.recursive == false)
+            {
+                safeWrite("let rec ");
+                safeWrite(functionName);
+                translateParameters(1, n);
+                safeWrite(" = \n");
+                translateRecursive(n.children.ElementAt(0));
+                safeWrite("\n");
+            }
+            else
+            {
+                safeWrite("let ");
+                safeWrite(functionName);
+                translateParameters(1, n);
+                safeWrite(" = \n");
+                translateRecursive(n.children.ElementAt(0));
+                safeWrite("\n");
+            }
         }
 
 
