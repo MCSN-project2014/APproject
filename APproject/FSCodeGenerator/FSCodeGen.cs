@@ -227,10 +227,10 @@ namespace APproject
             {
                 indent(indentationLevel);
                 translateRecursive(c);
-                safeWrite("\n");
+                
             }
             indentationLevel--;
-
+            safeWrite("\n");
             environment.removeScope();
         }
 
@@ -245,13 +245,14 @@ namespace APproject
         {
             string functionName = ((Obj)n.value).name;
 
-            environment.addUpdateValue((Obj)n.value, n.value);
+            //environment.addUpdateValue((Obj)n.value, n.value);
 
             safeWrite("let ");
             safeWrite(functionName);
             translateParameters(1, n);
             safeWrite(" = \n");
             translateRecursive(n.children.ElementAt(0));
+            safeWrite("\n");
 
         }
      
@@ -307,7 +308,7 @@ namespace APproject
             List<ASTNode> children = n.children;
             safeWrite("while ");
             translateRecursive(children.ElementAt(0));
-            safeWrite("do\n");
+            safeWrite(" do\n");
             translateRecursive(children.ElementAt(1));  
         }
         /// <summary>
@@ -471,7 +472,7 @@ namespace APproject
             safeWrite("})");
             */
             string taskName = "task" + (asyncTasksCounter++);
-            safeWrite("let " + taskName + " = Async.StartAsTask( async{ return");
+            safeWrite("let " + taskName + " = Async.StartAsTask( async{ return ");
 
             // insert taskName in memory with name of the variable 
             // associate result to variable

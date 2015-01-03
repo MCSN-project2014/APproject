@@ -1,5 +1,3 @@
-
-
 fun main (){
 
 var t  bool = true ;
