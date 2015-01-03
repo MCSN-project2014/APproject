@@ -13,7 +13,7 @@ fun outadd() fun( int ) int {
 		return sum;
 	};
 }
-*/
+
 
 fun fib ( n int ) int {
 	var a int ; 
@@ -23,7 +23,7 @@ fun fib ( n int ) int {
 	b = async { return fib( n-1 ) };
 	return a + b;
 }
-
+*/
 
 fun main (){
 
@@ -67,5 +67,12 @@ var anotheradd fun = outadd();
 
 println{adder(5)};
 */
+
+var a int =0;
+while ( a != 10 ){
+
+	println( a );
+	a = a+1 ;
+}
 
 }

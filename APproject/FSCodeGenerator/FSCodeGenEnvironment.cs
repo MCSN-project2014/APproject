@@ -19,7 +19,7 @@ namespace APproject.FSCodeGenerator
 
         }
 
-        public updateVal()
+        public void updateVal()
         {
 
         }

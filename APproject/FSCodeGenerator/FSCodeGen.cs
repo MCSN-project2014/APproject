@@ -193,6 +193,7 @@ namespace APproject
         {
             safeWrite("open System\n");
             safeWrite("open System.IO\n");
+            safeWrite("\n");
             foreach (ASTNode c in n.children)
             {
                 translateRecursive(c);
