@@ -189,6 +189,8 @@ namespace APproject
         /// <param name="n">the Program node</param>
         public void  translateProgram(ASTNode n)
         {
+            safeWrite("open System\n");
+            safeWrite("open System.IO\n");
             foreach ( ASTNode c in n.children )
             {
                 translateRecursive( c );
@@ -431,7 +433,14 @@ namespace APproject
         /// 
         public void translateRead(ASTNode n)
         {
-            safeWrite("Console.ReadLine()\n");
+            if (n.parent.children.ElementAt(0).type == Types.integer)
+            {
+                safeWrite("Convert.ToInt32(Console.ReadLine())\n");
+            }
+            else
+            {
+                safeWrite("Console.ReadLine()\n");
+            }
         }
 
         /// <summary>
