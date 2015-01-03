@@ -420,11 +420,21 @@ namespace APproject
         /// 
         public void translatePrint(ASTNode n)
         {
+            /*
             safeWrite("\n");
             indent(indentationLevel);
             safeWrite("printfn(");
+            if( n.children.ElementAt(0) )
             translateRecursive(n.children.ElementAt(0));
             safeWrite(")\n");
+             */
+        
+            safeWrite("\n");
+            indent(indentationLevel);
+            safeWrite("printfn((");
+            translateRecursive(n.children.ElementAt(0));
+            safeWrite(").ToString())\n");
+        
         }
 
         /// <summary>
