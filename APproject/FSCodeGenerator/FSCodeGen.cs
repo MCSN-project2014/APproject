@@ -329,6 +329,8 @@ namespace APproject
         /// <param name="n">the Return node</param>
         public void translateReturn(ASTNode n)
         {
+            safeWrite("\n");
+            indent(indentationLevel);
             translateRecursive(n.children.ElementAt(0));
         }
 
@@ -510,14 +512,14 @@ namespace APproject
                 translateParameters(2 , n);
                 safeWrite(" : ");
                 translateRecursive(children.ElementAt(1)); 
-                safeWrite( " -> \n ");
+                safeWrite( " -> \n");
                 translateRecursive(children.ElementAt(0));
             }
 
             if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
             {
                 translateParameters(1, n);
-                safeWrite(" -> \n ");
+                safeWrite(" -> \n");
                 translateRecursive(children.ElementAt(0));
             }
         
