@@ -52,55 +52,56 @@ namespace APproject
         /// Just a big switch case.
         ///</summary>
         /// <param name="Node n">n.</param>
-        public void translate(ASTNode n) {
+        public void translate(ASTNode n)
+        {
             switch (n.label)
             {
-                case Labels.Program :
+                case Labels.Program:
                     translateProgram(n);
                     break;
-                case Labels.Main: 
+                case Labels.Main:
                     translateMain(n);
                     break;
                 case Labels.Block:
                     translateBlock(n);
                     break;
-                case Labels.FunDecl: 
+                case Labels.FunDecl:
                     translateFunDecl(n);
                     break;
                 case Labels.If:
                     translateIf(n);
                     break;
-                case Labels.While: 
+                case Labels.While:
                     translateWhile(n);
                     break;
-                case Labels.Return: 
+                case Labels.Return:
                     translateReturn(n);
                     break;
-                case Labels.Assig: 
+                case Labels.Assig:
                     translateAssig(n);
                     break;
-                case Labels.Decl: 
+                case Labels.Decl:
                     translateDecl(n);
                     break;
-                case Labels.AssigDecl: 
+                case Labels.AssigDecl:
                     translateAssigDecl(n);
                     break;
-                case Labels.Print: 
+                case Labels.Print:
                     translatePrint(n);
                     break;
                 case Labels.Read:
                     translateRead(n);
                     break;
-                case Labels.For: 
+                case Labels.For:
                     translateFor(n);
                     break;
-                case Labels.Async: 
+                case Labels.Async:
                     translateAsync(n);
                     break;
-                case Labels.Afun: 
+                case Labels.Afun:
                     translateAfun(n);
                     break;
-                case Labels.Plus: 
+                case Labels.Plus:
                     translateOp("+", n);
                     break;
                 case Labels.Mul:
@@ -139,7 +140,7 @@ namespace APproject
                 case Labels.NotEq:
                     translateOp("<>", n);
                     break;
-                default : 
+                default:
                     break;
             }
         }
@@ -150,9 +151,10 @@ namespace APproject
         ///one.
         ///</summary>
         ///<param name="n">n.</param>
-        private void translateRecursive (ASTNode n){
-             if (n.isTerminal())
-                safeWrite(n.ToString()); 
+        private void translateRecursive(ASTNode n)
+        {
+            if (n.isTerminal())
+                safeWrite(n.ToString());
             else translate(n);
         }
 
@@ -162,7 +164,7 @@ namespace APproject
         /// </summary>
         /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
-        {  
+        {
             using (fileWriter = new StreamWriter(fileName, true))
             {
                 fileWriter.Write(s);
@@ -187,13 +189,13 @@ namespace APproject
         /// main, recursively.
         /// </summary>
         /// <param name="n">the Program node</param>
-        public void  translateProgram(ASTNode n)
+        public void translateProgram(ASTNode n)
         {
             safeWrite("open System\n");
             safeWrite("open System.IO\n");
-            foreach ( ASTNode c in n.children )
+            foreach (ASTNode c in n.children)
             {
-                translateRecursive( c );
+                translateRecursive(c);
             }
         }
 
@@ -205,14 +207,14 @@ namespace APproject
         {
             environment.addScope();
 
-           
-            foreach ( Node c in n.children )
+
+            foreach (Node c in n.children)
             {
                 translateRecursive(c);
             }
 
             environment.removeScope();
-            
+
         }
         /// <summary>
         /// This method translates the Block node and 
@@ -220,31 +222,31 @@ namespace APproject
         /// </summary>
         /// <param name="n">the Block node</param>
         public void translateBlock(ASTNode n)
-        {   
+        {
             List<ASTNode> children = n.children;
-           
+
             environment.addScope();
 
-             if (n.parent.label != Labels.Main)
-             {
+            if (n.parent.label != Labels.Main)
+            {
                 indentationLevel++;
-                foreach( Node c in children)
+                foreach (Node c in children)
                 {
                     indent(indentationLevel);
-                    translateRecursive(c);  
+                    translateRecursive(c);
                 }
                 indentationLevel--;
                 safeWrite("\n");
-             }
-             else
-             {
-                 foreach (Node c in children)
-                 {
-                   translateRecursive(c);
-                 }
-             }
-  
-           environment.removeScope();
+            }
+            else
+            {
+                foreach (Node c in children)
+                {
+                    translateRecursive(c);
+                }
+            }
+
+            environment.removeScope();
         }
 
         /// <summary>
@@ -268,7 +270,7 @@ namespace APproject
             safeWrite("\n");
 
         }
-     
+
 
         /// <summary>
         /// This is a helper method, translating the function
@@ -304,7 +306,7 @@ namespace APproject
             translateRecursive(children.ElementAt(0));
             safeWrite(" then\n");
             translateRecursive(children.ElementAt(1));
-            if(children.Count == 3)
+            if (children.Count == 3)
             {
                 safeWrite("else\n");
                 translateRecursive(children.ElementAt(2));
@@ -322,7 +324,7 @@ namespace APproject
             safeWrite("while ");
             translateRecursive(children.ElementAt(0));
             safeWrite(" do\n");
-            translateRecursive(children.ElementAt(1));  
+            translateRecursive(children.ElementAt(1));
         }
         /// <summary>
         /// This method translates the Return node
@@ -357,7 +359,7 @@ namespace APproject
         /// </summary>
         /// <param name="n">the declaration node</param>
         public void translateDecl(ASTNode n)
-        {   
+        {
             safeWrite("let mutable ");
 
             translateRecursive(n.children.ElementAt(0));
@@ -395,12 +397,12 @@ namespace APproject
         /// <param name="n">the function call node</param>
         /// 
         /****************** !! Still RECURSIVE FUNCTION to be translated !! **********/
-        public void translateFunCall( ASTNode n)
+        public void translateFunCall(ASTNode n)
         {
             List<ASTNode> children = n.children;
             if (n.value.GetType() == typeof(Obj))
             {
-              safeWrite(((Obj)n.value).name + " ");
+                safeWrite(((Obj)n.value).name + " ");
             }
 
             for (int i = 0; i < children.Count(); i++)  // parameters of the function
@@ -425,7 +427,6 @@ namespace APproject
             safeWrite("Console.WriteLine(");
             translateRecursive(n.children.ElementAt(0));
             safeWrite(")\n");
-        }
         }
 
         /// <summary>
@@ -467,9 +468,9 @@ namespace APproject
             safeWrite("for ");
             ASTNode assFor = children.ElementAt(0);
             Term pattern = (Term)assFor.children.ElementAt(0);
-            safeWrite(pattern.ToString());                 
+            safeWrite(pattern.ToString());
             safeWrite(" in ");
-            Term valueStart = (Term) assFor.children.ElementAt(1);
+            Term valueStart = (Term)assFor.children.ElementAt(1);
             safeWrite(valueStart.ToString());
             safeWrite(" .. ");
             ASTNode expFor = children.ElementAt(1);
@@ -515,14 +516,15 @@ namespace APproject
         public void translateAfun(ASTNode n)
         {
 
-            List<ASTNode> children = n.children; 
+            List<ASTNode> children = n.children;
             int numElement = children.Count;
             safeWrite("fun ");
-            if (numElement >= 2 && children.ElementAt(1).label==Labels.Return ){
-                translateParameters(2 , n);
+            if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
+            {
+                translateParameters(2, n);
                 safeWrite(" : ");
-                translateRecursive(children.ElementAt(1)); 
-                safeWrite( " -> \n");
+                translateRecursive(children.ElementAt(1));
+                safeWrite(" -> \n");
                 translateRecursive(children.ElementAt(0));
             }
 
@@ -532,7 +534,7 @@ namespace APproject
                 safeWrite(" -> \n");
                 translateRecursive(children.ElementAt(0));
             }
-        
+
 
         }
 
@@ -557,3 +559,4 @@ namespace APproject
         }
     }
 }
+
