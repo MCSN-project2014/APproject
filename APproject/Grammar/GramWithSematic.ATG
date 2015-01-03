@@ -269,7 +269,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 			(  
     			                                                               
    				CompleteExpr<out type, out node1> ';'						    (. ((Node)node).addChildren(node1);
-																				   if (node1)
+																				   
 																				   tab.getOwner(out obj , out controlofblock);
 																				   if(obj != null){
 																						if(controlofblock)

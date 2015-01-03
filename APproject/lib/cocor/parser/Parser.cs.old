@@ -348,7 +348,7 @@ public SymbolTable   tab;
 					if (obj1.kind != Kinds.proc) 
 					   SemErr("object is not a procedure");
 					else if(tab.getAsyncControl(obj1))
-					SemErr("procedure " + obj1.name + " contain a println or readln ");																				   																				   
+					SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
 					if (obj1.type == Types.fun)
 					SemErr("wrong return type");
 					
