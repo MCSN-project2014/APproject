@@ -236,7 +236,6 @@ namespace APproject
                     translateRecursive(c);
                 }
                 indentationLevel--;
-                safeWrite("\n");
             }
             else
             {
@@ -308,9 +307,10 @@ namespace APproject
             translateRecursive(children.ElementAt(1));
             if (children.Count == 3)
             {
+                safeWrite("\n");
+                indent(indentationLevel);
                 safeWrite("else\n");
                 translateRecursive(children.ElementAt(2));
-                safeWrite("\n");
             }
         }
         /// <summary>
@@ -476,7 +476,7 @@ namespace APproject
             ASTNode expFor = children.ElementAt(1);
             Term valueExp = (Term)expFor.children.ElementAt(1);
             translateRecursive(valueExp);
-            safeWrite(" do \n ");
+            safeWrite(" do \n");
             translateRecursive(children.ElementAt(3));  // block 
 
         }
