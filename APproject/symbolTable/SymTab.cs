@@ -71,6 +71,7 @@ namespace APproject
         {
             Obj scop = new Obj();
             scop.name = owner.name;
+            scop.asyncControl = false;
             owner.returnIsSet = false;
             scop.kind = Kinds.scope;
             scop.owner = owner;
@@ -113,9 +114,12 @@ namespace APproject
 				last = p; p = p.next;
 			}
 			if (last == null) topScope.locals = obj; else last.next = obj;
-			if (kind == Kinds.var) obj.adr = topScope.nextAdr++;
-            if (kind == Kinds.proc) obj.formals = new Queue<Obj>();
-	       
+
+            if (kind == Kinds.proc)
+            {
+                obj.formals = new Queue<Obj>();
+                obj.asyncControl = false;
+            }
 			return obj;
 		}
 
@@ -195,6 +199,27 @@ namespace APproject
         /// <summary>
         /// return the owner of the current scope
         /// <summary>
+        /// 
+
+        public Obj getOwner()
+        {
+            Obj scope = topScope;
+            Obj owner = null;
+            if (scope.owner != null)
+            {
+                owner = scope.owner;
+            }
+            else
+            {
+                while (scope.next != null)
+                {
+                    scope = scope.next;
+                    owner = scope.owner;
+                }
+            }
+
+            return owner;
+        }
 
         public void getOwner(out Obj owner, out bool control)
         {
@@ -248,6 +273,20 @@ namespace APproject
             procedure.rtype = rtype;
         }
 
+        public void setAsyncControl(bool value)
+        {
+            if(getOwner() != null)
+                getOwner().asyncControl = value;
+        }
+
+        public bool getAsyncControl(Obj obj)
+        {
+            if (obj.asyncControl != null)
+                return obj.asyncControl;
+            else
+                return false;
+        }
+
        
 		/// <summary>
 		/// Checks that the actual parameter type of a function call have the same type of the formal parameters.
@@ -256,22 +295,25 @@ namespace APproject
 		/// <param name="actualTypes">Actual types.</param>
 	    public void checkActualFormalTypes(Obj obj, Queue<Types> actualTypes)
 	    {
-	        if (obj.formals.Count != actualTypes.Count)
-	            parser.SemErr("parameter expected");
-	        else
-	        {
-	            Obj[] ArrayofFormals = obj.formals.ToArray();
-	            for (int i = 0; i < ArrayofFormals.Length; i++)
+	        if(!(obj.formals == null || actualTypes == null))
+            { 
+                if (obj.formals.Count != actualTypes.Count)
+	                parser.SemErr("parameter expected");
+	            else
 	            {
-	                Obj formal = ArrayofFormals[i];
-	                Types actType = actualTypes.Dequeue();
-	                if (formal.type != actType)
+	                Obj[] ArrayofFormals = obj.formals.ToArray();
+	                for (int i = 0; i < ArrayofFormals.Length; i++)
 	                {
-						parser.SemErr(formal.type + "type expected");
+	                    Obj formal = ArrayofFormals[i];
+	                    Types actType = actualTypes.Dequeue();
+	                    if (formal.type != actType)
+	                    {
+						    parser.SemErr(formal.type + "type expected");
+	                    }
 	                }
+                    
 	            }
-
-	        }
+            }
 	    }
 
 

@@ -263,6 +263,7 @@ public SymbolTable   tab;
 					Expect(8);
 					Expect(9);
 					Expect(14);
+					tab.setAsyncControl(true);
 					if(type != Types.integer)
 					SemErr("incompatible types"); 
 					obj = tab.NewObj((string)names[0], Kinds.var, type);
@@ -311,8 +312,8 @@ public SymbolTable   tab;
 					Expect(8);
 					Expect(13);
 					Ident(out name1);
-					Node async =  new Node(Labels.Async);
-					obj1 = tab.Find(name1);	
+					obj1 = tab.Find(name1);
+					Node async =  new Node(Labels.Async);	
 					Node call = new Node(Labels.FunCall, obj1); 
 					Expect(5);
 					while (StartOf(3)) {
@@ -346,8 +347,11 @@ public SymbolTable   tab;
 					((Node)node).addChildren(async); 
 					if (obj1.kind != Kinds.proc) 
 					   SemErr("object is not a procedure");
+					else if(tab.getAsyncControl(obj1))
+					SemErr("procedure " + obj1.name + " contain a println or readln ");																				   																				   
 					if (obj1.type == Types.fun)
 					SemErr("wrong return type");
+					
 					tab.checkActualFormalTypes(obj1, actualTypes); 
 					if(obj.type != obj1.type) 
 					SemErr("incompatible types"); 
@@ -368,6 +372,7 @@ public SymbolTable   tab;
 					Expect(8);
 					Expect(9);
 					Expect(14);
+					tab.setAsyncControl(true);
 					if(obj.type != Types.integer) 
 					SemErr("incompatible types");
 					((Node)node).addChildren(new Term(obj)); 
@@ -402,9 +407,9 @@ public SymbolTable   tab;
 				}
 				Expect(7);
 				Expect(14);
-				if (obj.kind != Kinds.proc || obj.rtype == null) 
-				SemErr("object is not a procedure");
-				else
+				if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
+				SemErr("object is not a function");
+				else if (obj.type != Types.fun)
 				tab.checkActualFormalTypes(obj,actualTypes); 
 			} else SynErr(48);
 			break;
@@ -526,6 +531,7 @@ public SymbolTable   tab;
 		case 21: {
 			Get();
 			Expect(8);
+			tab.setAsyncControl(true);
 			node = new Node(Labels.Print); 
 			if (StartOf(2)) {
 				CompleteExpr(out type, out node1);
@@ -769,9 +775,9 @@ public SymbolTable   tab;
 					}
 				}
 				Expect(7);
-				if (obj.kind != Kinds.proc || obj.rtype == null) 
-				SemErr("object is not a procedure");
-				else
+				if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
+				SemErr("object is not a function");
+				else if (obj.type != Types.fun)
 				tab.checkActualFormalTypes(obj, actualTypes); 
 			}
 			if (!control && obj.kind != Kinds.var)

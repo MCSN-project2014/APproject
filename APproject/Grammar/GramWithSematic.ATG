@@ -128,8 +128,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																					   SemErr("cannot assign to procedure"); .)
 				(                                                            
 				                                                               
-				      "async" '{' "return" Ident<out name1>						(. Node async =  new Node(Labels.Async);
-																				   obj1 = tab.Find(name1);	
+				      "async" '{' "return" Ident<out name1>						(. obj1 = tab.Find(name1);
+																				   Node async =  new Node(Labels.Async);	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
 								 '(' { (
 									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
@@ -150,8 +150,11 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																				   ((Node)node).addChildren(async); .)
 																				(. if (obj1.kind != Kinds.proc) 
 																				       SemErr("object is not a procedure");
+																				   else if(tab.getAsyncControl(obj1))
+																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
 																				   if (obj1.type == Types.fun)
 																					   SemErr("wrong return type");
+																					
 																				   tab.checkActualFormalTypes(obj1, actualTypes); 
 																				   if(obj.type != obj1.type) 
 																					   SemErr("incompatible types"); .)
@@ -164,7 +167,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 					| AProcDecl<out robj, out node1>';'							(. ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(node1); .)
 
-					| "readln" '{''}' ';'									    (. if(obj.type != Types.integer) 
+					| "readln" '{''}' ';'									    (.  tab.setAsyncControl(true);
+																					if(obj.type != Types.integer) 
 																						SemErr("incompatible types");
 																				   ((Node)node).addChildren(new Term(obj)); 
 																				   ((Node)node).addChildren(new Node(Labels.Read));
@@ -188,9 +192,9 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 						| AProcDecl<out robj, out node1>						(. actualTypes.Enqueue(Types.fun);
 																				   ((Node)node).addChildren(node1); .)
 					  ) 
-				  } } ')' ';'													(. if (obj.kind != Kinds.proc || obj.rtype == null) 
-																						SemErr("object is not a procedure");
-																				   else
+				  } } ')' ';'													(. if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
+																						SemErr("object is not a function");
+																				   else if (obj.type != Types.fun)
 																						tab.checkActualFormalTypes(obj,actualTypes); .)
                                                                                 
 			                                                                  
@@ -252,7 +256,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 	  } '}'																					(. ((Node)node).addChildren(forBlock);
 																								tab.CloseScope(); .)
 																				
-    | "println"'{'																(.  node = new Node(Labels.Print); .)
+    | "println"'{'																(.  tab.setAsyncControl(true);
+																					node = new Node(Labels.Print); .)
 				  ( CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
 				    |string													    (. ((Node)node).addChildren(new Term(t.val)); .)
 				  )
@@ -307,7 +312,8 @@ VarDecl<out ASTNode node>														(. string name; ArrayList names = new Arr
 																				   node =  new Node (Labels.Decl);
 																				   ((Node)node).addChildren(new Term (obj));                             .)
 				| '=' 
-					(	"readln" '{''}'';'										(. if(type != Types.integer)
+					(	"readln" '{''}'';'										(. tab.setAsyncControl(true);
+																				   if(type != Types.integer)
 																					  SemErr("incompatible types"); 
 																				   obj = tab.NewObj((string)names[0], Kinds.var, type);
 																				   node =  new Node (Labels.AssigDecl);
@@ -412,9 +418,9 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   ((Node)node).addChildren(node1); .)
 			  
 			   ) 
-			 } } ')'															(. if (obj.kind != Kinds.proc || obj.rtype == null) 
-																						SemErr("object is not a procedure");
-																				   else
+			 } } ')'															(. if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
+																						SemErr("object is not a function");
+																				   else if (obj.type != Types.fun)
 																						tab.checkActualFormalTypes(obj, actualTypes); .)
 		]																		
 																				(. if (!control && obj.kind != Kinds.var)
