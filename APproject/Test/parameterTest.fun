@@ -1,6 +1,6 @@
 
 fun add() int {
-	println{5};
+
 	return 5;
 }
 
@@ -9,7 +9,7 @@ fun main(){
 		var z fun;
 		z = z();
 		x = async{return add()};	
-        println{"hola zio"};
+        println("hola zio");
 
 		
 }

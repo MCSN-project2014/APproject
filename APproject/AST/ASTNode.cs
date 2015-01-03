@@ -27,6 +27,11 @@ namespace APproject
 
 		protected int _line;
 		protected int _column;
+
+        // indicates whether a function is recursive or not
+        protected bool _recursive;
+
+        public bool recursive { get { return _recursive; } }
 		public int line{ get {return _line;}}
 		public int column{ get {return _column;}}
 
@@ -104,6 +109,10 @@ namespace APproject
 		public override string ToString(){
 			return Convert.ToString(_label);
 		}
+
+        public bool isRecursive(){
+            return this.recursive;
+        }
 	}
 
 

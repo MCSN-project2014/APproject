@@ -167,7 +167,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 					| AProcDecl<out robj, out node1>';'							(. ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(node1); .)
 
-					| "readln" '{''}' ';'									    (.  tab.setAsyncControl(true);
+					| "readln" '('')' ';'									    (.  tab.setAsyncControl(true);
 																					if(obj.type != Types.integer) 
 																						SemErr("incompatible types");
 																				   ((Node)node).addChildren(new Term(obj)); 
@@ -225,7 +225,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																					   if (type != Types.boolean) 
 																					       SemErr("boolean type expected"); .) 
 	   																				(. tab.OpenScope(); .) 
-	 '{' { Stat<out node1>															(. ((Node)whileBlock).addChildren(node1);.) 
+	 '{' {   Stat<out node1>														(. ((Node)whileBlock).addChildren(node1);.) 
 		   | VarDecl<out node1>														(. ((Node)whileBlock).addChildren(node1); .)	 
 	  } '}'																			(.  ((Node)node).addChildren(whileBlock);
 																						tab.CloseScope(); .)
@@ -256,12 +256,12 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 	  } '}'																					(. ((Node)node).addChildren(forBlock);
 																								tab.CloseScope(); .)
 																				
-    | "println"'{'																(.  tab.setAsyncControl(true);
+    | "println"'('																(.  tab.setAsyncControl(true);
 																					node = new Node(Labels.Print); .)
 				  ( CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
 				    |string													    (. ((Node)node).addChildren(new Term(t.val)); .)
 				  )
-				  '}' ';'						
+				  ')' ';'						
 																				  
 		
 	| "return"																	(. node = new Node(Labels.Return);
@@ -270,7 +270,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
     			                                                               
    				CompleteExpr<out type, out node1> ';'						    (. ((Node)node).addChildren(node1);
 																				   
-																				   tab.getOwner(out obj,out controlofblock);
+																				   tab.getOwner(out obj , out controlofblock);
 																				   if(obj != null){
 																						if(controlofblock)
 																							obj.returnIsSet=true;
@@ -312,7 +312,7 @@ VarDecl<out ASTNode node>														(. string name; ArrayList names = new Arr
 																				   node =  new Node (Labels.Decl);
 																				   ((Node)node).addChildren(new Term (obj));                             .)
 				| '=' 
-					(	"readln" '{''}'';'										(. tab.setAsyncControl(true);
+					(	"readln" '('')'';'										(. tab.setAsyncControl(true);
 																				   if(type != Types.integer)
 																					  SemErr("incompatible types"); 
 																				   obj = tab.NewObj((string)names[0], Kinds.var, type);

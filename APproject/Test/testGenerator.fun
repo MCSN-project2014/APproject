@@ -18,8 +18,8 @@ fun fib ( n int ) int {
 	var a int ; 
 	var b int ;
 
-	a = async { return fib( n-1 ); }
-	b = async { return fib( n-1 ); }
+	a = async { return fib( n-1 ) };
+	b = async { return fib( n-1 ) };
 	return a + b
 }
 

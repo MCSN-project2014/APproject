@@ -260,8 +260,8 @@ public SymbolTable   tab;
 				Get();
 				if (la.kind == 15) {
 					Get();
-					Expect(8);
-					Expect(9);
+					Expect(5);
+					Expect(7);
 					Expect(14);
 					tab.setAsyncControl(true);
 					if(type != Types.integer)
@@ -369,8 +369,8 @@ public SymbolTable   tab;
 					((Node)node).addChildren(node1); 
 				} else if (la.kind == 15) {
 					Get();
-					Expect(8);
-					Expect(9);
+					Expect(5);
+					Expect(7);
 					Expect(14);
 					tab.setAsyncControl(true);
 					if(obj.type != Types.integer) 
@@ -530,7 +530,7 @@ public SymbolTable   tab;
 		}
 		case 21: {
 			Get();
-			Expect(8);
+			Expect(5);
 			tab.setAsyncControl(true);
 			node = new Node(Labels.Print); 
 			if (StartOf(2)) {
@@ -540,7 +540,7 @@ public SymbolTable   tab;
 				Get();
 				((Node)node).addChildren(new Term(t.val)); 
 			} else SynErr(49);
-			Expect(9);
+			Expect(7);
 			Expect(14);
 			break;
 		}
@@ -552,8 +552,8 @@ public SymbolTable   tab;
 				CompleteExpr(out type, out node1);
 				Expect(14);
 				((Node)node).addChildren(node1);
-				
-				tab.getOwner(out obj,out controlofblock);
+				//if (node1)
+				tab.getOwner(out obj , out controlofblock);
 				if(obj != null){
 				if(controlofblock)
 				obj.returnIsSet=true;
