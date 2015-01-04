@@ -1,15 +1,23 @@
 open System
 open System.IO
 
-let rec fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
-
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
+let rec add x  y  = 
     
-    retVal
-let mutable retVal = fib  (5) 
+    x + y
+let rec minus x  y  = 
+    
+    x - y
 
-Console.WriteLine(retVal)
+[<EntryPoint>]
+let main argv = 
+    let mutable result = 0
+    let mutable value = 0
+    let mutable op = Convert.ToInt32(Console.ReadLine())
+
+    while op <> 9 do
+        value <- Convert.ToInt32(Console.ReadLine())
+
+       
+    Console.WriteLine(result)
+    Console.ReadLine()|>ignore
+    0

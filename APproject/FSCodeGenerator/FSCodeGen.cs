@@ -212,17 +212,19 @@ namespace APproject
             environment.addScope();
 
             safeWrite("\n[<EntryPoint>]\nlet main argv = \n");
-            indentationLevel++;
-            indent(indentationLevel);
+      
             foreach (Node c in n.children)
             {
                 translateRecursive(c);
             }
+            indentationLevel++;
             indent(indentationLevel);
             safeWrite("Console.ReadLine()|>ignore\n");
             indent(indentationLevel);
             safeWrite("0\n");
             indentationLevel--;
+            Console.WriteLine(indentationLevel);
+
             environment.removeScope();
 
         }
@@ -237,8 +239,8 @@ namespace APproject
 
             environment.addScope();
 
-            if (n.parent.label != Labels.Main)
-            {
+            //if (n.parent.label != Labels.Main)
+            //{
                 indentationLevel++;
                 foreach (Node c in children)
                 {
@@ -246,14 +248,14 @@ namespace APproject
                     translateRecursive(c);
                 }
                 indentationLevel--;
-            }
-            else
-            {
-                foreach (Node c in children)
-                {
-                    translateRecursive(c);
-                }
-            }
+            //}
+            //else
+            //{
+            //    foreach (Node c in children)
+            //    {
+            //        translateRecursive(c);
+            //    }
+            //}
 
             environment.removeScope();
         }
@@ -269,7 +271,6 @@ namespace APproject
         {
             string functionName = ((Obj)n.value).name;
 
-            //environment.addUpdateValue((Obj)n.value, n.value);
             if (n.recursive == false)
             {
                 safeWrite("let rec ");
