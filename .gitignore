@@ -154,3 +154,4 @@ UpgradeLog*.htm
 *.bim_*.settings
 # Microsoft Fakes
 FakesAssemblies/
+APproject/Test/translated_file.fs
