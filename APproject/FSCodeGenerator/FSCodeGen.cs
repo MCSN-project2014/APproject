@@ -19,6 +19,7 @@ namespace APproject
         private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
         private string fileName;
         private int asyncTasksCounter;
+        private bool bang; //it indicates whether the operator bang! must be used or not
         Environment environment;
 
         public FSCodeGen(string outputFileName)
@@ -248,15 +249,6 @@ namespace APproject
                     translateRecursive(c);
                 }
                 indentationLevel--;
-            //}
-            //else
-            //{
-            //    foreach (Node c in children)
-            //    {
-            //        translateRecursive(c);
-            //    }
-            //}
-
             environment.removeScope();
         }
 
@@ -273,7 +265,7 @@ namespace APproject
 
             if (n.recursive == false)
             {
-                safeWrite("let rec ");
+                safeWrite("let ");
                 safeWrite(functionName);
                 translateParameters(1, n);
                 safeWrite(" = \n");
@@ -282,7 +274,7 @@ namespace APproject
             }
             else
             {
-                safeWrite("let ");
+                safeWrite("let rec ");
                 safeWrite(functionName);
                 translateParameters(1, n);
                 safeWrite(" = \n");
