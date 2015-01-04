@@ -1,7 +1,7 @@
 ﻿fun fib(n int) int{
-	var retVal int = -1;
+	var retVal int;
 	if  n == 0 {
-		retVal = 0;
+		retVal = 1;
 	}
 	if  n == 1 {
 		retVal = 1;
@@ -13,5 +13,7 @@
 }
 
 fun main(){
-	return fib(5);
+	var retVal int = fib(5);
+	println(retVal);
+	return retVal;
 }
