@@ -422,9 +422,9 @@ namespace APproject
 
             for (int i = 0; i < children.Count(); i++)  // parameters of the function
             {
-                safeWrite(" ");
+                safeWrite(" (");
                 translateRecursive(children.ElementAt(i));
-                safeWrite(" ");
+                safeWrite(") ");
             }
 
         }

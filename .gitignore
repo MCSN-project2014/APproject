@@ -155,3 +155,6 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 APproject/Test/translated_file.fs
+APproject/Test/translated_file.fs
+APproject/Test/translated_file.fs
+*.fs
