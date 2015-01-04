@@ -270,11 +270,15 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
     			                                                               
    				CompleteExpr<out type, out node1> ';'						    (. ((Node)node).addChildren(node1);
 																				   tab.getOwner(out obj , out controlofblock);
-																				   if (node1.label == Labels.FunCall){
+																				   if(obj != null){
+																					if (node1.label == Labels.FunCall){
 																						if(((Obj)node1.value).name == obj.name){
 																							node1.recursive = true;
+																							}
 																						}
-																				   }
+																					} else {
+																						 SemErr("return is not expected");
+																					}
 																				   
 																				   if(obj != null){
 																						if(controlofblock)
@@ -289,6 +293,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 																						if(controlofblock)
 																							obj.returnIsSet=true;
 																						tab.complexReturnTypeControl(obj,robj);
+																					}else {
+																						 SemErr("return is not expected");
 																					} .) 
 			).
 
