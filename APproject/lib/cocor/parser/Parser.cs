@@ -553,10 +553,14 @@ public SymbolTable   tab;
 				Expect(14);
 				((Node)node).addChildren(node1);
 				tab.getOwner(out obj , out controlofblock);
+				if(obj != null){
 				if (node1.label == Labels.FunCall){
 				if(((Obj)node1.value).name == obj.name){
 				node1.recursive = true;
 				}
+				}
+				} else {
+				SemErr("return is not expected");
 				}
 				
 				if(obj != null){
@@ -574,6 +578,8 @@ public SymbolTable   tab;
 				if(controlofblock)
 				obj.returnIsSet=true;
 				tab.complexReturnTypeControl(obj,robj);
+				}else {
+				SemErr("return is not expected");
 				} 
 			} else SynErr(50);
 			break;

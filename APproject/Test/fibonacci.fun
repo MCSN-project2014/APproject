@@ -13,5 +13,5 @@
 }
 
 fun main(){
-	return fib(5);
+ var f int = fib(5);
 }

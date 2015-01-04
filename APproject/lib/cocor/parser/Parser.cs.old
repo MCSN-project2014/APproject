@@ -557,7 +557,6 @@ public SymbolTable   tab;
 				if(((Obj)node1.value).name == obj.name){
 				node1.recursive = true;
 				}
-				Console.Write(node1.recursive);
 				}
 				
 				if(obj != null){

@@ -88,6 +88,7 @@
     <None Include="startCocor.bat" />
     <None Include="lib\cocor\Parser.frame" />
     <None Include="lib\cocor\Scanner.frame" />
+    <None Include="Test\fibonacci.fun" />
     <None Include="Test\parameterTest.fun" />
     <None Include="Test\testGenerator.fun" />
     <None Include="Test\vardeclTest.fun" />
