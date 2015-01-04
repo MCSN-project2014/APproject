@@ -211,12 +211,18 @@ namespace APproject
         {
             environment.addScope();
 
-
+            safeWrite("\n[<EntryPoint>]\nlet main argv = \n");
+            indentationLevel++;
+            indent(indentationLevel);
             foreach (Node c in n.children)
             {
                 translateRecursive(c);
             }
-
+            indent(indentationLevel);
+            safeWrite("Console.ReadLine()|>ignore\n");
+            indent(indentationLevel);
+            safeWrite("0\n");
+            indentationLevel--;
             environment.removeScope();
 
         }
@@ -411,7 +417,6 @@ namespace APproject
         /// </summary>
         /// <param name="n">the function call node</param>
         /// 
-        /****************** !! Still RECURSIVE FUNCTION to be translated !! **********/
         public void translateFunCall(ASTNode n)
         {
             List<ASTNode> children = n.children;
@@ -537,8 +542,8 @@ namespace APproject
             if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
             {
                 translateParameters(2, n);
-                safeWrite(" : ");
-                translateRecursive(children.ElementAt(1));
+                //safeWrite(" : ");
+                //translateRecursive(children.ElementAt(1));
                 safeWrite(" -> \n");
                 translateRecursive(children.ElementAt(0));
             }

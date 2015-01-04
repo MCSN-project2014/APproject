@@ -7,9 +7,9 @@ namespace APproject
 {
 	public class Interpreter
 	{
-		const string CONSOL_PRINT = "FUNW@P console: ";
-		const string CONSOL_READ = "FUNW@P read: ";
-		const string CONSOL_INFO = "FUNW@P info: ";
+		const string CONSOL_PRINT = "funW@P console: ";
+		const string CONSOL_READ = "funW@P read: ";
+		const string CONSOL_INFO = "funW@P info: ";
 
 		//MemoryFunction funMem;
 		private Dictionary<Obj,ASTNode> function;
@@ -146,7 +146,7 @@ namespace APproject
 					object value = actualMemory.GetValue ((Obj)node.value);
 					if (value is Task<object>) {
 						//((Task<object>)value).Wait();
-						Console.WriteLine(CONSOL_INFO + "waiting the calculation of variable '"+node+"'...");
+						Console.WriteLine(CONSOL_INFO + "while computing '"+node+"'...");
 						return ((Task<object>)value).Result;
 					}else
 						return value;

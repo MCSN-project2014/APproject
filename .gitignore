@@ -158,3 +158,5 @@ APproject/Test/translated_file.fs
 APproject/Test/translated_file.fs
 APproject/Test/translated_file.fs
 *.fs
+*.fs
+APproject/Test/fibonacciwrong.fun
