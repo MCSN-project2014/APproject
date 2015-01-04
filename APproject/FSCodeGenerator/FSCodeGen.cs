@@ -110,6 +110,9 @@ namespace APproject
                 case Labels.Minus:
                     translateOp("-", n);
                     break;
+                case Labels.Negativ:
+                    translateNegativ(n);
+                    break;
                 case Labels.Div:
                     translateOp("/", n);
                     break;
@@ -548,6 +551,15 @@ namespace APproject
             }
 
 
+        }
+        /// <summary>
+        /// This method translates into F#  the unary minus.
+        /// </summary>
+        /// <param name="n">The node.</param>
+        public void translateNegativ(ASTNode n)
+        {
+            safeWrite("-");
+            translateRecursive(n.children.ElementAt(0));
         }
 
         /// <summary>
