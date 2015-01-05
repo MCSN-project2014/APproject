@@ -220,7 +220,9 @@ namespace APproject
                 while (scope.next != null)
                 {
                     scope = scope.next;
-                    owner = scope.owner;
+                     if (scope.owner != null){
+                         owner = scope.owner;
+                    }
                 }
             }
 
