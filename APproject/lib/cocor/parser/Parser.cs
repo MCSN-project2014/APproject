@@ -554,21 +554,14 @@ public SymbolTable   tab;
 				((Node)node).addChildren(node1);
 				tab.getOwner(out obj , out controlofblock);
 				if(obj != null){
-				if (node1.label == Labels.FunCall){
-				if(((Obj)node1.value).name == obj.name){
-				node1.recursive = true;
-				}
-				}
-				} else {
-				SemErr("return is not expected");
-				}
-				
-				if(obj != null){
 				if(controlofblock)
 				obj.returnIsSet=true;
 				if( obj.type != type )
 				SemErr("incompatible return type");
-				} 
+				} else {
+				SemErr("return is not expected");
+				}
+				
 			} else if (la.kind == 4) {
 				AProcDecl(out robj,out node1);
 				Expect(14);
@@ -760,7 +753,14 @@ public SymbolTable   tab;
 			type = obj.type; 
 			if (la.kind == 5) {
 				control = true; 
-				node = new Node(Labels.FunCall, obj); 
+				node = new Node(Labels.FunCall, obj);
+				Obj owner = tab.getOwner();
+				if(owner != null){
+				if (owner.name == obj.name){
+				owner.recursive = true;
+				
+				}
+				} 
 				Get();
 				while (StartOf(3)) {
 					if (StartOf(2)) {

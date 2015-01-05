@@ -271,21 +271,14 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
    				CompleteExpr<out type, out node1> ';'						    (. ((Node)node).addChildren(node1);
 																				   tab.getOwner(out obj , out controlofblock);
 																				   if(obj != null){
-																					if (node1.label == Labels.FunCall){
-																						if(((Obj)node1.value).name == obj.name){
-																							node1.recursive = true;
-																							}
-																						}
-																					} else {
-																						 SemErr("return is not expected");
-																					}
-																				   
-																				   if(obj != null){
 																						if(controlofblock)
 																							obj.returnIsSet=true;
 																						if( obj.type != type )
 																							SemErr("incompatible return type");
-																					} .)
+																					} else {
+																						 SemErr("return is not expected");
+																					}
+																				 .)
 																					                                                 
 			   | AProcDecl<out robj,out node1> ';'                                  (. ((Node)node).addChildren(node1);
 																					tab.getOwner(out obj,out controlofblock);
@@ -413,7 +406,14 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   node = new Term(obj); 
 																				   type = obj.type; .) 
 		[																		(. control = true; 
-																				   node = new Node(Labels.FunCall, obj); .)
+																				   node = new Node(Labels.FunCall, obj);
+																				   Obj owner = tab.getOwner();
+																				   if(owner != null){
+																					if (owner.name == obj.name){
+																						owner.recursive = true;
+			
+																						}
+																					} .)
 		'(' { (
 				 CompleteExpr<out type1, out node1>								(. actualTypes.Enqueue(type1);
 																				   ((Node)node).addChildren(node1); .) 

@@ -23,6 +23,11 @@ namespace APproject
 		public int level;           			    // nesting level; 0=global, 1=local
 		public Obj locals;          		        // scopes: to locally declared objects
 		public int nextAdr;		                    // scopes: next free address in this scope
+
+        protected bool _recursive;                  // indicates whether a function is recursive or not
+
+        public bool recursive { get { return _recursive; } set { _recursive = value; } }
+
         public RType rtype;
         public bool asyncControl;
         public bool returnIsSet;
@@ -119,6 +124,7 @@ namespace APproject
             {
                 obj.formals = new Queue<Obj>();
                 obj.asyncControl = false;
+                obj.recursive = false;
             }
 			return obj;
 		}

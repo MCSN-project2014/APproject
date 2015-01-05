@@ -16,6 +16,7 @@ namespace APproject
 	public abstract class ASTNode{
 		public ASTNode parent;
 
+        public bool recursive { get; set; }
 		protected object _value;
 		public object value{ get{return _value;}}
 
@@ -28,10 +29,7 @@ namespace APproject
 		protected int _line;
 		protected int _column;
 
-        // indicates whether a function is recursive or not
-        protected bool _recursive;
 
-        public bool recursive { get { return _recursive; } set { _recursive = value; } }
 		public int line{ get {return _line;}}
 		public int column{ get {return _column;}}
 
@@ -61,7 +59,7 @@ namespace APproject
 			_children = new List<ASTNode> ();
 			_label = l;
 			_value = value;
-            _recursive = false;
+          
 		}
 
 		public Node (Labels l, int line, int column){
@@ -80,7 +78,7 @@ namespace APproject
 			_value = value;
 			_line = line;
 			_column = column;
-            _recursive = false;
+           
 		}
 
 		/// <summary>
@@ -112,9 +110,7 @@ namespace APproject
 			return Convert.ToString(_label);
 		}
 
-        public bool isRecursive(){
-            return this.recursive;
-        }
+       
 	}
 
 
