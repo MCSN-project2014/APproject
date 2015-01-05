@@ -9,7 +9,7 @@ namespace APproject
 	public enum Labels {Program, Main, Afun, FunDecl, 
 						For, If, While, Block,
 						Assig, Decl, AssigDecl, 
-						Return, Async, Print, Read,  
+						Return, Async, Print, Read, Dsync,  
 						Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq, NotEq, And, Or, Negativ,
 						FunCall};
 

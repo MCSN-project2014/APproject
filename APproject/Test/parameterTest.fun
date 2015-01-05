@@ -1,13 +1,9 @@
-
-fun add() int {
-
-	return 5;
-}
-
-fun main(){
+fun main() {
 		var x int= 6+8;
-		var z fun;
-		z = z();
-		x = async{return add()};	
-        println("hola zio");		
+		var y int;
+		var z fun = fun () int {
+				y = 5;
+				return x;
+			};
+		
 }

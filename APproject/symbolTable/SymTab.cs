@@ -22,10 +22,11 @@ namespace APproject
 		public int adr;	            			    // address in memory or start of proc
 		public int level;           			    // nesting level; 0=global, 1=local
 		public Obj locals;          		        // scopes: to locally declared objects
+        protected bool _isUsedFromAfun;             // var : indicates if the variable is used in afun but is declared external
+        public bool isUsedFromAfun { get { return _isUsedFromAfun; } set { _isUsedFromAfun = value; } }              
 		public int nextAdr;		                    // scopes: next free address in this scope
 
         protected bool _recursive;                  // indicates whether a function is recursive or not
-
         public bool recursive { get { return _recursive; } set { _recursive = value; } }
 
         public RType rtype;
@@ -47,7 +48,7 @@ namespace APproject
 		public SymbolTable(Parser parser) {
 			this.parser = parser;
 			topScope = null;
-
+            curLevel = 0;
 			undefObj = new Obj();
 			undefObj.name  =  "undef"; undefObj.type = Types.undef; undefObj.kind = Kinds.var;
 			undefObj.adr = 0; undefObj.level = 0; undefObj.next = null;
@@ -66,6 +67,8 @@ namespace APproject
             scop.owner = null;
             topScope = scop; 
 			curLevel++;
+            scop.level = curLevel;
+           // System.Console.WriteLine(curLevel + " level of anonima bolck");
 		}
 
         ///<summary>
@@ -85,6 +88,8 @@ namespace APproject
             scop.next = topScope;
             topScope = scop;
             curLevel++;
+            scop.level = curLevel;
+           // System.Console.WriteLine(curLevel + " level of owner block");
 
         }
 
@@ -119,7 +124,12 @@ namespace APproject
 				last = p; p = p.next;
 			}
 			if (last == null) topScope.locals = obj; else last.next = obj;
-
+            if (kind == Kinds.var)
+            {
+                obj.level = curLevel;
+               // System.Console.WriteLine(obj.level + " x level");
+                obj.isUsedFromAfun = false;
+            }
             if (kind == Kinds.proc)
             {
                 obj.formals = new Queue<Obj>();
@@ -331,12 +341,28 @@ namespace APproject
         /// </summary>
         /// <param name="name">name.</param>
 		public Obj Find (string name) {
-            Obj obj, scope; 
-			scope = topScope;
+            Obj obj, scope, owner;
+            owner = getOwner();
+            scope = topScope;
 			while (scope != null) {  // for all open scopes
 				obj = scope.locals;
 				while (obj != null) {  // for all objects in this scope
-					if (obj.name == name) return obj;
+					if (obj.name == name)
+                    {
+                        if (owner != null && owner.name == null)
+                        {
+                          
+                            if (owner.level >= obj.level)
+                            {
+                                obj.isUsedFromAfun = true;
+                            }
+                                
+                            
+                        }
+                        return obj;
+                        
+                    } 
+                        
 					obj = obj.next;
 				}
 				scope = scope.next;
