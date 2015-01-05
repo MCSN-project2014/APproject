@@ -754,7 +754,7 @@ public SymbolTable   tab;
 			if (la.kind == 5) {
 				control = true; 
 				node = new Node(Labels.FunCall, obj);
-				 Obj owner = tab.getOwner();
+				Obj owner = tab.getOwner();
 				if(owner != null){
 				if (owner.name == obj.name){
 				owner.recursive = true;

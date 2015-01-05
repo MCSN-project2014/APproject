@@ -176,7 +176,14 @@ Stat<out ASTNode node>															(. Types type,type1; string name; string na
 				                                                              
 				)                                                            
 			                                                                 
-			| '('																(. node = new Node(Labels.FunCall, obj); .)
+			| '('																(. node = new Node(Labels.FunCall, obj);
+																				   Obj owner = tab.getOwner();
+																				   if(owner != null){
+																				     if (owner.name == obj.name){
+																						 owner.recursive = true;
+																					  }
+																					} 
+																				.)
 																				   
 				  { ( 
 					    CompleteExpr<out type, out node1>						(. actualTypes.Enqueue(type);
@@ -409,7 +416,7 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   node = new Node(Labels.FunCall, obj);
 																				   Obj owner = tab.getOwner();
 																				   if(owner != null){
-																					if (owner.name == obj.name){
+																				   if (owner.name == obj.name){
 																						owner.recursive = true;
 			
 																						}

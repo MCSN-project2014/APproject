@@ -381,7 +381,14 @@ public SymbolTable   tab;
 				} else SynErr(46);
 			} else if (la.kind == 5) {
 				Get();
-				node = new Node(Labels.FunCall, obj); 
+				node = new Node(Labels.FunCall, obj);
+				Obj owner = tab.getOwner();
+				if(owner != null){
+				if (owner.name == obj.name){
+				owner.recursive = true;
+				}
+				} 
+				
 				while (StartOf(3)) {
 					if (StartOf(2)) {
 						CompleteExpr(out type, out node1);
