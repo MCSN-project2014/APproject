@@ -242,13 +242,16 @@ namespace APproject
 
             //if (n.parent.label != Labels.Main)
             //{
+           // safeWrite("\n");
                 indentationLevel++;
                 foreach (Node c in children)
                 {
+                    
                     indent(indentationLevel);
                     translateRecursive(c);
                 }
                 indentationLevel--;
+                
             environment.removeScope();
         }
 
@@ -268,8 +271,9 @@ namespace APproject
                 Console.WriteLine("rec");
                 safeWrite("let rec ");
                 safeWrite(functionName);
-                translateParameters(1, n);
+                List<string> nameParameters = translateParameters(1, n);
                 safeWrite(" = \n");
+                translateMutableParameters(nameParameters);
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
             }
@@ -277,11 +281,32 @@ namespace APproject
             {
                 safeWrite("let ");
                 safeWrite(functionName);
-                translateParameters(1, n);
+                List<string> nameParameters = translateParameters(1, n);
                 safeWrite(" = \n");
+                translateMutableParameters(nameParameters);
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
             }
+        }
+
+
+        /// <summary>
+        /// This is a helper method, translating the paramters function
+        /// as mutable variable.
+        /// </summary>
+        /// <param name="iparList"></param>
+        private void translateMutableParameters(List<string> parList)
+        {
+            indentationLevel++;
+            foreach (string s in parList)
+            {
+                safeWrite("\n");
+                indent(indentationLevel);
+                string mutableDecl = "let mutable " + s + " = " + s;
+                safeWrite(mutableDecl);
+            }
+            indentationLevel--;
+            safeWrite("\n");
         }
 
 
@@ -291,17 +316,20 @@ namespace APproject
         /// </summary>
         /// <param name="initPar"></param>
         /// <param name="n"></param>
-        private void translateParameters(int initPar, ASTNode n)
+        private List<string> translateParameters(int initPar, ASTNode n)
         {
             List<ASTNode> parameters = n.children;
+            List<string> nameParameters = new List<string>();
             {
                 for (int i = initPar; i < parameters.Count; i++)
                 {
                     safeWrite(" ");
                     ASTNode temp = parameters.ElementAt(i);
+                    nameParameters.Add(temp.ToString());
                     translateRecursive(temp);
                     safeWrite(" ");
                 }
+                return nameParameters;
             }
 
         }
@@ -347,8 +375,8 @@ namespace APproject
         /// <param name="n">the Return node</param>
         public void translateReturn(ASTNode n)
         {
-            safeWrite("\n");
-            indent(indentationLevel);
+            //safeWrite("\n");
+           // indent(indentationLevel);
             translateRecursive(n.children.ElementAt(0));
         }
 

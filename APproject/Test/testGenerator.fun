@@ -1,7 +1,9 @@
-/*
 fun add( x int , y int ) int {
-	var s int;
-	return s + x ; 
+	var s int ;
+	s = x + y ;
+	s = x - y ;
+    s = x * y ; 
+	return s;
 }
 
 
@@ -13,35 +15,40 @@ fun fib ( n int ) int {
 	b = async { return fib( n-1 ) };
 	return a + b;
 }
-*/
-fun outsideAdder() fun ( int ) int {
+
+/*
+fun outsideAdder( x int , y int) fun ( int ) int {
 	var sum int = 10;
 	return fun(x int ) int {
 		sum = sum + x;
 		return sum ;
 	};
 }
+*/
 
 fun main (){
 
-
-var adder  fun = outsideAdder();
-var anotherAdder fun ;
-println ( adder (5 ));
-anotherAdder = adder ;
-println(anotherAdder(5));
-
-
-
-/*
 var t  bool = true ;
 var s  int ;
 
-
 if ( t == false ) {
 	s = 0;
+	s = 1;
+	s = 3;
 	}
 else {s = 1;}
+
+/*
+//var adder  fun = outsideAdder();
+//var anotherAdder fun ;
+//println ( adder (5 ));
+//anotherAdder = adder ;
+//println(anotherAdder(5));
+
+
+
+
+
 
 for var i int =0 ; i < 32 ; i= i+1 {
 	var t bool ; 

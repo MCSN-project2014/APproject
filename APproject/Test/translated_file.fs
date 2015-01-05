@@ -1,162 +1,35 @@
+
 open System
 open System.IO
 
-let outsideAdder = 
-    let  sum = ref 10
-    
-    fun  x  -> 
-        sum.Value <- sum.Value + x
-        sum.Value 
+let add x  y  = 
 
-
-[<EntryPoint>]
-let main argv = 
-    let mutable adder = outsideAdder 
-    let mutable anotherAdder = Unchecked.defaultof<'a>
-    
-    Console.WriteLine(adder  (5) )
-    let anotherAdder = adder
-    
-    Console.WriteLine(anotherAdder  (5) )
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
+    let mutable x = x
+    let mutable y = y
+    let mutable s = 0
+    s <- x + y
+    s <- x - y
+    s <- x * y
+    s
 let fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
 
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
-let fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
-
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
+    let mutable n = n
+    let mutable a = 0
+    let mutable b = 0
+    a <- let task0 = Async.StartAsTask( async{ return fib  (n - 1) })
+    b <- let task1 = Async.StartAsTask( async{ return fib  (n - 1) })
+    a + b
 
 [<EntryPoint>]
 let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
-let fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
+    let mutable t = true
+    let mutable s = 0
+    if t = false then
+        s <- 0
+        s <- 1
+        s <- 3
 
     else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
-let fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
-
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
-let fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
-
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
-let fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
-
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
-
-let rec fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
-
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
+        s <- 1
     Console.ReadLine()|>ignore
     0
