@@ -1,23 +1,22 @@
 open System
 open System.IO
 
-let rec add x  y  = 
+let outsideAdder = 
+    let  sum = ref 10
     
-    x + y
-let rec minus x  y  = 
-    
-    x - y
+    fun  x  -> 
+        sum.Value <- sum.Value + x
+        sum.Value 
+
 
 [<EntryPoint>]
 let main argv = 
-    let mutable result = 0
-    let mutable value = 0
-    let mutable op = Convert.ToInt32(Console.ReadLine())
-
-    while op <> 9 do
-        value <- Convert.ToInt32(Console.ReadLine())
-
-       
-    Console.WriteLine(result)
+    let mutable adder = outsideAdder 
+    let mutable anotherAdder = Unchecked.defaultof<'a>
+    
+    Console.WriteLine(adder  (5) )
+    let anotherAdder = adder
+    
+    Console.WriteLine(anotherAdder  (5) )
     Console.ReadLine()|>ignore
     0

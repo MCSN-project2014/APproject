@@ -1,17 +1,7 @@
 /*
 fun add( x int , y int ) int {
 	var s int;
-	s = x - y;
 	return s + x ; 
-}
-
-
-fun outadd() fun( int ) int {
-	var sum int = 10;
-	return fun( x int) int {
-		sum = sum + x;
-		return sum;
-	};
 }
 
 
@@ -24,8 +14,23 @@ fun fib ( n int ) int {
 	return a + b;
 }
 */
+fun outsideAdder() fun ( int ) int {
+	var sum int = 10;
+	return fun(x int ) int {
+		sum = sum + x;
+		return sum ;
+	};
+}
 
 fun main (){
+
+
+var adder  fun = outsideAdder();
+var anotherAdder fun ;
+println ( adder (5 ));
+anotherAdder = adder ;
+println(anotherAdder(5));
+
 
 
 /*
@@ -61,12 +66,6 @@ for var i int =0 ; i < 32 ; i= i+1 {
  
 }
 
-var adder fun = outadd();
-
-var anotheradd fun = outadd();
-
-println{adder(5)};
-*/
 
 var a int =0;
 while ( a != 10 ){
@@ -74,5 +73,5 @@ while ( a != 10 ){
 	println( a );
 	a = a+1 ;
 }
-
+*/
 }
