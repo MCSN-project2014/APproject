@@ -263,9 +263,10 @@ namespace APproject
         {
             string functionName = ((Obj)n.value).name;
 
-            if (n.recursive == false)
+            if (((Obj)n.value).recursive == true)
             {
-                safeWrite("let ");
+                Console.WriteLine("rec");
+                safeWrite("let rec ");
                 safeWrite(functionName);
                 translateParameters(1, n);
                 safeWrite(" = \n");
@@ -274,7 +275,7 @@ namespace APproject
             }
             else
             {
-                safeWrite("let rec ");
+                safeWrite("let ");
                 safeWrite(functionName);
                 translateParameters(1, n);
                 safeWrite(" = \n");
