@@ -20,6 +20,7 @@ namespace APproject
         private string fileName;
         private int asyncTasksCounter;
         private bool bang; //it indicates whether the operator bang! must be used or not
+        Dictionary<string, Tuple<ASTNode, List<string>>> funDeclarations; //contains the reference to the nodes representing funDecl's
         Environment environment;
 
         public FSCodeGen(string outputFileName)
@@ -28,6 +29,8 @@ namespace APproject
             asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
             environment = new Environment();
+
+            funDeclarations = new Dictionary<string,Tuple<ASTNode, List<string> >();
 
             if (outputFileName == string.Empty)
             {
@@ -98,6 +101,9 @@ namespace APproject
                     break;
                 case Labels.Async:
                     translateAsync(n);
+                    break;
+                case Labels.Dsync:
+                    translateDsync(n);
                     break;
                 case Labels.Afun:
                     translateAfun(n);
@@ -266,9 +272,10 @@ namespace APproject
         {
             string functionName = ((Obj)n.value).name;
 
+            //funDeclarations.Add(functionName, ); //stores the couple < functionName, DeclNode >, useful for dsync
+
             if (((Obj)n.value).recursive == true)
             {
-                Console.WriteLine("rec");
                 safeWrite("let rec ");
                 safeWrite(functionName);
                 List<string> nameParameters = translateParameters(1, n);
@@ -546,6 +553,16 @@ namespace APproject
             translateRecursive(n.children.ElementAt(0));
             safeWrite("})");
 
+        }
+
+        /// <summary>
+        /// This method produces the F# code performing 
+        /// the HTTP POST request for the dsync in funW@P.
+        /// </summary>
+        /// <param name="n">The node Dsync.</param>
+        public void translateDsync(ASTNode n)
+        {
+            string url = n.children[0].name
         }
 
         /// <summary>
