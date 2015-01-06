@@ -70,7 +70,6 @@
     <Compile Include="FSCodeGenerator\FSCodeGenEnvironment.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenRef.cs" />
     <Compile Include="FSCodeGenerator\MainTestFSCodeGen.cs" />
-    <Compile Include="FSCodeGenerator\PyCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
