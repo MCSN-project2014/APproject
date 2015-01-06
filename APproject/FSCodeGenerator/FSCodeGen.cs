@@ -410,19 +410,28 @@ namespace APproject
         /// <param name="n">the declaration node</param>
         public void translateDecl(ASTNode n)
         {
-            safeWrite("let mutable ");
-
-            translateRecursive(n.children.ElementAt(0));
-
-            if (n.children.ElementAt(0).type == Types.integer)
+            
+            for (int i = 0; i < n.children.Count; i++)
             {
-                safeWrite(" = 0\n"); // integer are initialized to '0'
+                if (i>0) 
+                    indent(indentationLevel); //fix indentation for multiple declarations like var x, y, z int;
+
+                safeWrite("let mutable ");
+                translateRecursive(n.children.ElementAt(i));
+                if (n.children.ElementAt(i).type == Types.integer)
+                {
+                    safeWrite(" = 0\n"); // integer are initialized to '0'
+                }
+                else if (n.children.ElementAt(i).type == Types.boolean)
+                {
+                    safeWrite(" = true\n"); // bool are initialized to 'true'
+                }
+                else
+                {   
+                    safeWrite(" = Unchecked.defaultof<'a>\n");
+                }
             }
-            else if (n.children.ElementAt(0).type == Types.boolean)
-            {
-                safeWrite(" = true\n"); // bool are initialized to 'true'
-            }
-            else safeWrite(" = Unchecked.defaultof<'a>\n");
+ 
         }
 
         /// <summary>
