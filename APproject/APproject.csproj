@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="ASTGenerator\ASTGenerator.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenEnvironment.cs" />
+    <Compile Include="FSCodeGenerator\FSCodeGenRef.cs" />
     <Compile Include="FSCodeGenerator\MainTestFSCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />

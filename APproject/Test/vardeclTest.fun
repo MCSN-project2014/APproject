@@ -1,10 +1,12 @@
 
-fun add ( a int , b int){
+fun add ( a int , b int) int{
 	var z int = a + b;
+	return z;
 }
 
-fun sub ( a int, b int )  {
+fun sub ( a int, b int )int{
 	var s int = a - b ; 
+	return s;
 }
 
 fun main(){

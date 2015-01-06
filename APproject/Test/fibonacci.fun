@@ -9,6 +9,7 @@
 }
 
 fun main(){
-	var retVal int = fib(5);
+	var x int= 6;
+	var retVal int = fib(x);
 	println(retVal);
 }
