@@ -13,7 +13,7 @@ namespace funwapc
 				ASTNode root;
 				String fileName = "translated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
 				if (HelperParser.TryParse(args[0], out root)){
-					FSCodeGen genFsharp = new FSCodeGen(fileName);
+					FSCodeGenRef genFsharp = new FSCodeGenRef(fileName);
 					genFsharp.translate(root);
 				}
 				Console.Read();

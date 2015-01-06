@@ -15,7 +15,8 @@ namespace APproject
     ///</summary>
     public class FSCodeGenRef
     {
-        private StreamWriter fileWriter;
+        //private StreamWriter fileWriter;
+        private FileStream output;
         private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
         private string fileName;
         private int asyncTasksCounter;
@@ -39,13 +40,17 @@ namespace APproject
             }
             else
             {
-                try
+                if (File.Exists(fileName))
                 {
-                    FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                }
-                catch (IOException)
-                {
-                    Console.WriteLine("Error while creating the new file " + outputFileName + ".fs");
+                    try
+                    {
+                        File.Delete(fileName);
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return;
+                    }
                 }
             }
         }
@@ -165,6 +170,8 @@ namespace APproject
         private void translateRecursive(ASTNode n)
         {
             if (n.isTerminal())
+                
+                
                 if ((n.value) is Obj && ((Obj)n.value).kind == Kinds.var && bang)
                     safeWrite("!" + n.ToString());
                 else
@@ -179,7 +186,7 @@ namespace APproject
         /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
         {
-            using (fileWriter = new StreamWriter(fileName, true))
+            using (var fileWriter = new StreamWriter(fileName, true))
             {
                 fileWriter.Write(s);
             }
@@ -234,7 +241,6 @@ namespace APproject
             indent(indentationLevel);
             safeWrite("0\n");
             indentationLevel--;
-            Console.WriteLine(indentationLevel);
 
             environment.removeScope();
 
@@ -283,7 +289,7 @@ namespace APproject
                 safeWrite("let rec ");
                 safeWrite(functionName);
                 List<string> nameParameters = translateParameters(1, n);
-                safeWrite(" = \n");
+                safeWrite(" =");
                 translateMutableParameters(nameParameters);
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
@@ -298,6 +304,8 @@ namespace APproject
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
             }
+
+            
         }
 
 
@@ -316,8 +324,11 @@ namespace APproject
                 string mutableDecl = "let " + s + " = ref(" + s + ")";
                 safeWrite(mutableDecl);
             }
+            
+            if (parList.Count!=0)
+                safeWrite("\n");
             indentationLevel--;
-            safeWrite("\n");
+            
         }
 
 
@@ -339,6 +350,10 @@ namespace APproject
                     nameParameters.Add(temp.ToString());
                     translateRecursive(temp);
                     safeWrite(" ");
+                }
+                if (parameters.Count == 1)
+                {
+                    safeWrite("()");
                 }
                 return nameParameters;
             }
@@ -432,7 +447,25 @@ namespace APproject
             {
                 safeWrite(" = ref(true)\n"); // bool are initialized to 'true'
             }
-            else safeWrite(" = null\n");
+            else safeWrite(" = fun() <- Unchecked.defaultof<'a>\n");
+
+            for (int i = 0; i < n.children.Count; i++)
+            {
+                if (i > 0)
+                    indent(indentationLevel); //fix indentation for multiple declarations like var x, y, z int;
+
+                safeWrite("let ");
+                translateRecursive(n.children.ElementAt(i));
+                if (n.children.ElementAt(i).type == Types.integer)
+                {
+                    safeWrite(" ref 0\n"); // integer are initialized to '0'
+                }
+                else if (n.children.ElementAt(i).type == Types.boolean)
+                {
+                    safeWrite(" ref true\n"); // bool are initialized to 'true'
+                }
+                
+            }
         }
 
         /// <summary>
@@ -461,18 +494,24 @@ namespace APproject
         public void translateFunCall(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            if (n.value.GetType() == typeof(Obj))
-            {
-                safeWrite(((Obj)n.value).name + " ");
-            }
+            dynamic tmp = n.value;
+            if (tmp.kind == Kinds.proc)
+                safeWrite(tmp.name + " ");
+            else
+                safeWrite("!"+tmp.name + " ");
 
             for (int i = 0; i < children.Count(); i++)  // parameters of the function
             {
-                safeWrite(" (");
+                safeWrite("(");
                 bang = true;
                 translateRecursive(children.ElementAt(i));
                 bang = false;
-                safeWrite(") ");
+                safeWrite(")");
+            }
+
+            if (children.Count == 0)
+            {
+                safeWrite("()");
             }
 
         }
@@ -485,11 +524,12 @@ namespace APproject
         /// 
         public void translatePrint(ASTNode n)
         {
-            safeWrite("\n");
-            indent(indentationLevel);
-            safeWrite("Console.WriteLine(");
+            //indent(indentationLevel);
+            safeWrite("Console.WriteLine( ");
+            bang = true;
             translateRecursive(n.children.ElementAt(0));
-            safeWrite(")\n");
+            bang = false;
+            safeWrite(" )\n");
         }
 
         /// <summary>
@@ -594,23 +634,42 @@ namespace APproject
         {
 
             List<ASTNode> children = n.children;
+           
             int numElement = children.Count;
             safeWrite("fun ");
-            if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
-            {
-                translateParameters(2, n);
-                //safeWrite(" : ");
-                //translateRecursive(children.ElementAt(1));
-                safeWrite(" -> \n");
-                translateRecursive(children.ElementAt(0));
-            }
+            bang = false;
+            var paramList = translateParameters(1, n);
+            safeWrite(" ->\n");
+            
 
-            if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            indentationLevel++;
+            foreach (string tmp in paramList)
             {
-                translateParameters(1, n);
-                safeWrite(" -> \n");
-                translateRecursive(children.ElementAt(0));
+                indent(indentationLevel);
+                safeWrite("let " + tmp + " = " + "ref( " + tmp + " )\n");     
             }
+            indentationLevel--;
+
+            translateRecursive(children[0]);
+            
+
+
+            ////if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
+            //{
+            //    translateParameters(2, n);
+                
+            //    //translateRecursive(children.ElementAt(1));
+            //    safeWrite(" -> \n");
+            //    translateRecursive(children.ElementAt(0));
+            //}
+
+            //if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            //{   
+
+            //    translateParameters(1, n);
+            //    safeWrite(" -> \n");
+            //    translateRecursive(children.ElementAt(0));
+            //}
 
 
         }

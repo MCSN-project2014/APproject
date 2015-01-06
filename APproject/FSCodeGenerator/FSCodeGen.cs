@@ -420,15 +420,15 @@ namespace APproject
                 translateRecursive(n.children.ElementAt(i));
                 if (n.children.ElementAt(i).type == Types.integer)
                 {
-                    safeWrite(" = 0\n"); // integer are initialized to '0'
+                    safeWrite(" = Unchecked.defaultof<int>\n"); // integer are initialized to '0'
                 }
                 else if (n.children.ElementAt(i).type == Types.boolean)
                 {
-                    safeWrite(" = true\n"); // bool are initialized to 'true'
+                    safeWrite(" = Unchecked.defaultof<bool>\n"); // bool are initialized to 'true'
                 }
                 else
                 {   
-                    safeWrite(" = Unchecked.defaultof<'a>\n");
+                    safeWrite(" = fun() -> Unchecked.defaultof<'a>\n");
                 }
             }
  

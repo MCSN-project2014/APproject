@@ -42,6 +42,7 @@
       </CustomCommands>
     </CustomCommands>
     <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -69,6 +70,7 @@
     <Compile Include="FSCodeGenerator\FSCodeGenEnvironment.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenRef.cs" />
     <Compile Include="FSCodeGenerator\MainTestFSCodeGen.cs" />
+    <Compile Include="FSCodeGenerator\PyCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,7 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
-    <Content Include="Test\translated_file.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
