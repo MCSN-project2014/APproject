@@ -214,6 +214,7 @@ namespace APproject
         {
             safeWrite("open System\n");
             safeWrite("open System.IO\n");
+            safeWrite("open System.Threading.Tasks\n");
             safeWrite("\n");
             foreach (ASTNode c in n.children)
             {
@@ -230,7 +231,10 @@ namespace APproject
             environment.addScope();
 
             safeWrite("\n[<EntryPoint>]\nlet main argv = \n");
-
+            indentationLevel++;
+            indent(indentationLevel);
+            safeWrite("let _task = ref( Map.empty )\n");
+            indentationLevel--;
             foreach (Node c in n.children)
             {
                 translateRecursive(c);
@@ -282,6 +286,8 @@ namespace APproject
         {
             string functionName = ((Obj)n.value).name;
 
+            environment.addScope();
+
             //funDeclarations.Add(functionName, ); //stores the couple < functionName, DeclNode >, useful for dsync
 
             if (((Obj)n.value).recursive == true)
@@ -305,7 +311,7 @@ namespace APproject
                 safeWrite("\n");
             }
 
-            
+            environment.removeScope();
         }
 
 
@@ -420,8 +426,13 @@ namespace APproject
         public void translateAssig(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            translateRecursive(children.ElementAt(0));
-            safeWrite(" := ");
+
+            if (children[1].label != Labels.Async)
+            {
+                translateRecursive(children.ElementAt(0));
+                safeWrite(" := ");
+            }
+
             bang = true;
             translateRecursive(children.ElementAt(1));
             bang = false;
@@ -437,18 +448,6 @@ namespace APproject
         /// <param name="n">the declaration node</param>
         public void translateDecl(ASTNode n)
         {
-            safeWrite("let ");
-            translateRecursive(n.children.ElementAt(0));
-            if (n.children.ElementAt(0).type == Types.integer)
-            {
-                safeWrite(" = ref (0)\n"); // integer are initialized to '0'
-            }
-            else if (n.children.ElementAt(0).type == Types.boolean)
-            {
-                safeWrite(" = ref(true)\n"); // bool are initialized to 'true'
-            }
-            else safeWrite(" = fun() <- Unchecked.defaultof<'a>\n");
-
             for (int i = 0; i < n.children.Count; i++)
             {
                 if (i > 0)
@@ -458,11 +457,11 @@ namespace APproject
                 translateRecursive(n.children.ElementAt(i));
                 if (n.children.ElementAt(i).type == Types.integer)
                 {
-                    safeWrite(" ref 0\n"); // integer are initialized to '0'
+                    safeWrite(" = ref (0)\n"); // integer are initialized to '0'
                 }
                 else if (n.children.ElementAt(i).type == Types.boolean)
                 {
-                    safeWrite(" ref true\n"); // bool are initialized to 'true'
+                    safeWrite(" = ref (true)\n"); // bool are initialized to 'true'
                 }
                 
             }
@@ -476,9 +475,12 @@ namespace APproject
         public void translateAssigDecl(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            safeWrite("let ");
-            translateRecursive(children.ElementAt(0)); // contains the variable name 
-            safeWrite(" = ref(");
+            if (children[1].label != Labels.Async)
+            {
+                safeWrite("let ");
+                translateRecursive(children.ElementAt(0)); // contains the variable name 
+                safeWrite(" = ref(");
+            }
             bang = true;
             translateRecursive(children.ElementAt(1));
             bang = false;
@@ -540,14 +542,7 @@ namespace APproject
         /// 
         public void translateRead(ASTNode n)
         {
-            if (n.parent.children.ElementAt(0).type == Types.integer)
-            {
-                safeWrite("Convert.ToInt32(Console.ReadLine())\n");
-            }
-            else
-            {
-                safeWrite("Console.ReadLine()\n");
-            }
+            safeWrite("Convert.ToInt32(Console.ReadLine())");
         }
 
         /// <summary>
@@ -590,22 +585,12 @@ namespace APproject
 
         public void translateAsync(ASTNode n)
         {
+            ASTNode sisterNode = n.parent.children[0];
+            environment.addUpdateValue(((Obj)sisterNode.value), true);
 
-            /* var a int = async{...}
-             * b = async{...}
-             * a + b
-             * safeWrite("Async.RunSynchronously(async { return ");
-            translateRecursive(n.children.ElementAt(0));
-            safeWrite("})");
-            */
-            string taskName = "task" + (asyncTasksCounter++);
-            safeWrite("let " + taskName + " = Async.StartAsTask( async{ return ");
-
-            // insert taskName in memory with name of the variable 
-            // associate result to variable
-            // use the variable
-            translateRecursive(n.children.ElementAt(0));
-            safeWrite("})");
+            safeWrite("_task := (!_task).Add(" + ((Obj)sisterNode.value).name + ", Async.StartAsTask( async{ return ");
+            translateRecursive(n.children[0]);
+            safeWrite("}))");
 
         }
 
