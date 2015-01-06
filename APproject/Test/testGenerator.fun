@@ -1,3 +1,11 @@
+
+fun test(x int) int {
+x = x + 1;
+return x;
+}
+
+/*
+
 fun add( x int , y int ) int {
 	var s int ;
 	s = x + y ;
@@ -16,7 +24,7 @@ fun fib ( n int ) int {
 	return a + b;
 }
 
-/*
+
 fun outsideAdder( x int , y int) fun ( int ) int {
 	var sum int = 10;
 	return fun(x int ) int {

@@ -30,7 +30,7 @@ namespace APproject
             fileName = outputFileName + ".fs";
             environment = new Environment();
 
-            funDeclarations = new Dictionary<string,Tuple<ASTNode, List<string> >();
+            funDeclarations = new Dictionary<string,Tuple<ASTNode, List<string>>> ();
 
             if (outputFileName == string.Empty)
             {
@@ -102,9 +102,9 @@ namespace APproject
                 case Labels.Async:
                     translateAsync(n);
                     break;
-                case Labels.Dsync:
-                    translateDsync(n);
-                    break;
+              //  case Labels.Dsync:
+               //     translateDsync(n);
+                //    break;
                 case Labels.Afun:
                     translateAfun(n);
                     break;
@@ -560,11 +560,15 @@ namespace APproject
         /// the HTTP POST request for the dsync in funW@P.
         /// </summary>
         /// <param name="n">The node Dsync.</param>
+        
+        /*
+         * 
         public void translateDsync(ASTNode n)
         {
-            string url = n.children[0].name
+            string url = n.children[0].name;
         }
 
+       */
         /// <summary>
         /// This method translates into F# the anonymous function.
         /// The first child is the block, the second the return type(if there),
