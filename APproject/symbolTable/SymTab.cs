@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace APproject
 {
-	public enum Types {undef,integer,boolean,fun}
+	public enum Types {undef,integer,boolean,fun,url}
 	public enum Kinds {var,proc,act,scope}
 
     public class RType
