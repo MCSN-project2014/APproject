@@ -64,7 +64,7 @@ namespace APproject
 
 		/// <summary>
 		/// Try to get a variable value from the memory.
-		/// If the varialble value is null a VariableNotInizialized exception is throw.
+		/// If the varialble value is null a VariableNotInitialized exception is throw.
 		/// </summary>
 		/// <returns><c>true</c>, if get value was tryed, <c>false</c> otherwise.</returns>
 		/// <param name="var">Variable.</param>
@@ -76,7 +76,7 @@ namespace APproject
 					if (value != null)
 						return true;
 					else
-						throw new VariableNotInizialized (var.name);
+						throw new VariableNotInitialized (var.name);
 				}
 			}
 			return false;
@@ -84,7 +84,7 @@ namespace APproject
 
 		/// <summary>
 		/// Get a value from the memory, if the variable is not found throw a Variable NotFoundException(),
-		/// instead if the variable is not inizialized a VariableNotInizialized exception is throw. 
+		/// instead if the variable is not inizialized a VariableNotInitialized exception is throw. 
 		/// </summary>
 		/// <returns>The value.</returns>
 		/// <param name="var">Variable.</param>
@@ -94,7 +94,7 @@ namespace APproject
 				if (result != null)
 					return result;
 				else
-					throw new VariableNotInizialized (var.name);
+					throw new VariableNotInitialized (var.name);
 			else
 				throw new VariableNotFoundException();
 		}

@@ -14,11 +14,11 @@ namespace APproject
 		}
 	}
 
-	public class VariableNotInizialized : InterpreterException
+	public class VariableNotInitialized : InterpreterException
 	{
 		private string var;
 
-		public VariableNotInizialized(string var){
+		public VariableNotInitialized(string var){
 			this.var = var;
 		}
 

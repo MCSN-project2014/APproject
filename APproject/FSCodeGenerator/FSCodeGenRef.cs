@@ -169,13 +169,30 @@ namespace APproject
         ///<param name="n">n.</param>
         private void translateRecursive(ASTNode n)
         {
+            object asyncTask;
+
+             //terminal synchronously assigned
             if (n.isTerminal())
-                
-                
-                if ((n.value) is Obj && ((Obj)n.value).kind == Kinds.var && bang)
-                    safeWrite("!" + n.ToString());
-                else
-                    safeWrite(n.ToString());
+            {
+                if ((n.value) is Obj)
+                {
+                    if (!(environment.TryGetValue((Obj)n.value, out asyncTask)))
+                    {
+                        if (((Obj)n.value).kind == Kinds.var && bang)
+                            safeWrite("!" + n.ToString());
+                        else
+                            safeWrite(n.ToString());
+
+                    }
+                    //terminal asynchronously assigned
+                    else
+                    {
+                        safeWrite("_checkAsync " + n.ToString());
+                    }
+                }
+                else safeWrite(n.ToString());
+            }
+
             else translate(n);
         }
 
