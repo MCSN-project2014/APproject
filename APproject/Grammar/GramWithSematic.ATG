@@ -54,7 +54,7 @@ Fun =																			(. ASTNode node; .)
                                                     
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
-																				    RType rtype; ASTNode fundecl, node1; Term parameter;     .)
+																				    FRType rtype; ASTNode fundecl, node1; Term parameter;     .)
 			"fun"																	
 			(
 			    Ident<out name>													 (. proc = tab.NewObj(name, Kinds.proc, Types.undef);
@@ -73,7 +73,7 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 					}
 					}
 				 ')'															 (. Node block = new Node(Labels.Block);  .)
-				  RType<out rtype>												 (. tab.setRType(proc,rtype);        .)
+				  FRType<out rtype>												 (. tab.setFRType(proc,rtype);        .)
 		        '{' {   VarDecl<out node1>	         							 (. ((Node)block).addChildren(node1); .)	 
 					  | Stat<out node1> 										 (. ((Node)block).addChildren(node1);    .) 
 				 } '}'																
@@ -95,7 +95,7 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 			
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
                                                                 
-AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types type; RType rtype; Obj formal;
+AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types type; FRType rtype; Obj formal;
 																					ASTNode block, vardeclnode, statnode; Term parameter;.)
  =																				(. node = new Node(Labels.Afun);
 																				   robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
@@ -108,8 +108,8 @@ AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types typ
 																				   tab.addFormal(robj,formal); 
 																				   parameter = new Term(formal);
 																				   ((Node)node).addChildren(parameter); .)
-					  }} ')' RType<out rtype>									(. block = new Node(Labels.Block);
-																				   tab.setRType(robj,rtype); .) 
+					  }} ')' FRType<out rtype>									(. block = new Node(Labels.Block);
+																				   tab.setFRType(robj,rtype); .) 
 																				              
 		    '{' {	VarDecl<out vardeclnode>									(. ((Node)block).addChildren(vardeclnode); .)	
 					| Stat<out statnode>                         			    (. ((Node)block).addChildren(statnode);    .)  
@@ -514,9 +514,9 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-RType<out RType rtype>																			(. Queue<Types> formals; Types type; 
-																								   RType rtype1;	.)
-=																								(. rtype = new RType(); .) 																						
+FRType<out FRType rtype>																	    (. Queue<Types> formals; Types type; 
+																								   FRType rtype1;	.)
+=																								(. rtype = new FRType(); .) 																						
 		(
 		  "fun"																					(. rtype.type = Types.fun;
 																								   formals = new Queue<Types>(); .)
@@ -524,7 +524,7 @@ RType<out RType rtype>																			(. Queue<Types> formals; Types type;
 		      '(' { Type<out type>																(. formals.Enqueue(type); .)
 			      {',' Type<out type>															(. formals.Enqueue(type); .)
 				  }} ')'																		
-				  RType<out rtype1>																(. rtype1.formals = formals;
+				  FRType<out rtype1>															(. rtype1.formals = formals;
 																								   rtype.next = rtype1;.)	 
 						
 		| "int"																					(.  rtype.type = Types.integer; .) 
