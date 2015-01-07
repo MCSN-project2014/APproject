@@ -296,6 +296,8 @@ namespace APproject
                 safeWrite(functionName);
                 List<string> nameParameters = translateParameters(1, n);
                 safeWrite(" =");
+                if (nameParameters.Count == 0)
+                    safeWrite("\n");
                 translateMutableParameters(nameParameters);
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
@@ -305,7 +307,9 @@ namespace APproject
                 safeWrite("let ");
                 safeWrite(functionName);
                 List<string> nameParameters = translateParameters(1, n);
-                safeWrite(" = \n");
+                safeWrite(" =");
+                if (nameParameters.Count == 0)
+                    safeWrite("\n");
                 translateMutableParameters(nameParameters);
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
@@ -383,7 +387,6 @@ namespace APproject
             translateRecursive(children.ElementAt(1));
             if (children.Count == 3)
             {
-                safeWrite("\n");
                 indent(indentationLevel);
                 safeWrite("else\n");
                 translateRecursive(children.ElementAt(2));
@@ -462,6 +465,10 @@ namespace APproject
                 else if (n.children.ElementAt(i).type == Types.boolean)
                 {
                     safeWrite(" = ref (true)\n"); // bool are initialized to 'true'
+                }
+                else
+                {
+                    safeWrite(" = ref (Unchecked.defaultof<'a>)\n");
                 }
                 
             }
