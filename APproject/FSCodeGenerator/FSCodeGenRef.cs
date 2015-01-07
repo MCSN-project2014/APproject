@@ -1,15 +1,22 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APproject.FSCodeGenerator
+namespace APproject
 {
-    class FSCodeGenRef{
-
-        private StreamWriter fileWriter;
+    ///<summary>
+    ///This class converts an AST of funW@P into the corresponding F#
+    ///code, simply by visiting the tree.
+    ///Output is written into a outputFileName.fs file, 
+    ///result of the translation.
+    ///</summary>
+    public class FSCodeGenRef
+    {
+        //private StreamWriter fileWriter;
+        private FileStream output;
         private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
         private string fileName;
         private int asyncTasksCounter;
@@ -23,8 +30,9 @@ namespace APproject.FSCodeGenerator
             asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
             environment = new Environment();
+            bang = false;
 
-            funDeclarations = new Dictionary<string,Tuple<ASTNode, List<string> >();
+            funDeclarations = new Dictionary<string, Tuple<ASTNode, List<string>>>();
 
             if (outputFileName == string.Empty)
             {
@@ -32,13 +40,17 @@ namespace APproject.FSCodeGenerator
             }
             else
             {
-                try
+                if (File.Exists(fileName))
                 {
-                    FileStream output = new FileStream(outputFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                }
-                catch (IOException)
-                {
-                    Console.WriteLine("Error while creating the new file " + outputFileName + ".fs");
+                    try
+                    {
+                        File.Delete(fileName);
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return;
+                    }
                 }
             }
         }
@@ -96,9 +108,9 @@ namespace APproject.FSCodeGenerator
                 case Labels.Async:
                     translateAsync(n);
                     break;
-                case Labels.Dsync:
-                    translateDsync(n);
-                    break;
+                //  case Labels.Dsync:
+                //     translateDsync(n);
+                //    break;
                 case Labels.Afun:
                     translateAfun(n);
                     break;
@@ -158,7 +170,12 @@ namespace APproject.FSCodeGenerator
         private void translateRecursive(ASTNode n)
         {
             if (n.isTerminal())
-                safeWrite(n.ToString());
+                
+                
+                if ((n.value) is Obj && ((Obj)n.value).kind == Kinds.var && bang)
+                    safeWrite("!" + n.ToString());
+                else
+                    safeWrite(n.ToString());
             else translate(n);
         }
 
@@ -169,7 +186,7 @@ namespace APproject.FSCodeGenerator
         /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
         {
-            using (fileWriter = new StreamWriter(fileName, true))
+            using (var fileWriter = new StreamWriter(fileName, true))
             {
                 fileWriter.Write(s);
             }
@@ -197,6 +214,7 @@ namespace APproject.FSCodeGenerator
         {
             safeWrite("open System\n");
             safeWrite("open System.IO\n");
+            safeWrite("open System.Threading.Tasks\n");
             safeWrite("\n");
             foreach (ASTNode c in n.children)
             {
@@ -213,7 +231,10 @@ namespace APproject.FSCodeGenerator
             environment.addScope();
 
             safeWrite("\n[<EntryPoint>]\nlet main argv = \n");
-      
+            indentationLevel++;
+            indent(indentationLevel);
+            safeWrite("let _task = ref( Map.empty )\n");
+            indentationLevel--;
             foreach (Node c in n.children)
             {
                 translateRecursive(c);
@@ -224,7 +245,6 @@ namespace APproject.FSCodeGenerator
             indent(indentationLevel);
             safeWrite("0\n");
             indentationLevel--;
-            Console.WriteLine(indentationLevel);
 
             environment.removeScope();
 
@@ -242,16 +262,16 @@ namespace APproject.FSCodeGenerator
 
             //if (n.parent.label != Labels.Main)
             //{
-           // safeWrite("\n");
-                indentationLevel++;
-                foreach (Node c in children)
-                {
-                    
-                    indent(indentationLevel);
-                    translateRecursive(c);
-                }
-                indentationLevel--;
-                
+            // safeWrite("\n");
+            indentationLevel++;
+            foreach (Node c in children)
+            {
+
+                indent(indentationLevel);
+                translateRecursive(c);
+            }
+            indentationLevel--;
+
             environment.removeScope();
         }
 
@@ -266,6 +286,8 @@ namespace APproject.FSCodeGenerator
         {
             string functionName = ((Obj)n.value).name;
 
+            environment.addScope();
+
             //funDeclarations.Add(functionName, ); //stores the couple < functionName, DeclNode >, useful for dsync
 
             if (((Obj)n.value).recursive == true)
@@ -273,7 +295,7 @@ namespace APproject.FSCodeGenerator
                 safeWrite("let rec ");
                 safeWrite(functionName);
                 List<string> nameParameters = translateParameters(1, n);
-                safeWrite(" = \n");
+                safeWrite(" =");
                 translateMutableParameters(nameParameters);
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
@@ -288,6 +310,8 @@ namespace APproject.FSCodeGenerator
                 translateRecursive(n.children.ElementAt(0));
                 safeWrite("\n");
             }
+
+            environment.removeScope();
         }
 
 
@@ -303,11 +327,14 @@ namespace APproject.FSCodeGenerator
             {
                 safeWrite("\n");
                 indent(indentationLevel);
-                string mutableDecl = "let mutable " + s + " = " + s;
+                string mutableDecl = "let " + s + " = ref(" + s + ")";
                 safeWrite(mutableDecl);
             }
+            
+            if (parList.Count!=0)
+                safeWrite("\n");
             indentationLevel--;
-            safeWrite("\n");
+            
         }
 
 
@@ -330,6 +357,10 @@ namespace APproject.FSCodeGenerator
                     translateRecursive(temp);
                     safeWrite(" ");
                 }
+                if (parameters.Count == 1)
+                {
+                    safeWrite("()");
+                }
                 return nameParameters;
             }
 
@@ -345,7 +376,9 @@ namespace APproject.FSCodeGenerator
             List<ASTNode> children = n.children;
 
             safeWrite("if ");
+            bang = true;
             translateRecursive(children.ElementAt(0));
+            bang = false;
             safeWrite(" then\n");
             translateRecursive(children.ElementAt(1));
             if (children.Count == 3)
@@ -365,7 +398,9 @@ namespace APproject.FSCodeGenerator
         {
             List<ASTNode> children = n.children;
             safeWrite("while ");
+            bang = true;
             translateRecursive(children.ElementAt(0));
+            bang = false;
             safeWrite(" do\n");
             translateRecursive(children.ElementAt(1));
         }
@@ -377,8 +412,10 @@ namespace APproject.FSCodeGenerator
         public void translateReturn(ASTNode n)
         {
             //safeWrite("\n");
-           // indent(indentationLevel);
+            // indent(indentationLevel);
+            bang = true;
             translateRecursive(n.children.ElementAt(0));
+            bang = false;
         }
 
         /// <summary>
@@ -389,9 +426,16 @@ namespace APproject.FSCodeGenerator
         public void translateAssig(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            translateRecursive(children.ElementAt(0));
-            safeWrite(" <- ");
+
+            if (children[1].label != Labels.Async)
+            {
+                translateRecursive(children.ElementAt(0));
+                safeWrite(" := ");
+            }
+
+            bang = true;
             translateRecursive(children.ElementAt(1));
+            bang = false;
             safeWrite("\n");
         }
 
@@ -404,19 +448,23 @@ namespace APproject.FSCodeGenerator
         /// <param name="n">the declaration node</param>
         public void translateDecl(ASTNode n)
         {
-            safeWrite("let mutable ");
-
-            translateRecursive(n.children.ElementAt(0));
-
-            if (n.children.ElementAt(0).type == Types.integer)
+            for (int i = 0; i < n.children.Count; i++)
             {
-                safeWrite(" = 0\n"); // integer are initialized to '0'
+                if (i > 0)
+                    indent(indentationLevel); //fix indentation for multiple declarations like var x, y, z int;
+
+                safeWrite("let ");
+                translateRecursive(n.children.ElementAt(i));
+                if (n.children.ElementAt(i).type == Types.integer)
+                {
+                    safeWrite(" = ref (0)\n"); // integer are initialized to '0'
+                }
+                else if (n.children.ElementAt(i).type == Types.boolean)
+                {
+                    safeWrite(" = ref (true)\n"); // bool are initialized to 'true'
+                }
+                
             }
-            else if (n.children.ElementAt(0).type == Types.boolean)
-            {
-                safeWrite(" = true\n"); // bool are initialized to 'true'
-            }
-            else safeWrite(" = Unchecked.defaultof<'a>\n");
         }
 
         /// <summary>
@@ -427,11 +475,16 @@ namespace APproject.FSCodeGenerator
         public void translateAssigDecl(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            safeWrite("let mutable ");
-            translateRecursive(children.ElementAt(0)); // contains the variable name 
-            safeWrite(" = ");
+            if (children[1].label != Labels.Async)
+            {
+                safeWrite("let ");
+                translateRecursive(children.ElementAt(0)); // contains the variable name 
+                safeWrite(" = ref(");
+            }
+            bang = true;
             translateRecursive(children.ElementAt(1));
-            safeWrite("\n");
+            bang = false;
+            safeWrite(")\n");
         }
 
         /// <summary>
@@ -443,16 +496,24 @@ namespace APproject.FSCodeGenerator
         public void translateFunCall(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            if (n.value.GetType() == typeof(Obj))
-            {
-                safeWrite(((Obj)n.value).name + " ");
-            }
+            dynamic tmp = n.value;
+            if (tmp.kind == Kinds.proc)
+                safeWrite(tmp.name + " ");
+            else
+                safeWrite("!"+tmp.name + " ");
 
             for (int i = 0; i < children.Count(); i++)  // parameters of the function
             {
-                safeWrite(" (");
+                safeWrite("(");
+                bang = true;
                 translateRecursive(children.ElementAt(i));
-                safeWrite(") ");
+                bang = false;
+                safeWrite(")");
+            }
+
+            if (children.Count == 0)
+            {
+                safeWrite("()");
             }
 
         }
@@ -465,11 +526,12 @@ namespace APproject.FSCodeGenerator
         /// 
         public void translatePrint(ASTNode n)
         {
-            safeWrite("\n");
-            indent(indentationLevel);
-            safeWrite("Console.WriteLine(");
+            //indent(indentationLevel);
+            safeWrite("Console.WriteLine( ");
+            bang = true;
             translateRecursive(n.children.ElementAt(0));
-            safeWrite(")\n");
+            bang = false;
+            safeWrite(" )\n");
         }
 
         /// <summary>
@@ -480,14 +542,7 @@ namespace APproject.FSCodeGenerator
         /// 
         public void translateRead(ASTNode n)
         {
-            if (n.parent.children.ElementAt(0).type == Types.integer)
-            {
-                safeWrite("Convert.ToInt32(Console.ReadLine())\n");
-            }
-            else
-            {
-                safeWrite("Console.ReadLine()\n");
-            }
+            safeWrite("Convert.ToInt32(Console.ReadLine())");
         }
 
         /// <summary>
@@ -530,22 +585,12 @@ namespace APproject.FSCodeGenerator
 
         public void translateAsync(ASTNode n)
         {
+            ASTNode sisterNode = n.parent.children[0];
+            environment.addUpdateValue(((Obj)sisterNode.value), true);
 
-            /* var a int = async{...}
-             * b = async{...}
-             * a + b
-             * safeWrite("Async.RunSynchronously(async { return ");
-            translateRecursive(n.children.ElementAt(0));
-            safeWrite("})");
-            */
-            string taskName = "task" + (asyncTasksCounter++);
-            safeWrite("let " + taskName + " = Async.StartAsTask( async{ return ");
-
-            // insert taskName in memory with name of the variable 
-            // associate result to variable
-            // use the variable
-            translateRecursive(n.children.ElementAt(0));
-            safeWrite("})");
+            safeWrite("_task := (!_task).Add(" + ((Obj)sisterNode.value).name + ", Async.StartAsTask( async{ return ");
+            translateRecursive(n.children[0]);
+            safeWrite("}))");
 
         }
 
@@ -554,11 +599,15 @@ namespace APproject.FSCodeGenerator
         /// the HTTP POST request for the dsync in funW@P.
         /// </summary>
         /// <param name="n">The node Dsync.</param>
+
+        /*
+         * 
         public void translateDsync(ASTNode n)
         {
-            string url = n.children[0].name
+            string url = n.children[0].name;
         }
 
+       */
         /// <summary>
         /// This method translates into F# the anonymous function.
         /// The first child is the block, the second the return type(if there),
@@ -570,23 +619,42 @@ namespace APproject.FSCodeGenerator
         {
 
             List<ASTNode> children = n.children;
+           
             int numElement = children.Count;
             safeWrite("fun ");
-            if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
-            {
-                translateParameters(2, n);
-                //safeWrite(" : ");
-                //translateRecursive(children.ElementAt(1));
-                safeWrite(" -> \n");
-                translateRecursive(children.ElementAt(0));
-            }
+            bang = false;
+            var paramList = translateParameters(1, n);
+            safeWrite(" ->\n");
+            
 
-            if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            indentationLevel++;
+            foreach (string tmp in paramList)
             {
-                translateParameters(1, n);
-                safeWrite(" -> \n");
-                translateRecursive(children.ElementAt(0));
+                indent(indentationLevel);
+                safeWrite("let " + tmp + " = " + "ref( " + tmp + " )\n");     
             }
+            indentationLevel--;
+
+            translateRecursive(children[0]);
+            
+
+
+            ////if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
+            //{
+            //    translateParameters(2, n);
+                
+            //    //translateRecursive(children.ElementAt(1));
+            //    safeWrite(" -> \n");
+            //    translateRecursive(children.ElementAt(0));
+            //}
+
+            //if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
+            //{   
+
+            //    translateParameters(1, n);
+            //    safeWrite(" -> \n");
+            //    translateRecursive(children.ElementAt(0));
+            //}
 
 
         }
@@ -621,3 +689,5 @@ namespace APproject.FSCodeGenerator
         }
     }
 }
+
+
