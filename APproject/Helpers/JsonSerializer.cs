@@ -6,8 +6,20 @@ using System.Collections.Generic;
 
 namespace APproject
 {
-	public static class TestJson
+	public static class JsonSerializer
 	{
+		public static string serialize(List<Dictionary<string,object>> parameters, ASTNode node){
+			var setting = new JsonSerializerSettings () {
+				ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+				NullValueHandling = NullValueHandling.Ignore
+			};
+			var jsonNode = JsonConvert.SerializeObject (node, setting);
+			var parameter = JsonConvert.SerializeObject (parameters, setting);
+
+			return "{parameter: " + parameter + ", block: " + jsonNode + "}";
+		}
+
+
 		public static void Start ()
 		{
 			var setting = new JsonSerializerSettings () {
