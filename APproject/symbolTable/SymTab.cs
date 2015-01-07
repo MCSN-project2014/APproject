@@ -23,7 +23,9 @@ namespace APproject
 		public int level;           			    // nesting level; 0=global, 1=local
 		public Obj locals;          		        // scopes: to locally declared objects
         protected bool _isUsedFromAfun;             // var : indicates if the variable is used in afun but is declared external
-        public bool isUsedFromAfun { get { return _isUsedFromAfun; } set { _isUsedFromAfun = value; } }              
+        public bool isUsedFromAfun { get { return _isUsedFromAfun; } set { _isUsedFromAfun = value; } }
+        protected bool _isUsedInAsync;
+        public bool isUsedInAsync { get { return _isUsedInAsync; } set { _isUsedInAsync = value; } }
 		public int nextAdr;		                    // scopes: next free address in this scope
 
         protected bool _recursive;                  // indicates whether a function is recursive or not
@@ -127,8 +129,8 @@ namespace APproject
             if (kind == Kinds.var)
             {
                 obj.level = curLevel;
-               // System.Console.WriteLine(obj.level + " x level");
                 obj.isUsedFromAfun = false;
+                obj.isUsedInAsync = false;
             }
             if (kind == Kinds.proc)
             {
