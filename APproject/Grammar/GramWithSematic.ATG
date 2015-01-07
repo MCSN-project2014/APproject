@@ -19,17 +19,16 @@ CHARACTERS
   letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
   digit = "0123456789".
   CharInLine = ANY - '\r' - '\n'.
+  UrlInLine = ANY - '\r' - '\t' - '\n'.
   AnyButDoubleQuote = CharInLine - '\"'.
   cr  = '\r'.
   lf  = '\n'.
   tab = '\t'.
   ap =  '\'' .
- // urlchar = ( letter | digit | '-' | '_' |'.' | '~' | '!' | '*' | '\'' | ':' 
- //             | '@' | '&' | '=' | '+' | '$' | ',' | '/' | '?' | '%' | '#' | '[' | ']' ).
 
 TOKENS
   ident  = letter {letter | digit}.
-  url = ap "http://" {CharInLine} ap.
+  url = ap "http://" {UrlInLine} ap.
   number = digit {digit}.
   string = '"' {AnyButDoubleQuote | "\\\""} '"'.
 
@@ -132,7 +131,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																					   SemErr("cannot assign to procedure"); .)
 				(                                                            
 				                                                               
-				      "async" '{' "return" Ident<out name1>						(. obj1 = tab.Find(name1);
+				      "async" '{' "return" Ident<out name1>						(. obj.isUsedInAsync = true;
+																				   obj1 = tab.Find(name1);
 																				   Node async =  new Node(Labels.Async);	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
 								 '(' { (

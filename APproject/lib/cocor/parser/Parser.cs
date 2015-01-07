@@ -325,6 +325,7 @@ public SymbolTable   tab;
 					Expect(9);
 					Expect(14);
 					Ident(out name1);
+					obj.isUsedInAsync = true;
 					obj1 = tab.Find(name1);
 					Node async =  new Node(Labels.Async);	
 					Node call = new Node(Labels.FunCall, obj1); 
