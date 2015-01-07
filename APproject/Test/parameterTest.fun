@@ -3,7 +3,7 @@ fun add() int{
 }
 
 fun main() {
-		var u url;
+		var u url = 'http://dkdlslkdlsl';
 		var y int;
-		y = dasync{y,add()};		
+		y = dasync{u,add()};		
 }
