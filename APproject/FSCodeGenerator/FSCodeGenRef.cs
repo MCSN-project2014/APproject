@@ -418,6 +418,7 @@ namespace APproject
             // indent(indentationLevel);
             bang = true;
             translateRecursive(n.children.ElementAt(0));
+            safeWrite("\n");
             bang = false;
         }
 
