@@ -1,9 +1,4 @@
 
-fun test(x int) int {
-x = x + 1;
-return x;
-}
-
 /*
 
 fun add( x int , y int ) int {
@@ -33,8 +28,33 @@ fun outsideAdder( x int , y int) fun ( int ) int {
 	};
 }
 */
+fun add(x int, y int) int{
+    return x+y;
+}
+
+fun minus(x int, y int) int{
+    return x-y;
+} 
 
 fun main (){
+
+var result int = 0;
+var value int;
+var op int = 0;
+
+while op != 9 {
+        value = readln();
+        if op == 1 {
+            result = async{return add(result,value)};
+        }
+        if op==2 {
+            result = async{return minus(result,value)};
+        }
+        op = readln();
+    }
+    println(result);
+
+/*
 
 var t  bool = true ;
 var s  int ;
@@ -46,17 +66,11 @@ if ( t == false ) {
 	}
 else {s = 1;}
 
-/*
-//var adder  fun = outsideAdder();
-//var anotherAdder fun ;
-//println ( adder (5 ));
-//anotherAdder = adder ;
-//println(anotherAdder(5));
-
-
-
-
-
+var adder  fun = outsideAdder();
+var anotherAdder fun ;
+println ( adder (5 ));
+anotherAdder = adder ;
+println(anotherAdder(5));
 
 for var i int =0 ; i < 32 ; i= i+1 {
 	var t bool ; 

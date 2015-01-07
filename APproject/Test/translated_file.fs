@@ -1,42 +1,21 @@
-open System
-open System.IO
 
-let test x  = 
 
-    let mutable x = x
-    x <- x + 1
-    x
+let infinyt n : int =
+    while true do
+        n=n-1 |>ignore 
+    n
 
-[<EntryPoint>]
-let main argv = 
-    let mutable t = true
-    let mutable s = 0
-    if t = false then
-        s <- 0
-        s <- 1
-        s <- 3
+let minus n =
+    n-1
 
-    else
-        s <- 1
-    Console.ReadLine()|>ignore
-    0
-open System
-open System.IO
+let  taskB = Async.StartAsTask( async{ return infinyt 2 }  )
+let  taskC = Async.StartAsTask( async{ return minus 7  }  )
 
-let rec fib n  = 
-    let mutable retVal = -1
-    if n = 0 || n = 1 then
-        retVal <- 1
+printf("prima B\n")
+printf " is task c %d \n" taskC.Result
+taskB.Wait()
+printf("passato B\n")
+taskC.Wait()
 
-    else
-        retVal <- fib  (n - 1)  + fib  (n - 2) 
-    
-    retVal
-
-[<EntryPoint>]
-let main argv = 
-    let mutable retVal = fib  (5) 
-    
-    Console.WriteLine(retVal)
-    Console.ReadLine()|>ignore
-    0
+printf " is task b %d \n" taskB.Result
+printf " is task c %d \n" taskC.Result

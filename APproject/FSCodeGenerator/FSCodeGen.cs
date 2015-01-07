@@ -22,14 +22,16 @@ namespace APproject
         private bool bang; //it indicates whether the operator bang! must be used or not
         Dictionary<string, Tuple<ASTNode, List<string>>> funDeclarations; //contains the reference to the nodes representing funDecl's
         Environment environment;
+        FSCodeGenEnvironment tasksEnvironmet;
 
         public FSCodeGen(string outputFileName)
         {
             indentationLevel = 0;
             asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
+ 
             environment = new Environment();
-
+            tasksEnvironmet = new FSCodeGenEnvironment();
             funDeclarations = new Dictionary<string,Tuple<ASTNode, List<string>>> ();
 
             if (outputFileName == string.Empty)
@@ -202,6 +204,7 @@ namespace APproject
         public void translateProgram(ASTNode n)
         {
             safeWrite("open System\n");
+            safeWrite("open System.Threading.Tasks ");
             safeWrite("open System.IO\n");
             safeWrite("\n");
             foreach (ASTNode c in n.children)
@@ -216,8 +219,8 @@ namespace APproject
         /// <param name="n">the Main node</param>
         public void translateMain(ASTNode n)
         {
-            environment.addScope();
-
+            //environment.addScope();
+            tasksEnvironmet.addScope();
             safeWrite("\n[<EntryPoint>]\nlet main argv = \n");
       
             foreach (Node c in n.children)
@@ -232,7 +235,8 @@ namespace APproject
             indentationLevel--;
             Console.WriteLine(indentationLevel);
 
-            environment.removeScope();
+            //environment.removeScope();
+            tasksEnvironmet.removeScope();
 
         }
         /// <summary>
@@ -394,8 +398,13 @@ namespace APproject
         /// <param name="n">the Assignment node</param>
         public void translateAssig(ASTNode n)
         {
+            /*  a = async { return fcall(...) }
+             *  add the name a of the variable in the  taskenvironment;
+             *   
+             * */
             List<ASTNode> children = n.children;
-            translateRecursive(children.ElementAt(0));
+            string nameVar = ((Obj)children.ElementAt(0).value).name;   //variable name in the assignament 
+            translateRecursive(children.ElementAt(0));  
             safeWrite(" <- ");
             translateRecursive(children.ElementAt(1));
             safeWrite("\n");
@@ -449,9 +458,11 @@ namespace APproject
         public void translateFunCall(ASTNode n)
         {
             List<ASTNode> children = n.children;
+            string funName;
             if (n.value.GetType() == typeof(Obj))
             {
-                safeWrite(((Obj)n.value).name + " ");
+                funName = ((Obj)n.value).name + " ";
+                safeWrite(funName);
             }
 
             for (int i = 0; i < children.Count(); i++)  // parameters of the function
@@ -544,8 +555,12 @@ namespace APproject
             translateRecursive(n.children.ElementAt(0));
             safeWrite("})");
             */
-            string taskName = "task" + (asyncTasksCounter++);
+
+            string funName = ((Obj)n.children[0].value).name;  //name of the function called into async
+            string taskName = "task" + funName;
             safeWrite("let " + taskName + " = Async.StartAsTask( async{ return ");
+
+            tasksEnvironmet.updateTask(funName, taskName);
 
             // insert taskName in memory with name of the variable 
             // associate result to variable
