@@ -615,7 +615,7 @@ namespace APproject
         /// 
         public void translateRead(ASTNode n)
         {
-            safeWrite("Convert.ToInt32(Console.ReadLine())\n");
+            safeWrite("Convert.ToInt32(Console.ReadLine())");
         }
 
         /// <summary>
