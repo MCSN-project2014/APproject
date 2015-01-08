@@ -188,6 +188,7 @@ namespace APproject
                     else
                         safeWrite(n.ToString());
                 }
+
 				else safeWrite(n.ToString());
             }
 			else translate(n);
@@ -235,11 +236,33 @@ namespace APproject
             safeWriteLine("open System\n");
             safeWriteLine("open System.IO\n");
             safeWriteLine("open System.Threading.Tasks\n");
+            safeWriteLine("open System.Net.Http\n");
+            safeWriteLine("open System.Text\n");
             safeWriteLine("\n");
+            printgetPostAsync();
+            
             foreach (ASTNode c in n.children)
             {
                 translateRecursive(c);
             }
+        }
+
+
+        public void printgetPostAsync()
+        {
+            safeWriteLine("let getPostAsync (url:string, data) = \n");
+            indentationLevel++;
+            safeWriteLine("async {\n");
+            indentationLevel++;
+            safeWriteLine("let httpClient = new System.Net.Http.HttpClient()\n");
+            safeWriteLine("let contentPost:StringContent = new StringContent( data , Encoding.UTF8, \"applicatio/json\")\n");
+            safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
+            safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
+            safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
+            safeWriteLine("return content }\n");
+            indentationLevel--;
+            indentationLevel--;
+    
         }
 
         /// <summary>
@@ -423,7 +446,9 @@ namespace APproject
 				createAsync (children [1].children [0], (Obj)children [0].value);
 				break;
 			case Labels.Dsync:
-				createDAsync (children [1].children [1], (Obj)children [0].value);
+                    //funCall, varAsync, url
+              
+                createDAsync(children[1].children[1], (Obj)children[0].value, children[1].children[0].ToString());
 				break;
 			default:
 
@@ -515,8 +540,9 @@ namespace APproject
 			return actual;
 		}
 
-		private void createDAsync (ASTNode funCall, Obj varDAsync){
-			var actual = createTmpParameter (funCall);
+		private void createDAsync (ASTNode funCall, Obj varDAsync, string url){
+			List<string> actual = createTmpParameter (funCall);
+
 			ASTNode funDec;
 			if (decFunctions.TryGetValue ((Obj)funCall.value, out funDec)) {
 
@@ -527,9 +553,10 @@ namespace APproject
 				}
 				var block = funDec.children[0];
 				block.parent = null;
-				string json = JsonSerializer.serialize (actual, formal, block);
 
-				safeWriteLine ("let jsonTest = " + json + "\n");
+				string data = JsonSerializer.serialize (actual, formal, block);
+
+				safeWriteLine ("let _task_a = Async.StartAsTask( getPostAsync( "+url+",\""+data+"\"))\n");
 			}
 		}
 
