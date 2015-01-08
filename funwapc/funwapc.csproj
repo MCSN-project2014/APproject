@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/testLuca.fun" />
+        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/asyncTest.fun" />
       </CustomCommands>
     </CustomCommands>
     <ConsolePause>false</ConsolePause>

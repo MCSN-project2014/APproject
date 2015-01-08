@@ -96,6 +96,7 @@
     <None Include="Test\testGenerator.fun" />
     <None Include="Test\vardeclTest.fun" />
     <None Include="Test\testLuca.fun" />
+    <None Include="Test\asyncTest.fun" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
