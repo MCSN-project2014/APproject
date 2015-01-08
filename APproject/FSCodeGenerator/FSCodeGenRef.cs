@@ -22,14 +22,14 @@ namespace APproject
         //private int asyncTasksCounter;
         private bool bang; //it indicates whether the operator bang! must be used or not
         //Dictionary<string, Tuple<ASTNode, List<string>>> funDeclarations; //contains the reference to the nodes representing funDecl's
-        Environment environment;
-
+        private Environment environment;
+		private Dictionary<Obj,ASTNode> decFunctions; 
 		private int indexPar;
 
         public FSCodeGenRef(string outputFileName)
         {
 			indexPar = 0;
-
+			decFunctions = new Dictionary<Obj,ASTNode> ();
             indentationLevel = 0;
             //asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
@@ -299,8 +299,8 @@ namespace APproject
         {
             environment.addScope();
 
-            //funDeclarations.Add(functionName, ); //stores the couple < functionName, DeclNode >, useful for dsync
-
+			decFunctions.Add ((Obj)n.value, n);
+         	
 			safeWriteLine ("let "+( ((Obj)n.value).recursive ? "rec " :  " ") + ((Obj)(n.value)).name);
 			List<string> nameParameters = translateParameters (n);
 			safeWrite (" =");
@@ -417,19 +417,23 @@ namespace APproject
         public void translateAssig(ASTNode n)
         {
             List<ASTNode> children = n.children;
-
-            if (children[1].label != Labels.Async)
+			switch (children[1].label)
             {
-                safeWriteLine(children[0]+" := ");
+			case Labels.Async:
+				createAsync (children [1].children [0], (Obj)children [0].value);
+				break;
+			case Labels.Dsync:
+				createDAsync (children [1].children [1], (Obj)children [0].value);
+				break;
+			default:
+				safeWriteLine (children [0] + " := ");
 
 				bang = true;
-				translateRecursive(children.ElementAt(1));
+				translateRecursive (children.ElementAt (1));
 				bang = false;
-				safeWrite("\n");
-			
-			}else
-				createAsync (children [1].children [0], (Obj)children [0].value);
-
+				safeWrite ("\n");
+				break;
+			}
             
         }
 
@@ -476,16 +480,9 @@ namespace APproject
 			environment.addUpdateValue (var, true);
 		}
 
-		public void createAsync (ASTNode funCall, Obj varAsync){
+		private void createAsync (ASTNode funCall, Obj varAsync){
 
-			foreach (ASTNode node in funCall.children) {
-				safeWriteLine ("let _par_"+ node + indexPar + " = ");
-			
-				bang = true;
-				translateRecursive (node);
-				bang = false;
-				safeWrite ("\n");
-			}
+			createTmpParameter (funCall);
 
 			var funObj = (Obj)funCall.value;
 			safeWriteLine("_task_" + varAsync.name + " <- Async.StartAsTask( async{ return "+funObj.name+" ");
@@ -498,6 +495,37 @@ namespace APproject
 			indexPar++;
 		}
 
+		private List<string> createTmpParameter(ASTNode funCall){
+			var actual = new List<string>();
+			foreach (ASTNode node in funCall.children) {
+				var varName = "_par_"+ node + indexPar;
+				safeWriteLine ("let "+ varName + " = ");
+				actual.Add (varName);
+				bang = true;
+				translateRecursive (node);
+				bang = false;
+				safeWrite ("\n");
+			}
+			return actual;
+		}
+
+		private void createDAsync (ASTNode funCall, Obj varDAsync){
+			var actual = createTmpParameter (funCall);
+			ASTNode funDec;
+			if (decFunctions.TryGetValue ((Obj)funCall.value, out funDec)) {
+
+				var formal = new List<string> ();
+				foreach (var item in funDec.children) {
+					if (item.isTerminal())
+						formal.Add (item.ToString ());
+				}
+				var block = funDec.children[0];
+				block.parent = null;
+				string json = JsonSerializer.serialize (actual, formal, block);
+
+				safeWriteLine ("let jsonTest = " + json + "\n");
+			}
+		}
 
         /// <summary>
         /// This method translates the Declaration/Assigment node and 

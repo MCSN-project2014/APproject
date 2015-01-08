@@ -8,17 +8,35 @@ namespace APproject
 {
 	public static class JsonSerializer
 	{
-		public static string serialize(List<Dictionary<string,object>> parameters, ASTNode node){
-			var setting = new JsonSerializerSettings () {
-				ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-				NullValueHandling = NullValueHandling.Ignore
-			};
-			var jsonNode = JsonConvert.SerializeObject (node, setting);
-			var parameter = JsonConvert.SerializeObject (parameters, setting);
+		private static JsonSerializerSettings setting = new JsonSerializerSettings () {
+			ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+			NullValueHandling = NullValueHandling.Ignore,
+			//Formatting = Formatting.Indented,
+			//StringEscapeHandling = StringEscapeHandling.EscapeHtml
 
-			return "{parameter: " + parameter + ", block: " + jsonNode + "}";
+		};
+
+		public static string serialize(List<Dictionary<string,object>> parameters, ASTNode node){
+			var parameter = JsonConvert.SerializeObject (parameters, setting);
+			var jsonNode = JsonConvert.SerializeObject (node, setting);
+			return "{\"parameter\": " + parameter + ", \"block\": " + jsonNode + "}";
 		}
 
+		public static string serialize(List<string> actual, List<string> formal, ASTNode node){
+		
+			string jsonPar = "[";
+			for (int i=0; i < actual.Count; i++) {
+				jsonPar += "{\\\""+formal[i]+"\\\" : \"+"+ actual[i] + "+\"}" +
+					(i<actual.Count-1 ? ",":""); 
+			}
+			jsonPar+="]";
+
+			var jsonNode = JsonConvert.SerializeObject (node, setting);
+			jsonNode = jsonNode.Replace ("\"", "\\\"");
+			var tmp =  "\"{\\\"parameter\\\" : " + jsonPar + ", \\\"block\\\" : " + jsonNode + "}\"";
+			Console.WriteLine (tmp);
+			return tmp;
+		}
 
 		public static void Start ()
 		{
