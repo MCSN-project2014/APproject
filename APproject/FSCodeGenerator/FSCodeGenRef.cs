@@ -490,15 +490,17 @@ namespace APproject
 			int i=0;
 			foreach (ASTNode node in funCall.children) {
 				safeWrite ("_par_"+ node+ indexPar + (i++ < funCall.children.Count-1 ? " ":""));
+                indexPar++;
 			}
 			safeWrite(" })\n");
-			indexPar++;
+			
 		}
 
 		private List<string> createTmpParameter(ASTNode funCall){
+            var tmpIndex = indexPar;
 			var actual = new List<string>();
 			foreach (ASTNode node in funCall.children) {
-				var varName = "_par_"+ node + indexPar;
+                var varName = "_par_" + node + tmpIndex++;
 				safeWriteLine ("let "+ varName + " = ");
 				actual.Add (varName);
 				bang = true;
