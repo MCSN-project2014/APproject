@@ -33,7 +33,7 @@ namespace funwapi
 
 			});
 
-			Console.WriteLine (JsonSerializer.serialize (list, InterpreterTest.test1()));
+			Console.WriteLine (HelperJson.serialize (list, InterpreterTest.test1()));
 		}
 	}
 }

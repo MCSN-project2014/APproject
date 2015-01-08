@@ -81,8 +81,8 @@
     <Compile Include="Interpreter\InterpreterTest.cs" />
     <Compile Include="Interpreter\InterpreterException.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
-    <Compile Include="Helpers\JsonSerializer.cs" />
     <Compile Include="Helpers\HelperParser.cs" />
+    <Compile Include="Helpers\HelperJson.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

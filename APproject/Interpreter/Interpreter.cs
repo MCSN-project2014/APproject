@@ -25,25 +25,43 @@ namespace APproject
 		public void Start (){
 			Console.WriteLine ("\nINTERPRETER START:");
 			try{
-			foreach (ASTNode node in startNode.children) {
-				if (node.label == Labels.FunDecl)
-					function.Add ((Obj)node.value, node);
-				if (node.label == Labels.Main) {
-					//funMem.addNameSpace (main);
-					var mem = new Environment ();
-					mem.addScope ();
-					Interpret (node, mem);
-					mem.removeScope ();
-				} /*else {
-					var mem = new Memory ();
-					mem.addScope ();
-					Interpret (node, mem);
-					mem.removeScope ();
-				}*/
-			}
+				if (startNode.label == Labels.Program){
+					foreach (ASTNode node in startNode.children) {
+						if (node.label == Labels.FunDecl)
+							function.Add ((Obj)node.value, node);
+						if (node.label == Labels.Main) {
+							//funMem.addNameSpace (main);
+							var mem = new Environment ();
+							mem.addScope ();
+							Interpret (node, mem);
+							mem.removeScope ();
+						}
+					}
+				}
 			}catch(InterpreterException e){
 				Console.WriteLine (e.Message);
 			}
+		}
+
+		public void Start(List<Dictionary<string,object>> parameter){
+			try{
+				if (startNode.label == Labels.Block){
+					var mem = new Environment();
+					mem.addScope();
+
+					foreach(var item in parameter){
+						var keys = item.Keys.GetEnumerator();
+						keys.MoveNext();
+						var key = keys.Current;
+						object value = item[key];
+						mem.addUpdateValue(new Obj{name=key}, value);
+					}
+					Console.Write(Interpret(startNode,mem));
+				}
+			}catch(InterpreterException e){
+				Console.WriteLine (e.Message);
+			}
+
 		}
 
 		private object Interpret (ASTNode node, Environment actualMemory){
@@ -164,7 +182,7 @@ namespace APproject
 				case Labels.Div:
 					return InterpretExpInt (children [0],actualMemory) / InterpretExpInt (children [1],actualMemory);
 				case Labels.Eq:
-					var tmp = InterpretExp (children [0],actualMemory);
+					var tmp = InterpretExp (children [0], actualMemory);
 					if (tmp is bool)
 						return (bool) tmp == InterpretCondition (children [1],actualMemory);
 					else

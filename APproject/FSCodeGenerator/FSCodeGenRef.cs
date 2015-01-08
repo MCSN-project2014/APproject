@@ -527,7 +527,7 @@ namespace APproject
 				}
 				var block = funDec.children[0];
 				block.parent = null;
-				string json = JsonSerializer.serialize (actual, formal, block);
+				string json = HelperJson.serialize (actual, formal, block);
 
 				safeWriteLine ("let jsonTest = " + json + "\n");
 			}

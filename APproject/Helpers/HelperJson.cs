@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace APproject
 {
-	public static class JsonSerializer
+	public static class HelperJson
 	{
 		private static JsonSerializerSettings setting = new JsonSerializerSettings () {
 			ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -37,7 +37,7 @@ namespace APproject
 			Console.WriteLine (tmp);
 			return tmp;
 		}
-
+		/*
 		public static void Start ()
 		{
 			var setting = new JsonSerializerSettings () {
@@ -53,9 +53,26 @@ namespace APproject
 			new Interpreter (deserialize (ret)).Start ();
 
 		}
+		*/
 
+		public static List<Dictionary<string,object>> DeserializeParameter (string json){
+			var ret = JsonConvert.DeserializeObject<List<Dictionary<string,object>>> (json);
+			foreach (var item in ret) {
+				var keys = item.Keys.GetEnumerator();
+				keys.MoveNext();
+				var key = keys.Current;
+				if (item[key] is Int64)
+					item[key] = Convert.ToInt32(item[key]);
+			}
+			return ret;
+		}
 
-		public static ASTNode deserialize(dynamic ret){
+		public static ASTNode DeserializeAST (string json){
+			dynamic ret = JsonConvert.DeserializeObject<dynamic>(json);
+			return _Deserialize(ret); 
+		}
+
+		private static ASTNode _Deserialize(dynamic ret){
 			if (ret.children == null) {
 				//Console.WriteLine (ret.value.GetType ());
 				if (ret.value is JObject) {
@@ -74,7 +91,7 @@ namespace APproject
 					n = new Node ((Labels)ret.label);
 
 				foreach (dynamic p in ret.children)
-					n.addChildren(deserialize (p));
+					n.addChildren(_Deserialize (p));
 
 				return n;
 			}

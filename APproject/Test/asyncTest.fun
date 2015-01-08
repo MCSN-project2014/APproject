@@ -3,10 +3,11 @@
 }
 
 fun main(){
-	var b bool;
+	var b,c bool;
+	c = async {return test()};
 	b = async {return test()};
 	println(b);
-	println(b);
+	println(c);
 	b = false;
 	println(b);
 }
