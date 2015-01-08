@@ -615,7 +615,7 @@ namespace APproject
         /// 
         public void translateRead(ASTNode n)
         {
-            safeWrite("Convert.ToInt32(Console.ReadLine())\n");
+            safeWrite("Convert.ToInt32(Console.ReadLine())");
         }
 
         /// <summary>
@@ -701,13 +701,10 @@ namespace APproject
             
 
             indentationLevel++;
-            /*foreach (string tmp in paramList)
-            {
-                safeWriteLine("let " + tmp + " = " + "ref( " + tmp + " )\n");     
-            }*/
 			translateMutableParameters (paramList);
+            indentationLevel--;
             translateRecursive(children[0]);
-			indentationLevel--;
+			
 
 
 
