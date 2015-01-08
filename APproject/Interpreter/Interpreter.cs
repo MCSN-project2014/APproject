@@ -93,8 +93,13 @@ namespace APproject
 					}
 					break;
 				case Labels.Decl:
-					foreach (ASTNode n in children)
-						actualMemory.addUpdateValue ((Obj)n.value, null);
+                    foreach (ASTNode n in children)
+                    {
+                        if (n.type == Types.boolean)
+                            actualMemory.addUpdateValue((Obj)n.value, true);
+                        if (n.type == Types.integer)
+                            actualMemory.addUpdateValue((Obj)n.value, 0);
+                    }
 					break;
 				case Labels.AssigDecl:
 					Assignment (children, actualMemory);
@@ -103,10 +108,16 @@ namespace APproject
 					Assignment (children, actualMemory);
 					break;
 				case Labels.Print:
-					if (children [0].isTerminal () && children [0].value is string)
-						Console.WriteLine (CONSOL_PRINT + children [0].value);
-					else
-						Console.WriteLine (CONSOL_PRINT + Convert.ToString (InterpretExp (children [0], actualMemory)));
+                    if (children[0].isTerminal() && children[0].value is string)
+                    {
+                        char[] quotes = new char[1];
+                        quotes[0] = '"';
+                        string tmpString = ((string)children[0].value).TrimStart(quotes);
+                        tmpString = tmpString.TrimEnd(quotes);
+                        Console.WriteLine(CONSOL_PRINT + tmpString);
+                    }
+                    else
+                        Console.WriteLine(CONSOL_PRINT + Convert.ToString(InterpretExp(children[0], actualMemory)));
 					break;
 				case Labels.Return:
 					object tmp = InterpretExp (children [0], actualMemory);
@@ -169,6 +180,8 @@ namespace APproject
 						return (bool) tmp == InterpretCondition (children [1],actualMemory);
 					else
 						return (int) tmp == InterpretExpInt (children [1],actualMemory);
+                case Labels.Negativ:
+                    return -(InterpretExpInt(children[0], actualMemory));                        
 				case Labels.NotEq:
 					var tmp1 = InterpretExp (children [0], actualMemory);
 					if (tmp1 is bool)

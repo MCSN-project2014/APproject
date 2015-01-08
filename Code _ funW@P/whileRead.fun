@@ -28,11 +28,11 @@ open System.Threading.Tasks
 [<EntryPoint>]
 let main argv = 
     let input = ref (0)
+    let attempt = ref (true)
     input := Convert.ToInt32(Console.ReadLine())
-
     while !input <> 42 do
         input := Convert.ToInt32(Console.ReadLine())
-
+        attempt := true
     Console.WriteLine( "the answer to life the universe and everything" )
     Console.WriteLine( "https://www.youtube.com/watch?v=aboZctrHfK8" )
     Console.ReadLine()|>ignore
