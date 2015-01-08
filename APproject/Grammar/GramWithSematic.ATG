@@ -123,8 +123,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																			       ASTNode node1;  
 																			       node = new Node(Labels.Assig); .) 
 =																				
-	Ident<out name>																(. obj = tab.Find(name); 
-																					.)                                                               
+	Ident<out name>																(. obj = tab.Find(name); .)                                                               
 		(                                                                    
 			'='																	(. if ( obj.kind != Kinds.var )
 																					   SemErr("cannot assign to procedure"); .)
@@ -134,20 +133,13 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																				   obj1 = tab.Find(name1);
 																				   Node async =  new Node(Labels.Async);	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
-								 '(' { (
-									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
-																				   ((Node)call).addChildren(node1);	.) 
-										  | AProcDecl<out robj, out node1>		(. actualTypes.Enqueue(Types.fun);
-																				   ((Node)call).addChildren(node1); .)
-										)
 
-									 {','(
-										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
-																				   ((Node)call).addChildren(node1); .) 
-										   | AProcDecl<out robj, out node1>	    (. actualTypes.Enqueue(Types.fun);
+								 '(' {   CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+																				   ((Node)call).addChildren(node1);	.) 
+
+									 {','  CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
 																				   ((Node)call).addChildren(node1); .)
-										  )
-									 } } ')'									
+									 } }  ')'									
 											 '}'';'								(. ((Node)async).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(async); .)
@@ -173,19 +165,11 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 					              ','Ident<out name1>							(.  obj1 = tab.Find(name1);
 																				   	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
-								 '(' { (
-									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+								 '(' {   CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
 																				   ((Node)call).addChildren(node1);	.) 
-										  | AProcDecl<out robj, out node1>		(. actualTypes.Enqueue(Types.fun);
-																				   ((Node)call).addChildren(node1); .)
-										)
 
-									 {','(
-										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
+									 {',' CompleteExpr<out type, out node1>	    (. actualTypes.Enqueue(type);
 																				   ((Node)call).addChildren(node1); .) 
-										   | AProcDecl<out robj, out node1>	    (. actualTypes.Enqueue(Types.fun);
-																				   ((Node)call).addChildren(node1); .)
-										  )
 									 } } ')'									
 											 '}'';'								(. ((Node)dasync).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
@@ -402,19 +386,11 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 																				   obj1 = tab.Find(name1);
 																				   Node async =  new Node(Labels.Async);	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
-								 '(' { (
-									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+								 '(' {   CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
 																				   ((Node)call).addChildren(node1);	.) 
-										  | AProcDecl<out afobj, out node1>		(. actualTypes.Enqueue(Types.fun);
-																				   ((Node)call).addChildren(node1); .)
-										)
 
-									 {','(
-										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
-																				   ((Node)call).addChildren(node1); .) 
-										   | AProcDecl<out afobj, out node1>	(. actualTypes.Enqueue(Types.fun);
+									 {','  CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
 																				   ((Node)call).addChildren(node1); .)
-										  )
 									 } } ')'									
 											 '}'';'								(. ((Node)async).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
@@ -444,19 +420,10 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 					              ','Ident<out name1>							(.  obj1 = tab.Find(name1);
 																				   	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
-								 '(' { (
-									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+								 '(' {  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
 																				   ((Node)call).addChildren(node1);	.) 
-										  | AProcDecl<out afobj, out node1>		(. actualTypes.Enqueue(Types.fun);
+									 {','CompleteExpr<out type, out node1>	    (. actualTypes.Enqueue(type);
 																				   ((Node)call).addChildren(node1); .)
-										)
-
-									 {','(
-										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
-																				   ((Node)call).addChildren(node1); .) 
-										   | AProcDecl<out afobj, out node1>	(. actualTypes.Enqueue(Types.fun);
-																				   ((Node)call).addChildren(node1); .)
-										  )
 									 } } ')'									
 											 '}'';'								(. ((Node)dasync).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
