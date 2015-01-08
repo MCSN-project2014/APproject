@@ -162,7 +162,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 								  
 								   |URL<out url> 								(.  dasync.addChildren(new Term(url));  .)
 								  )		   				
-					              ','Ident<out name1>							(.  obj1 = tab.Find(name1);
+					              ',' return Ident<out name1>					(.  obj1 = tab.Find(name1);
 																				   	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
 								 '(' {   CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
