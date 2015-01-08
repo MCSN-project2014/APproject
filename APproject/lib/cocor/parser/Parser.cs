@@ -831,7 +831,7 @@ public SymbolTable   tab;
 	}
 
 	void CompleteExpr(out Types type, out ASTNode node) {
-		Types type1; ASTNode op, firstExpr, secondExpr; 
+		Types type1; ASTNode op, secondExpr; 
 		Expr(out type,out node);
 		while (la.kind == 37 || la.kind == 38) {
 			BoolOp(out op);
@@ -851,7 +851,7 @@ public SymbolTable   tab;
 	}
 
 	void Expr(out Types type,out ASTNode node) {
-		Types type1; ASTNode op, firstSimpExpr, secondSimpExpr; 
+		Types type1; ASTNode op, secondSimpExpr; 
 		SimpExpr(out type, out node);
 		if (StartOf(6)) {
 			RelOp(out op);
@@ -927,7 +927,7 @@ public SymbolTable   tab;
 	}
 
 	void Term(out Types type, out ASTNode node) {
-		Types type1; ASTNode op, firstfactor, secondfactor; 
+		Types type1; ASTNode op, secondfactor; 
 		Factor(out type, out node);
 		while (la.kind == 39 || la.kind == 40) {
 			MulOp(out op);
