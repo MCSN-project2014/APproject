@@ -283,7 +283,7 @@ public SymbolTable   tab;
 					CompleteExpr(out type1, out node1);
 					Expect(15);
 					obj = tab.NewObj((string)names[0], Kinds.var, type);
-					if (type != type1) 
+					if (!(type == type1 || type1 == Types.fun)) 
 					SemErr("incompatible types"); 
 					node =  new Node (Labels.AssigDecl);
 					((Node)node).addChildren(new Term (obj));
@@ -474,6 +474,7 @@ public SymbolTable   tab;
 						dasync.addChildren(new Term(url));  
 					} else SynErr(49);
 					Expect(7);
+					Expect(14);
 					Ident(out name1);
 					obj1 = tab.Find(name1);
 					
@@ -509,7 +510,7 @@ public SymbolTable   tab;
 				} else if (StartOf(3)) {
 					CompleteExpr(out type, out node1);
 					Expect(15);
-					if (type != obj.type)
+					if ( !(type == obj.type || type == Types.fun) )
 					SemErr("incompatible types");
 					((Node)node).addChildren(new Term(obj));
 					((Node)node).addChildren(node1); 
@@ -580,7 +581,7 @@ public SymbolTable   tab;
 			node = new Node(Labels.If);
 			((Node)node).addChildren(node1);
 			Node thenBlock = new Node(Labels.Block);
-			if (type != Types.boolean) 
+			if (!(type == Types.boolean || type == Types.fun)) 
 			SemErr("boolean type expected"); 
 			tab.OpenScope(); 
 			Expect(9);
@@ -669,7 +670,7 @@ public SymbolTable   tab;
 			Expect(12);
 			CompleteExpr(out type1, out node1);
 			Expect(15);
-			if (type != type1)
+			if (!(type == type1 || type1 == Types.fun))
 			SemErr("incompatible types");
 			obj = tab.NewObj(name, Kinds.var, type);
 			Node declAssig = new Node (Labels.AssigDecl);
@@ -690,7 +691,7 @@ public SymbolTable   tab;
 			((Node)assig).addChildren(node1);
 			((Node)node).addChildren(assig);
 			Node forBlock =new Node(Labels.Block);
-			if (type != obj.type)
+			if (!(type == obj.type || type == Types.fun))
 			SemErr("incompatible types"); 
 			Expect(9);
 			while (StartOf(1)) {
@@ -781,6 +782,10 @@ public SymbolTable   tab;
 		while (la.kind == 37 || la.kind == 38) {
 			BoolOp(out op);
 			Expr(out type1,out secondExpr);
+			if(type == Types.fun)
+			type = type1;
+			if(type1 == Types.fun)
+			type1 = type;	
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean; 
@@ -835,6 +840,10 @@ public SymbolTable   tab;
 		if (StartOf(6)) {
 			RelOp(out op);
 			SimpExpr(out type1, out secondSimpExpr);
+			if(type == Types.fun)
+			type = type1;
+			if(type1 == Types.fun)
+			type1 = type;	
 			if (type != type1)
 			SemErr("incompatible types");
 			type = Types.boolean;
@@ -860,6 +869,10 @@ public SymbolTable   tab;
 		while (la.kind == 24 || la.kind == 30) {
 			AddOp(out op);
 			Term(out type1,out secondTerm);
+			if(type == Types.fun)
+			type = Types.integer;
+			if(type1 == Types.fun)
+			type1 = Types.integer;	
 			if (type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected"); 
 			((Node)op).addChildren(node);
@@ -911,7 +924,11 @@ public SymbolTable   tab;
 		while (la.kind == 39 || la.kind == 40) {
 			MulOp(out op);
 			Factor(out type1,out secondfactor);
-			if (type != Types.integer || type1 != Types.integer)
+			if(type == Types.fun)
+			type = Types.integer;
+			if(type1 == Types.fun)
+			type1 = Types.integer;																					
+			if ( type != Types.integer || type1 != Types.integer)
 			SemErr("integer type expected");
 			((Node)op).addChildren(node);
 			((Node)op).addChildren(secondfactor);
