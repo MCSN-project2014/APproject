@@ -207,6 +207,18 @@ namespace APproject
 						return FunctionCall (fun);
 					});
 					return task;
+				case Labels.Dsync:
+					var parameter = children [0].children;
+					var funObj = (Obj)children [0].value;
+					var listParameter = new List<Dictionary<string,object>> ();
+					ASTNode funNode;
+					/*if (function.TryGetValue (funObj, funNode)) {
+						foreach (var par in parameter) {
+
+						}
+							
+					}*/
+					return null;
 				default:
 					return null;
 				}

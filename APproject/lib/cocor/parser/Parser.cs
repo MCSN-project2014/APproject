@@ -105,7 +105,7 @@ public SymbolTable   tab;
 
 	void ProcDecl() {
 		Types type; string name; Obj proc; Obj formal;
-		RType rtype; ASTNode fundecl, node1; Term parameter;     
+		FRType rtype; ASTNode fundecl, node1; Term parameter;     
 		Expect(5);
 		if (la.kind == 1) {
 			Ident(out name);
@@ -133,8 +133,8 @@ public SymbolTable   tab;
 			}
 			Expect(8);
 			Node block = new Node(Labels.Block);  
-			RType(out rtype);
-			tab.setRType(proc,rtype);        
+			FRType(out rtype);
+			tab.setFRType(proc,rtype);        
 			Expect(9);
 			while (StartOf(1)) {
 				if (la.kind == 22) {
@@ -196,10 +196,10 @@ public SymbolTable   tab;
 		} else SynErr(43);
 	}
 
-	void RType(out RType rtype) {
+	void FRType(out FRType rtype) {
 		Queue<Types> formals; Types type; 
-		RType rtype1;	
-		rtype = new RType(); 
+		FRType rtype1;	
+		rtype = new FRType(); 
 		if (la.kind == 5) {
 			Get();
 			rtype.type = Types.fun;
@@ -215,7 +215,7 @@ public SymbolTable   tab;
 				}
 			}
 			Expect(8);
-			RType(out rtype1);
+			FRType(out rtype1);
 			rtype1.formals = formals;
 			rtype.next = rtype1;
 		} else if (la.kind == 27) {
@@ -662,7 +662,7 @@ public SymbolTable   tab;
 	}
 
 	void AProcDecl(out Obj robj, out ASTNode node) {
-		string name; Types type; RType rtype; Obj formal;
+		string name; Types type; FRType rtype; Obj formal;
 		ASTNode block, vardeclnode, statnode; Term parameter;
 		node = new Node(Labels.Afun);
 		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
@@ -687,9 +687,9 @@ public SymbolTable   tab;
 			}
 		}
 		Expect(8);
-		RType(out rtype);
+		FRType(out rtype);
 		block = new Node(Labels.Block);
-		tab.setRType(robj,rtype); 
+		tab.setFRType(robj,rtype); 
 		Expect(9);
 		while (StartOf(1)) {
 			if (la.kind == 22) {
@@ -1007,7 +1007,7 @@ public class Errors {
 			case 41: s = "??? expected"; break;
 			case 42: s = "invalid ProcDecl"; break;
 			case 43: s = "invalid Type"; break;
-			case 44: s = "invalid RType"; break;
+			case 44: s = "invalid FRType"; break;
 			case 45: s = "invalid VarDecl"; break;
 			case 46: s = "invalid VarDecl"; break;
 			case 47: s = "invalid VarDecl"; break;

@@ -6,8 +6,38 @@ using System.Collections.Generic;
 
 namespace APproject
 {
-	public static class TestJson
+	public static class JsonSerializer
 	{
+		private static JsonSerializerSettings setting = new JsonSerializerSettings () {
+			ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+			NullValueHandling = NullValueHandling.Ignore,
+			//Formatting = Formatting.Indented,
+			//StringEscapeHandling = StringEscapeHandling.EscapeHtml
+
+		};
+
+		public static string serialize(List<Dictionary<string,object>> parameters, ASTNode node){
+			var parameter = JsonConvert.SerializeObject (parameters, setting);
+			var jsonNode = JsonConvert.SerializeObject (node, setting);
+			return "{\"parameter\": " + parameter + ", \"block\": " + jsonNode + "}";
+		}
+
+		public static string serialize(List<string> actual, List<string> formal, ASTNode node){
+		
+			string jsonPar = "[";
+			for (int i=0; i < actual.Count; i++) {
+				jsonPar += "{\\\""+formal[i]+"\\\" : \"+"+ actual[i] + "+\"}" +
+					(i<actual.Count-1 ? ",":""); 
+			}
+			jsonPar+="]";
+
+			var jsonNode = JsonConvert.SerializeObject (node, setting);
+			jsonNode = jsonNode.Replace ("\"", "\\\"");
+			var tmp =  "\"{\\\"parameter\\\" : " + jsonPar + ", \\\"block\\\" : " + jsonNode + "}\"";
+			Console.WriteLine (tmp);
+			return tmp;
+		}
+
 		public static void Start ()
 		{
 			var setting = new JsonSerializerSettings () {
