@@ -258,6 +258,8 @@ public SymbolTable   tab;
 			if (la.kind == 15) {
 				Get();
 				obj  =  tab.NewObj((string)names[0], Kinds.var, type);
+				if (type == Types.fun)
+				SemErr("you cannot declare a type fun without assign it");	
 				node =  new Node (Labels.Decl);
 				((Node)node).addChildren(new Term (obj));                             
 			} else if (la.kind == 12) {
@@ -573,6 +575,8 @@ public SymbolTable   tab;
 		case 18: {
 			Get();
 			CompleteExpr(out type, out node1);
+			int returnCounter = 0;
+			tab.ifNesting++;
 			node = new Node(Labels.If);
 			((Node)node).addChildren(node1);
 			Node thenBlock = new Node(Labels.Block);
@@ -581,7 +585,12 @@ public SymbolTable   tab;
 			tab.OpenScope(); 
 			Expect(9);
 			while (StartOf(1)) {
-				if (StartOf(5)) {
+				if (la.kind == 14) {
+					Return(out node1);
+					if(tab.ifNesting == 1)
+					returnCounter++;
+					((Node)thenBlock).addChildren(node1); 
+				} else if (StartOf(5)) {
 					Stat(out node1);
 					((Node)thenBlock).addChildren(node1); 
 				} else {
@@ -591,14 +600,21 @@ public SymbolTable   tab;
 			}
 			Expect(10);
 			((Node)node).addChildren(thenBlock);
+			tab.ifNesting--;
 			tab.CloseScope(); 
 			if (la.kind == 19) {
 				tab.OpenScope(); 
 				Get();
+				tab.ifNesting++;
 				Node elseBlock = new Node(Labels.Block); 
 				Expect(9);
 				while (StartOf(1)) {
-					if (StartOf(5)) {
+					if (la.kind == 14) {
+						Return(out node1);
+						if(tab.ifNesting == 1)
+						returnCounter++;
+						((Node)elseBlock).addChildren(node1); 
+					} else if (StartOf(5)) {
 						Stat(out node1);
 						((Node)elseBlock).addChildren(node1);
 					} else {
@@ -608,6 +624,13 @@ public SymbolTable   tab;
 				}
 				Expect(10);
 				((Node)node).addChildren(elseBlock);
+				if (returnCounter == 2){
+				obj = tab.getOwner();
+				if(obj != null){
+				obj.returnIsSet=true;
+				}
+				}
+				tab.ifNesting--;
 				tab.CloseScope(); 
 			}
 			break;
@@ -701,39 +724,10 @@ public SymbolTable   tab;
 			break;
 		}
 		case 14: {
-			Get();
-			node = new Node(Labels.Return);
-			bool controlofblock; 
-			if (StartOf(3)) {
-				CompleteExpr(out type, out node1);
-				Expect(15);
-				((Node)node).addChildren(node1);
-				tab.getOwner(out obj , out controlofblock);
-				if(obj != null){
-				if(controlofblock)
-				obj.returnIsSet=true;
-				if( obj.type != type )
-				SemErr("incompatible return type");
-				} else {
-				SemErr("return is not expected");
-				}
-				
-			} else if (la.kind == 5) {
-				AProcDecl(out robj,out node1);
-				Expect(15);
-				((Node)node).addChildren(node1);
-				tab.getOwner(out obj,out controlofblock);
-				if(obj != null){ 
-				if(controlofblock)
-				obj.returnIsSet=true;
-				tab.complexReturnTypeControl(obj,robj);
-				}else {
-				SemErr("return is not expected");
-				} 
-			} else SynErr(54);
+			Return(out node);
 			break;
 		}
-		default: SynErr(55); break;
+		default: SynErr(54); break;
 		}
 	}
 
@@ -799,6 +793,40 @@ public SymbolTable   tab;
 	void URL(out String url) {
 		Expect(2);
 		url = t.val; 
+	}
+
+	void Return(out ASTNode node) {
+		Types type; ASTNode node1; Obj obj,robj; 
+		Expect(14);
+		node = new Node(Labels.Return);
+		bool controlofblock; 
+		if (StartOf(3)) {
+			CompleteExpr(out type, out node1);
+			Expect(15);
+			((Node)node).addChildren(node1);
+			tab.getOwner(out obj , out controlofblock);
+			if(obj != null){
+			if(controlofblock)
+			obj.returnIsSet=true;
+			if( obj.type != type )
+			SemErr("incompatible return type");
+			} else {
+			SemErr("return is not expected");
+			}
+			
+		} else if (la.kind == 5) {
+			AProcDecl(out robj,out node1);
+			Expect(15);
+			((Node)node).addChildren(node1);
+			tab.getOwner(out obj,out controlofblock);
+			if(obj != null){ 
+			if(controlofblock)
+			obj.returnIsSet=true;
+			tab.complexReturnTypeControl(obj,robj);
+			}else {
+			SemErr("return is not expected");
+			} 
+		} else SynErr(55);
 	}
 
 	void Expr(out Types type,out ASTNode node) {
@@ -1094,7 +1122,7 @@ public class Errors {
 			case 52: s = "invalid Stat"; break;
 			case 53: s = "invalid Stat"; break;
 			case 54: s = "invalid Stat"; break;
-			case 55: s = "invalid Stat"; break;
+			case 55: s = "invalid Return"; break;
 			case 56: s = "invalid BoolOp"; break;
 			case 57: s = "invalid RelOp"; break;
 			case 58: s = "invalid AddOp"; break;
