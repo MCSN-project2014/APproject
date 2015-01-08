@@ -554,7 +554,7 @@ namespace APproject
 				var block = funDec.children[0];
 				block.parent = null;
 
-				string data = JsonSerializer.serialize (actual, formal, block);
+				string data = HelperJson.serialize (actual, formal, block);
 
 				safeWriteLine ("let _task_a = Async.StartAsTask( getPostAsync( "+url+",\""+data+"\"))\n");
 			}
@@ -642,7 +642,7 @@ namespace APproject
         /// 
         public void translateRead(ASTNode n)
         {
-            safeWrite("Convert.ToInt32(Console.ReadLine())\n");
+            safeWrite("Convert.ToInt32(Console.ReadLine())");
         }
 
         /// <summary>

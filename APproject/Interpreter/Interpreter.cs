@@ -25,25 +25,43 @@ namespace APproject
 		public void Start (){
 			Console.WriteLine ("\nINTERPRETER START:");
 			try{
-			foreach (ASTNode node in startNode.children) {
-				if (node.label == Labels.FunDecl)
-					function.Add ((Obj)node.value, node);
-				if (node.label == Labels.Main) {
-					//funMem.addNameSpace (main);
-					var mem = new Environment ();
-					mem.addScope ();
-					Interpret (node, mem);
-					mem.removeScope ();
-				} /*else {
-					var mem = new Memory ();
-					mem.addScope ();
-					Interpret (node, mem);
-					mem.removeScope ();
-				}*/
-			}
+				if (startNode.label == Labels.Program){
+					foreach (ASTNode node in startNode.children) {
+						if (node.label == Labels.FunDecl)
+							function.Add ((Obj)node.value, node);
+						if (node.label == Labels.Main) {
+							//funMem.addNameSpace (main);
+							var mem = new Environment ();
+							mem.addScope ();
+							Interpret (node, mem);
+							mem.removeScope ();
+						}
+					}
+				}
 			}catch(InterpreterException e){
 				Console.WriteLine (e.Message);
 			}
+		}
+
+		public void Start(List<Dictionary<string,object>> parameter){
+			try{
+				if (startNode.label == Labels.Block){
+					var mem = new Environment();
+					mem.addScope();
+
+					foreach(var item in parameter){
+						var keys = item.Keys.GetEnumerator();
+						keys.MoveNext();
+						var key = keys.Current;
+						object value = item[key];
+						mem.addUpdateValue(new Obj{name=key}, value);
+					}
+					Console.Write(Interpret(startNode,mem));
+				}
+			}catch(InterpreterException e){
+				Console.WriteLine (e.Message);
+			}
+
 		}
 
 		private object Interpret (ASTNode node, Environment actualMemory){
@@ -93,8 +111,13 @@ namespace APproject
 					}
 					break;
 				case Labels.Decl:
-					foreach (ASTNode n in children)
-						actualMemory.addUpdateValue ((Obj)n.value, null);
+                    foreach (ASTNode n in children)
+                    {
+                        if (n.type == Types.boolean)
+                            actualMemory.addUpdateValue((Obj)n.value, true);
+                        if (n.type == Types.integer)
+                            actualMemory.addUpdateValue((Obj)n.value, 0);
+                    }
 					break;
 				case Labels.AssigDecl:
 					Assignment (children, actualMemory);
@@ -103,10 +126,16 @@ namespace APproject
 					Assignment (children, actualMemory);
 					break;
 				case Labels.Print:
-					if (children [0].isTerminal () && children [0].value is string)
-						Console.WriteLine (CONSOL_PRINT + children [0].value);
-					else
-						Console.WriteLine (CONSOL_PRINT + Convert.ToString (InterpretExp (children [0], actualMemory)));
+                    if (children[0].isTerminal() && children[0].value is string)
+                    {
+                        char[] quotes = new char[1];
+                        quotes[0] = '"';
+                        string tmpString = ((string)children[0].value).TrimStart(quotes);
+                        tmpString = tmpString.TrimEnd(quotes);
+                        Console.WriteLine(CONSOL_PRINT + tmpString);
+                    }
+                    else
+                        Console.WriteLine(CONSOL_PRINT + Convert.ToString(InterpretExp(children[0], actualMemory)));
 					break;
 				case Labels.Return:
 					object tmp = InterpretExp (children [0], actualMemory);
@@ -164,11 +193,13 @@ namespace APproject
 				case Labels.Div:
 					return InterpretExpInt (children [0],actualMemory) / InterpretExpInt (children [1],actualMemory);
 				case Labels.Eq:
-					var tmp = InterpretExp (children [0],actualMemory);
+					var tmp = InterpretExp (children [0], actualMemory);
 					if (tmp is bool)
 						return (bool) tmp == InterpretCondition (children [1],actualMemory);
 					else
 						return (int) tmp == InterpretExpInt (children [1],actualMemory);
+                case Labels.Negativ:
+                    return -(InterpretExpInt(children[0], actualMemory));                        
 				case Labels.NotEq:
 					var tmp1 = InterpretExp (children [0], actualMemory);
 					if (tmp1 is bool)

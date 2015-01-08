@@ -162,7 +162,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 								  
 								   |URL<out url> 								(.  dasync.addChildren(new Term(url));  .)
 								  )		   				
-					              ','Ident<out name1>							(.  obj1 = tab.Find(name1);
+					              ',' return Ident<out name1>					(.  obj1 = tab.Find(name1);
 																				   	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
 								 '(' {   CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
@@ -233,22 +233,40 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 			                                                                  
 		)                                                       
 		                                                                     
-	| "if" CompleteExpr<out type, out node1>									   (.  node = new Node(Labels.If);
+	| "if" CompleteExpr<out type, out node1>									   (.  int returnCounter = 0;
+																					   tab.ifNesting++;
+																					   node = new Node(Labels.If);
 																				       ((Node)node).addChildren(node1);
 																					   Node thenBlock = new Node(Labels.Block);
 																					   if (type != Types.boolean) 
 																						  SemErr("boolean type expected"); .)
 																					(. tab.OpenScope(); .) 
-	 '{' { Stat<out node1>															(. ((Node)thenBlock).addChildren(node1); .) 
-		   | VarDecl<out node1>														(. ((Node)thenBlock).addChildren(node1); .)	 
+	 '{' { Return<out node1>														(. if(tab.ifNesting == 1)
+																						   returnCounter++;
+																					   ((Node)thenBlock).addChildren(node1); .)		
+		   |Stat<out node1>															(. ((Node)thenBlock).addChildren(node1); .) 
+		   | VarDecl<out node1>														(. ((Node)thenBlock).addChildren(node1); .)	
 	  } '}'																			(. ((Node)node).addChildren(thenBlock);
-																						tab.CloseScope(); .)
+																					   tab.ifNesting--;
+																					   tab.CloseScope(); .)
 
 	  [																				(. tab.OpenScope(); .)
-	   "else"																		(. Node elseBlock = new Node(Labels.Block); .)
-	  '{' {    Stat<out node1>														(. ((Node)elseBlock).addChildren(node1);.) 
-			| VarDecl<out node1>													(. ((Node)elseBlock).addChildren(node1); .)	 	
+	   "else"																		(. tab.ifNesting++;
+																					   Node elseBlock = new Node(Labels.Block); .)
+	  '{' {  Return<out node1>														(. if(tab.ifNesting == 1)
+																							returnCounter++;
+																					   ((Node)elseBlock).addChildren(node1); .)	
+			|   Stat<out node1>														(. ((Node)elseBlock).addChildren(node1);.) 
+			| VarDecl<out node1>													(. ((Node)elseBlock).addChildren(node1); .)	 
+				
 	   } '}'																		(. ((Node)node).addChildren(elseBlock);
+																					   if (returnCounter == 2){
+																							obj = tab.getOwner();
+																							if(obj != null){
+																								obj.returnIsSet=true;
+																							}
+																						}
+																					   tab.ifNesting--;
 																					   tab.CloseScope(); .)
 	  ] 
 	                                 
@@ -260,7 +278,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 	   																				(. tab.OpenScope(); .) 
 	 '{' {   Stat<out node1>														(. ((Node)whileBlock).addChildren(node1);.) 
 		   | VarDecl<out node1>														(. ((Node)whileBlock).addChildren(node1); .)	 
-	  } '}'																			(.  ((Node)node).addChildren(whileBlock);
+	  } '}'																			(. ((Node)node).addChildren(whileBlock);
 																						tab.CloseScope(); .)
 	                                
 	| "for"																				    (. tab.OpenScope(); 
@@ -297,7 +315,12 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 				  ')' ';'						
 																				  
 		
-	| "return"																	(. node = new Node(Labels.Return);
+	| Return<out node> .
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
+Return<out ASTNode node>														(. Types type; ASTNode node1; Obj obj,robj; .)
+
+= "return"																		(. node = new Node(Labels.Return);
 																				   bool controlofblock; .)
 			(  
     			                                                               
@@ -325,7 +348,6 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 			).
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
 VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names = new ArrayList(); 
 																				   Types type; Types type1; Obj obj,obj1, afobj; 
 																				    Queue<Types> actualTypes = new Queue<Types>();
@@ -349,6 +371,8 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 			  
 			  (
 				';'																(. obj  =  tab.NewObj((string)names[0], Kinds.var, type);
+																				   if (type == Types.fun)
+																						SemErr("you cannot declare a type fun without assign it");	
 																				   node =  new Node (Labels.Decl);
 																				   ((Node)node).addChildren(new Term (obj));                             .)
 				| '=' 

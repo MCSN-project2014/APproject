@@ -48,6 +48,7 @@ namespace APproject
 	public class SymbolTable {
 
 		public int curLevel;	// nesting level of current scope
+        public int ifNesting;   // nesting level of if used
 		public Obj undefObj;	// object node for erroneous symbols
 		public Obj topScope;	// topmost procedure scope
 		
@@ -57,6 +58,7 @@ namespace APproject
 			this.parser = parser;
 			topScope = null;
             curLevel = 0;
+            ifNesting = 0;
 			undefObj = new Obj();
 			undefObj.name  =  "undef"; 
             undefObj.type = Types.undef;
@@ -305,6 +307,7 @@ namespace APproject
                     scope = scope.next;
                      if (scope.owner != null){
                          owner = scope.owner;
+                         return owner;
                     }
                 }
             }
@@ -330,9 +333,12 @@ namespace APproject
                 {
                     scope = scope.next;
                     if (scope.owner != null)
+                    {
                         control = false;
                         owner = scope.owner;
-
+                        return;
+                    }
+                    
                 }
             }
             
