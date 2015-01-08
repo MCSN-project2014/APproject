@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APproject.FSCodeGenerator
+namespace APproject
 {
   	public enum TaskLabels {Task , NoTask };
 
@@ -25,7 +25,7 @@ namespace APproject.FSCodeGenerator
 
         public void  addScope(){
 
-             environmentTasks.Push( new Dictionary<string,string>);
+             //environmentTasks.Push( new Dictionary<string,string>);
         }
 
         public void  removeScope(){

@@ -8,17 +8,31 @@ fun add( x int , y int ) int {
     s = x * y ; 
 	return s;
 }
+*/
 
+fun bib ( n int ) int {
+	var retVal int = -1;
+	if  n == 0 || n==1 {
+		retVal = 1;
+	}else {
+		 retVal=(bib(n-1) + bib(n-2));
+	}
+	return retVal;
+	}
 
 fun fib ( n int ) int {
 	var a int ; 
 	var b int ;
 
-	a = async { return fib( n-1 ) };
-	b = async { return fib( n-1 ) };
+	a = async { return bib( n-1 ) };
+	b = async { return bib( n-2 ) };
 	return a + b;
 }
 
+
+
+
+/*
 
 fun outsideAdder( x int , y int) fun ( int ) int {
 	var sum int = 10;
@@ -27,7 +41,7 @@ fun outsideAdder( x int , y int) fun ( int ) int {
 		return sum ;
 	};
 }
-*/
+
 fun add(x int, y int) int{
     return x+y;
 }
@@ -35,12 +49,16 @@ fun add(x int, y int) int{
 fun minus(x int, y int) int{
     return x-y;
 } 
+*/
+
 
 fun main (){
 
+println(fib (4) );
+/*
 var result int = 0;
 var value int;
-var op int = 0;
+var op int = 1;
 
 while op != 9 {
         value = readln();
@@ -53,6 +71,7 @@ while op != 9 {
         op = readln();
     }
     println(result);
+*/
 
 /*
 

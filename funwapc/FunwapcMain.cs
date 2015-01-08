@@ -1,7 +1,7 @@
 ﻿using System;
 using APproject;
 
-namespace funwapc
+namespace  funwapc
 {
 	class MainClass
 	{
