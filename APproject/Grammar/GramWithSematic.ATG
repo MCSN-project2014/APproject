@@ -84,12 +84,11 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 			  | "main"															 (. tab.NewObj("Main", Kinds.proc, Types.undef);
 																				    fundecl = new Node(Labels.Main);
 																				    tab.OpenScope();	.)
-																				 (. Node block = new Node(Labels.Block);  .) 	
-				'(' ')' '{'  { VarDecl<out node1>								 (.	((Node)block).addChildren(node1);    .)
-							  | Stat<out node1>      							 (. ((Node)block).addChildren(node1);    .) 		
+																				 
+				'(' ')' '{'  { VarDecl<out node1>								 (.	((Node)fundecl).addChildren(node1);    .)
+							  | Stat<out node1>      							 (. ((Node)fundecl).addChildren(node1);    .) 		
 						 }  '}'	
-						    													 (. ((Node)fundecl).addChildren(0,block);
-																					gen.addChildren((Node)fundecl);
+						    													 (. gen.addChildren((Node)fundecl);
 																				    tab.CloseScope(); .)
 			).   
 			
@@ -343,8 +342,10 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-VarDecl<out ASTNode node>														(. string name,url; ArrayList names = new ArrayList(); 
-																					Types type; Types type1; Obj obj, afobj; ASTNode node1;.)
+VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names = new ArrayList(); 
+																				   Types type; Types type1; Obj obj,obj1, afobj; 
+																				    Queue<Types> actualTypes = new Queue<Types>();
+																					ASTNode node1;.)
 
 =		  "var" Ident<out name>													(. node =  new Node (Labels.AssigDecl);
 																				   names.Add(name); .)	
@@ -367,33 +368,109 @@ VarDecl<out ASTNode node>														(. string name,url; ArrayList names = new
 																				   node =  new Node (Labels.Decl);
 																				   ((Node)node).addChildren(new Term (obj));                             .)
 				| '=' 
-					(	"readln" '('')'';'										(. tab.setAsyncControl(true);
+					(	"readln" '('')'';'										(. obj  =  tab.NewObj((string)names[0], Kinds.var, type);
+																				   tab.setAsyncControl(true);
 																				   if(type != Types.integer)
 																					  SemErr("incompatible types"); 
-																				   obj = tab.NewObj((string)names[0], Kinds.var, type);
 																				   node =  new Node (Labels.AssigDecl);
 																				   ((Node)node).addChildren(new Term (obj));
 																				   ((Node)node).addChildren(new Node(Labels.Read)); .)	
 
-					    | CompleteExpr<out type1, out node1>';'				    (. if (type != type1) 
-																					   SemErr("incompatible types");
-					 															   obj = tab.NewObj((string)names[0], Kinds.var, type); 
+					    | CompleteExpr<out type1, out node1>';'				    (. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   if (type != type1) 
+																					   SemErr("incompatible types"); 
 																				   node =  new Node (Labels.AssigDecl);
 																				   ((Node)node).addChildren(new Term (obj));
 																				   ((Node)node).addChildren(node1); .)	
 																				   	 
-						| AProcDecl<out afobj,out node1> ';'					(. if (type != Types.fun) 
+						| AProcDecl<out afobj,out node1> ';'					(. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   if (type != Types.fun) 
 																					   SemErr("incompatible types");
-					 															   obj = tab.NewObj((string)names[0], Kinds.var, type); 
 																				   node =  new Node (Labels.AssigDecl);
 																				   ((Node)node).addChildren(new Term (obj));
 																				   ((Node)node).addChildren(node1);   .)
-						| URL<out url> ';'										(. if (type != Types.url)
+
+						| URL<out url> ';'										(. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   if (type != Types.url)
 																					   SemErr("imcompatible Types");
-																					obj = tab.NewObj((string)names[0], Kinds.var, type);
-																					node =  new Node (Labels.AssigDecl);
-																					((Node)node).addChildren(new Term (obj));
-																					((Node)node).addChildren(new Term (url)); .)
+																				   node =  new Node (Labels.AssigDecl);
+																				   ((Node)node).addChildren(new Term (obj));
+																				   ((Node)node).addChildren(new Term (url)); .)
+
+						|"async" '{' "return" Ident<out name1>				    (. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   obj.isUsedInAsync = true;
+																				   obj1 = tab.Find(name1);
+																				   Node async =  new Node(Labels.Async);	
+																				   Node call = new Node(Labels.FunCall, obj1); .)
+								 '(' { (
+									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+																				   ((Node)call).addChildren(node1);	.) 
+										  | AProcDecl<out afobj, out node1>		(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)call).addChildren(node1); .)
+										)
+
+									 {','(
+										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
+																				   ((Node)call).addChildren(node1); .) 
+										   | AProcDecl<out afobj, out node1>	(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)call).addChildren(node1); .)
+										  )
+									 } } ')'									
+											 '}'';'								(. ((Node)async).addChildren(call);
+																				   ((Node)node).addChildren(new Term(obj));
+																				   ((Node)node).addChildren(async); .)
+																				(. if (obj1.kind != Kinds.proc) 
+																				       SemErr("object is not a procedure");
+																				   else if(tab.getAsyncControl(obj1))
+																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
+																				   if (obj1.type == Types.fun)
+																					   SemErr("wrong return type");
+																					
+																				   tab.checkActualFormalTypes(obj1, actualTypes); 
+																				   if(obj.type != obj1.type) 
+																					   SemErr("incompatible types"); .)
+
+					| "dasync" '{'												(. obj = tab.NewObj((string)names[0], Kinds.var, type);
+																				   obj.isUsedInAsync = true;
+																				   Node dasync = new Node(Labels.Dsync); .)
+								  ( 
+									Ident<out name1>							(. obj1 = tab.Find(name1);
+																				   if (obj1.type != Types.url)
+																						SemErr("url expected");
+																				   dasync.addChildren(new Term(obj1)); .)
+								  
+								   |URL<out url> 								(.  dasync.addChildren(new Term(url));  .)
+								  )		   				
+					              ','Ident<out name1>							(.  obj1 = tab.Find(name1);
+																				   	
+																				   Node call = new Node(Labels.FunCall, obj1); .)
+								 '(' { (
+									 	  CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
+																				   ((Node)call).addChildren(node1);	.) 
+										  | AProcDecl<out afobj, out node1>		(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)call).addChildren(node1); .)
+										)
+
+									 {','(
+										   CompleteExpr<out type, out node1>	(. actualTypes.Enqueue(type);
+																				   ((Node)call).addChildren(node1); .) 
+										   | AProcDecl<out afobj, out node1>	(. actualTypes.Enqueue(Types.fun);
+																				   ((Node)call).addChildren(node1); .)
+										  )
+									 } } ')'									
+											 '}'';'								(. ((Node)dasync).addChildren(call);
+																				   ((Node)node).addChildren(new Term(obj));
+																				   ((Node)node).addChildren(dasync); .)
+																				(. if (obj1.kind != Kinds.proc) 
+																				       SemErr("object is not a procedure");
+																				   else if(tab.getAsyncControl(obj1))
+																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
+																				   if (obj1.type == Types.fun)
+																					   SemErr("wrong return type");
+																					
+																				   tab.checkActualFormalTypes(obj1, actualTypes); 
+																				   if(obj.type != obj1.type) 
+																					   SemErr("incompatible types"); .)
 					)
 			  )
 		  
@@ -401,7 +478,7 @@ VarDecl<out ASTNode node>														(. string name,url; ArrayList names = new
 		  
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, firstExpr, secondExpr; .)
+CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, secondExpr; .)
 = Expr<out type,out node>													 
   { BoolOp<out op>																 
 	Expr<out type1,out secondExpr>			          							 (. if (type != type1)
@@ -414,7 +491,7 @@ CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, firstSimpExpr, secondSimpExpr; .)
+Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, secondSimpExpr; .)
 = SimpExpr<out type, out node>											 
   [ RelOp<out op>																 
 	SimpExpr<out type1, out secondSimpExpr>										 (. if (type != type1)
@@ -440,7 +517,7 @@ SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op,
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, firstfactor, secondfactor; .)
+Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, secondfactor; .)
 = Factor<out type, out node>												   
   { MulOp<out op>																
     Factor<out type1,out secondfactor>											(. if (type != Types.integer || type1 != Types.integer)
@@ -450,9 +527,6 @@ Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, fi
 																					node = op;    .)
   }.
 
-/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
-URL<out String url>
-= url												          (. url = t.val; .).
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string name; Types type1; bool control = false;
 																			   Queue<Types> actualTypes = new Queue<Types>(); ASTNode node1; .) 
@@ -585,6 +659,11 @@ MulOp<out ASTNode op>
 
 Ident<out string name>
  = ident												(. name = t.val; .).
+
+ /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+URL<out String url>
+= url												          (. url = t.val; .).
 
 	  
 END Fun.
