@@ -181,7 +181,7 @@ namespace APproject
                 {
 					var tmpVar = (Obj)n.value;
 					object memValue;
-					if ((environment.TryGetValue (tmpVar, out memValue)) && bang) {
+					if (environment.TryGetValue(tmpVar, out memValue) && (bool)memValue && bang) {
 						safeWrite ("_task_" + n.ToString () + ".Result");
 					}else if (tmpVar.kind == Kinds.var && bang)
                         safeWrite("!" + n.ToString());
@@ -251,15 +251,16 @@ namespace APproject
             environment.addScope();
 
             safeWriteLine("\n[<EntryPoint>]\nlet main argv = \n");
-            //indentationLevel++; waiting for manelaos
+            
+			indentationLevel++;
 
 			foreach (Node c in n.children)
                 translateRecursive(c);
   			
-			indentationLevel++; //waiting for manelaos
+			//indentationLevel++;
             safeWriteLine("Console.ReadLine()|>ignore\n");
             safeWriteLine("0\n");
-			//indentationLevel--; waiting for manelaos
+			indentationLevel--;
 
             environment.removeScope();
 
@@ -309,8 +310,7 @@ namespace APproject
 			translateMutableParameters (nameParameters);
 			indentationLevel--;
 			translateRecursive (n.children[0]);
-			safeWrite ("\n");
-
+			//safeWrite ("\n");
 
             environment.removeScope();
         }
@@ -426,8 +426,10 @@ namespace APproject
 				createDAsync (children [1].children [1], (Obj)children [0].value);
 				break;
 			default:
-				safeWriteLine (children [0] + " := ");
 
+				environment.addUpdateValue ((Obj)children [0].value, false);
+
+				safeWriteLine (children [0] + " := ");
 				bang = true;
 				translateRecursive (children.ElementAt (1));
 				bang = false;
@@ -451,7 +453,7 @@ namespace APproject
                 //if (i > 0)
                 //    indent(indentationLevel); //fix indentation for multiple declarations like var x, y, z int;
 
-				safeWriteLine("let " + item + "= ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
+				safeWriteLine("let " + item + " = ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
                 /*if (item.type == Types.integer)
                     safeWrite(" = ref (0)\n"); // integer are initialized to '0'
                 
@@ -492,6 +494,8 @@ namespace APproject
 				safeWrite ("_par_"+ node+ indexPar + (i++ < funCall.children.Count-1 ? " ":""));
                 indexPar++;
 			}
+			if (funCall.children.Count == 0)
+				safeWrite ("()");
 			safeWrite(" })\n");
 			
 		}
