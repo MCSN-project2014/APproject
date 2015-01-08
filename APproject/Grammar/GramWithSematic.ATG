@@ -478,7 +478,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 		  
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, firstExpr, secondExpr; .)
+CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, secondExpr; .)
 = Expr<out type,out node>													 
   { BoolOp<out op>																 
 	Expr<out type1,out secondExpr>			          							 (. if (type != type1)
@@ -491,7 +491,7 @@ CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode 
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, firstSimpExpr, secondSimpExpr; .)
+Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, secondSimpExpr; .)
 = SimpExpr<out type, out node>											 
   [ RelOp<out op>																 
 	SimpExpr<out type1, out secondSimpExpr>										 (. if (type != type1)
@@ -517,7 +517,7 @@ SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op,
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
-Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, firstfactor, secondfactor; .)
+Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, secondfactor; .)
 = Factor<out type, out node>												   
   { MulOp<out op>																
     Factor<out type1,out secondfactor>											(. if (type != Types.integer || type1 != Types.integer)
@@ -527,9 +527,6 @@ Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, fi
 																					node = op;    .)
   }.
 
-/*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
-URL<out String url>
-= url												          (. url = t.val; .).
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string name; Types type1; bool control = false;
 																			   Queue<Types> actualTypes = new Queue<Types>(); ASTNode node1; .) 
@@ -662,6 +659,11 @@ MulOp<out ASTNode op>
 
 Ident<out string name>
  = ident												(. name = t.val; .).
+
+ /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
+
+URL<out String url>
+= url												          (. url = t.val; .).
 
 	  
 END Fun.

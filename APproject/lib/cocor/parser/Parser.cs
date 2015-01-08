@@ -268,10 +268,10 @@ public SymbolTable   tab;
 					Expect(6);
 					Expect(8);
 					Expect(15);
+					obj  =  tab.NewObj((string)names[0], Kinds.var, type);
 					tab.setAsyncControl(true);
 					if(type != Types.integer)
 					SemErr("incompatible types"); 
-					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					node =  new Node (Labels.AssigDecl);
 					((Node)node).addChildren(new Term (obj));
 					((Node)node).addChildren(new Node(Labels.Read)); 
@@ -280,9 +280,9 @@ public SymbolTable   tab;
 				case 1: case 3: case 6: case 24: case 25: case 26: {
 					CompleteExpr(out type1, out node1);
 					Expect(15);
+					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					if (type != type1) 
-					SemErr("incompatible types");
-					obj = tab.NewObj((string)names[0], Kinds.var, type); 
+					SemErr("incompatible types"); 
 					node =  new Node (Labels.AssigDecl);
 					((Node)node).addChildren(new Term (obj));
 					((Node)node).addChildren(node1); 
@@ -291,9 +291,9 @@ public SymbolTable   tab;
 				case 5: {
 					AProcDecl(out afobj,out node1);
 					Expect(15);
+					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					if (type != Types.fun) 
 					SemErr("incompatible types");
-					obj = tab.NewObj((string)names[0], Kinds.var, type); 
 					node =  new Node (Labels.AssigDecl);
 					((Node)node).addChildren(new Term (obj));
 					((Node)node).addChildren(node1);   
@@ -302,9 +302,9 @@ public SymbolTable   tab;
 				case 2: {
 					URL(out url);
 					Expect(15);
+					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					if (type != Types.url)
 					SemErr("imcompatible Types");
-					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					node =  new Node (Labels.AssigDecl);
 					((Node)node).addChildren(new Term (obj));
 					((Node)node).addChildren(new Term (url)); 
@@ -315,6 +315,7 @@ public SymbolTable   tab;
 					Expect(9);
 					Expect(14);
 					Ident(out name1);
+					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					obj.isUsedInAsync = true;
 					obj1 = tab.Find(name1);
 					Node async =  new Node(Labels.Async);	
@@ -364,6 +365,8 @@ public SymbolTable   tab;
 				case 16: {
 					Get();
 					Expect(9);
+					obj = tab.NewObj((string)names[0], Kinds.var, type);
+					obj.isUsedInAsync = true;
 					Node dasync = new Node(Labels.Dsync); 
 					if (la.kind == 1) {
 						Ident(out name1);
