@@ -25,7 +25,7 @@ namespace APproject
         protected bool _recursive;                  // indicates whether a function is recursive or not
         protected bool _asyncControl;               // proc : indicates if a function contains or not some println or readln 
         protected bool _returnIsSet;                // proc : indicates if the return statement is set
-        protected FRType _rtype;                     // proc : the return the of the function
+        protected FRType _rtype;                    // proc : the return the of the function
 
         public string name { get { return _name; } set { _name = value; } }
         public Types type { get { return _type;} set { _type = value;} }
