@@ -356,7 +356,7 @@ public SymbolTable   tab;
 					Get();
 					Expect(9);
 					obj = tab.NewObj((string)names[0], Kinds.var, type);
-					obj.isUsedInAsync = true;
+					obj.isUsedInDasync = true;
 					Node dasync = new Node(Labels.Dsync); 
 					if (la.kind == 1) {
 						Ident(out name1);
@@ -369,6 +369,7 @@ public SymbolTable   tab;
 						dasync.addChildren(new Term(url));  
 					} else SynErr(45);
 					Expect(7);
+					Expect(14);
 					Ident(out name1);
 					obj1 = tab.Find(name1);
 					
@@ -462,6 +463,7 @@ public SymbolTable   tab;
 				} else if (la.kind == 16) {
 					Get();
 					Expect(9);
+					obj.isUsedInDasync = true;
 					Node dasync = new Node(Labels.Dsync); 
 					if (la.kind == 1) {
 						Ident(out name1);
@@ -797,7 +799,8 @@ public SymbolTable   tab;
 
 	void URL(out String url) {
 		Expect(2);
-		url = t.val; 
+		url = t.val.Remove(0, 1); 
+		url = url.Remove(url.Length-1,1); 
 	}
 
 	void Return(out ASTNode node) {

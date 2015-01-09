@@ -6,7 +6,7 @@ fun main(){
 	println("ECTS Grade Converter - Italy");
 	var input int;
 	while input != 33 {
-		println("Insert a number your grade between 1 and 32(e lode) - EXIT 33");
+		println("Insert your grade between 1 and 32(e lode) - EXIT 33");
 		input = readln();
 		if input >= 18 && input != 33{
 			println("You passed the exam with:");
@@ -56,7 +56,7 @@ let main argv =
     Console.WriteLine( "ECTS Grade Converter - Italy" )
     let input = ref (0)
     while !input <> 33 do
-        Console.WriteLine( "Insert a number your grade between 1 and 32(e lode) - EXIT 33" )
+        Console.WriteLine( "Insert your grade between 1 and 32(e lode) - EXIT 33" )
         input := Convert.ToInt32(Console.ReadLine())
         if !input >= 18 && !input <> 33 then
             Console.WriteLine( "You passed the exam with:" )

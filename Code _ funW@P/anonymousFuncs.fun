@@ -1,4 +1,5 @@
-/** A test for closures of
+/** 
+A test for closures of
 anonymous functions
 **/ 
 
@@ -12,10 +13,10 @@ fun tick() fun() int{
 
 fun main(){
 	var tick1 fun = tick();
-	var tmp int = (tick1());
-	while tmp != 10{
+	var tmp int = 0;
+	while tmp!= 10{
 		var x int = readln();
-		if tick1() == 5{
+		if tmp == 5{
 			println("halfway through");
 		}
 		tmp = tick1();
