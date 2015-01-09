@@ -419,161 +419,120 @@ public SymbolTable   tab;
 		if (la.kind == 1) {
 			Ident(out name);
 			obj = tab.Find(name); 
-			if (la.kind == 12) {
+			Expect(12);
+			if ( obj.kind != Kinds.var )
+			SemErr("cannot assign to procedure"); 
+			if (la.kind == 13) {
 				Get();
-				if ( obj.kind != Kinds.var )
-				SemErr("cannot assign to procedure"); 
-				if (la.kind == 13) {
-					Get();
-					Expect(9);
-					Expect(14);
-					Ident(out name1);
-					obj.isUsedInAsync = true;
-					obj1 = tab.Find(name1);
-					Node async =  new Node(Labels.Async);	
-					Node call = new Node(Labels.FunCall, obj1); 
-					Expect(6);
-					while (StartOf(3)) {
-						CompleteExpr(out type, out node1);
-						actualTypes.Enqueue(type); 
-						((Node)call).addChildren(node1);	
-						while (la.kind == 7) {
-							Get();
-							CompleteExpr(out type, out node1);
-							actualTypes.Enqueue(type);
-							((Node)call).addChildren(node1); 
-						}
-					}
-					Expect(8);
-					Expect(10);
-					Expect(15);
-					((Node)async).addChildren(call);
-					((Node)node).addChildren(new Term(obj));
-					((Node)node).addChildren(async); 
-					if (obj1.kind != Kinds.proc) 
-					   SemErr("object is not a procedure");
-					else if(tab.getAsyncControl(obj1))
-					SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
-					if (obj1.type == Types.fun)
-					SemErr("wrong return type");
-					
-					tab.checkActualFormalTypes(obj1, actualTypes); 
-					if(obj.type != obj1.type) 
-					SemErr("incompatible types"); 
-				} else if (la.kind == 16) {
-					Get();
-					Expect(9);
-					obj.isUsedInDasync = true;
-					tab.dasyncused = true;
-					Node dasync = new Node(Labels.Dsync); 
-					if (la.kind == 1) {
-						Ident(out name1);
-						obj1 = tab.Find(name1);
-						if (obj1.type != Types.url)
-						SemErr("url expected");
-						dasync.addChildren(new Term(obj1)); 
-					} else if (la.kind == 2) {
-						URL(out url);
-						dasync.addChildren(new Term(url));  
-					} else SynErr(48);
-					Expect(7);
-					Expect(14);
-					Ident(out name1);
-					obj1 = tab.Find(name1);
-					
-					Node call = new Node(Labels.FunCall, obj1); 
-					Expect(6);
-					while (StartOf(3)) {
-						CompleteExpr(out type, out node1);
-						actualTypes.Enqueue(type); 
-						((Node)call).addChildren(node1);	
-						while (la.kind == 7) {
-							Get();
-							CompleteExpr(out type, out node1);
-							actualTypes.Enqueue(type);
-							((Node)call).addChildren(node1); 
-						}
-					}
-					Expect(8);
-					Expect(10);
-					Expect(15);
-					((Node)dasync).addChildren(call);
-					((Node)node).addChildren(new Term(obj));
-					((Node)node).addChildren(dasync); 
-					if (obj1.kind != Kinds.proc) 
-					   SemErr("object is not a procedure");
-					else if(tab.getAsyncControl(obj1))
-					SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
-					if (obj1.type == Types.fun)
-					SemErr("wrong return type");
-					
-					tab.checkActualFormalTypes(obj1, actualTypes); 
-					if(obj.type != obj1.type) 
-					SemErr("incompatible types"); 
-				} else if (StartOf(3)) {
+				Expect(9);
+				Expect(14);
+				Ident(out name1);
+				obj.isUsedInAsync = true;
+				obj1 = tab.Find(name1);
+				Node async =  new Node(Labels.Async);	
+				Node call = new Node(Labels.FunCall, obj1); 
+				Expect(6);
+				while (StartOf(3)) {
 					CompleteExpr(out type, out node1);
-					Expect(15);
-					if ( !(type == obj.type || type == Types.fun) )
-					SemErr("incompatible types");
-					((Node)node).addChildren(new Term(obj));
-					((Node)node).addChildren(node1); 
-				} else if (la.kind == 5) {
-					AProcDecl(out robj, out node1);
-					Expect(15);
-					((Node)node).addChildren(new Term(obj));
-					((Node)node).addChildren(node1); 
-				} else if (la.kind == 17) {
-					Get();
-					Expect(6);
-					Expect(8);
-					Expect(15);
-					tab.setAsyncControl(true);
-					if(obj.type != Types.integer) 
-					SemErr("incompatible types");
-					((Node)node).addChildren(new Term(obj)); 
-					((Node)node).addChildren(new Node(Labels.Read));
-					
-				} else SynErr(49);
-			} else if (la.kind == 6) {
-				Get();
-				node = new Node(Labels.FunCall, obj);
-				Obj owner = tab.getOwner();
-				if(owner != null){
-				if (owner.name == obj.name){
-				owner.recursive = true;
-				}
-				} 
-				
-				while (StartOf(4)) {
-					if (StartOf(3)) {
-						CompleteExpr(out type, out node1);
-						actualTypes.Enqueue(type);
-						((Node)node).addChildren(node1); 
-					} else {
-						AProcDecl(out robj, out node1);
-						actualTypes.Enqueue(Types.fun);
-						((Node)node).addChildren(node1); 
-					}
+					actualTypes.Enqueue(type); 
+					((Node)call).addChildren(node1);	
 					while (la.kind == 7) {
 						Get();
-						if (StartOf(3)) {
-							CompleteExpr(out type, out node1);
-							actualTypes.Enqueue(type); 
-							((Node)node).addChildren(node1); 
-						} else if (la.kind == 5) {
-							AProcDecl(out robj, out node1);
-							actualTypes.Enqueue(Types.fun);
-							((Node)node).addChildren(node1); 
-						} else SynErr(50);
+						CompleteExpr(out type, out node1);
+						actualTypes.Enqueue(type);
+						((Node)call).addChildren(node1); 
 					}
 				}
 				Expect(8);
+				Expect(10);
 				Expect(15);
-				if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
-				SemErr("object is not a function");
-				else if (obj.type != Types.fun)
-				tab.checkActualFormalTypes(obj,actualTypes); 
-			} else SynErr(51);
+				((Node)async).addChildren(call);
+				((Node)node).addChildren(new Term(obj));
+				((Node)node).addChildren(async); 
+				if (obj1.kind != Kinds.proc) 
+				   SemErr("object is not a procedure");
+				else if(tab.getAsyncControl(obj1))
+				SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
+				if (obj1.type == Types.fun)
+				SemErr("wrong return type");
+				
+				tab.checkActualFormalTypes(obj1, actualTypes); 
+				if(obj.type != obj1.type) 
+				SemErr("incompatible types"); 
+			} else if (la.kind == 16) {
+				Get();
+				Expect(9);
+				obj.isUsedInDasync = true;
+				tab.dasyncused = true;
+				Node dasync = new Node(Labels.Dsync); 
+				if (la.kind == 1) {
+					Ident(out name1);
+					obj1 = tab.Find(name1);
+					if (obj1.type != Types.url)
+					SemErr("url expected");
+					dasync.addChildren(new Term(obj1)); 
+				} else if (la.kind == 2) {
+					URL(out url);
+					dasync.addChildren(new Term(url));  
+				} else SynErr(48);
+				Expect(7);
+				Expect(14);
+				Ident(out name1);
+				obj1 = tab.Find(name1);
+				
+				Node call = new Node(Labels.FunCall, obj1); 
+				Expect(6);
+				while (StartOf(3)) {
+					CompleteExpr(out type, out node1);
+					actualTypes.Enqueue(type); 
+					((Node)call).addChildren(node1);	
+					while (la.kind == 7) {
+						Get();
+						CompleteExpr(out type, out node1);
+						actualTypes.Enqueue(type);
+						((Node)call).addChildren(node1); 
+					}
+				}
+				Expect(8);
+				Expect(10);
+				Expect(15);
+				((Node)dasync).addChildren(call);
+				((Node)node).addChildren(new Term(obj));
+				((Node)node).addChildren(dasync); 
+				if (obj1.kind != Kinds.proc) 
+				   SemErr("object is not a procedure");
+				else if(tab.getAsyncControl(obj1))
+				SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
+				if (obj1.type == Types.fun)
+				SemErr("wrong return type");
+				
+				tab.checkActualFormalTypes(obj1, actualTypes); 
+				if(obj.type != obj1.type) 
+				SemErr("incompatible types"); 
+			} else if (StartOf(3)) {
+				CompleteExpr(out type, out node1);
+				Expect(15);
+				if ( !(type == obj.type || type == Types.fun) )
+				SemErr("incompatible types");
+				((Node)node).addChildren(new Term(obj));
+				((Node)node).addChildren(node1); 
+			} else if (la.kind == 5) {
+				AProcDecl(out robj, out node1);
+				Expect(15);
+				((Node)node).addChildren(new Term(obj));
+				((Node)node).addChildren(node1); 
+			} else if (la.kind == 17) {
+				Get();
+				Expect(6);
+				Expect(8);
+				Expect(15);
+				tab.setAsyncControl(true);
+				if(obj.type != Types.integer) 
+				SemErr("incompatible types");
+				((Node)node).addChildren(new Term(obj)); 
+				((Node)node).addChildren(new Node(Labels.Read));
+				
+			} else SynErr(49);
 		} else if (la.kind == 18) {
 			Get();
 			CompleteExpr(out type, out node1);
@@ -592,7 +551,7 @@ public SymbolTable   tab;
 					if(tab.ifNesting == 1)
 					returnCounter++;
 					((Node)thenBlock).addChildren(node1); 
-				} else if (StartOf(5)) {
+				} else if (StartOf(4)) {
 					Stat(out node1);
 					((Node)thenBlock).addChildren(node1); 
 				} else {
@@ -616,7 +575,7 @@ public SymbolTable   tab;
 						if(tab.ifNesting == 1)
 						returnCounter++;
 						((Node)elseBlock).addChildren(node1); 
-					} else if (StartOf(5)) {
+					} else if (StartOf(4)) {
 						Stat(out node1);
 						((Node)elseBlock).addChildren(node1);
 					} else {
@@ -646,7 +605,7 @@ public SymbolTable   tab;
 			tab.OpenScope(); 
 			Expect(9);
 			while (StartOf(1)) {
-				if (StartOf(5)) {
+				if (StartOf(4)) {
 					Stat(out node1);
 					((Node)whileBlock).addChildren(node1);
 				} else {
@@ -670,12 +629,12 @@ public SymbolTable   tab;
 				string s = t.val.Remove(0, 1); 
 				s = s.Remove(s.Length-1,1);
 				((Node)node).addChildren(new Term(s)); 
-			} else SynErr(52);
+			} else SynErr(50);
 			Expect(8);
 			Expect(15);
 		} else if (la.kind == 14) {
 			Return(out node);
-		} else SynErr(53);
+		} else SynErr(51);
 	}
 
 	void AProcDecl(out Obj robj, out ASTNode node) {
@@ -778,13 +737,13 @@ public SymbolTable   tab;
 			}else {
 			SemErr("return is not expected");
 			} 
-		} else SynErr(54);
+		} else SynErr(52);
 	}
 
 	void Expr(out Types type,out ASTNode node) {
 		Types type1; ASTNode op, secondSimpExpr; 
 		SimpExpr(out type, out node);
-		if (StartOf(6)) {
+		if (StartOf(5)) {
 			RelOp(out op);
 			SimpExpr(out type1, out secondSimpExpr);
 			if(type == Types.fun)
@@ -807,7 +766,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 37) {
 			Get();
 			op = new Node(Labels.Or);  
-		} else SynErr(55);
+		} else SynErr(53);
 	}
 
 	void SimpExpr(out Types type, out ASTNode node) {
@@ -861,7 +820,7 @@ public SymbolTable   tab;
 			op = new Node(Labels.Gte); 
 			break;
 		}
-		default: SynErr(56); break;
+		default: SynErr(54); break;
 		}
 	}
 
@@ -890,7 +849,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 23) {
 			Get();
 			op = new Node(Labels.Minus); 
-		} else SynErr(57);
+		} else SynErr(55);
 	}
 
 	void Factor(out Types type, out ASTNode node) {
@@ -915,7 +874,7 @@ public SymbolTable   tab;
 				}
 				} 
 				Get();
-				while (StartOf(4)) {
+				while (StartOf(6)) {
 					if (StartOf(3)) {
 						CompleteExpr(out type1, out node1);
 						actualTypes.Enqueue(type1);
@@ -935,7 +894,7 @@ public SymbolTable   tab;
 							AProcDecl(out robj, out node1);
 							actualTypes.Enqueue(Types.fun);
 							((Node)node).addChildren(node1); 
-						} else SynErr(58);
+						} else SynErr(56);
 					}
 				}
 				Expect(8);
@@ -985,7 +944,7 @@ public SymbolTable   tab;
 			type = type1; 
 			break;
 		}
-		default: SynErr(59); break;
+		default: SynErr(57); break;
 		}
 	}
 
@@ -996,7 +955,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 39) {
 			Get();
 			op = new Node(Labels.Div); 
-		} else SynErr(60);
+		} else SynErr(58);
 	}
 
 
@@ -1015,9 +974,9 @@ public SymbolTable   tab;
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x,T,x, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
 		{x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x},
 		{x,T,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
-		{x,T,x,T, x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x,T,x, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, x,x,x,x, x,x}
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, x,x,x,x, x,x},
+		{x,T,x,T, x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x}
 
 	};
 } // end Parser
@@ -1083,15 +1042,13 @@ public class Errors {
 			case 49: s = "invalid Stat"; break;
 			case 50: s = "invalid Stat"; break;
 			case 51: s = "invalid Stat"; break;
-			case 52: s = "invalid Stat"; break;
-			case 53: s = "invalid Stat"; break;
-			case 54: s = "invalid Return"; break;
-			case 55: s = "invalid BoolOp"; break;
-			case 56: s = "invalid RelOp"; break;
-			case 57: s = "invalid AddOp"; break;
-			case 58: s = "invalid Factor"; break;
-			case 59: s = "invalid Factor"; break;
-			case 60: s = "invalid MulOp"; break;
+			case 52: s = "invalid Return"; break;
+			case 53: s = "invalid BoolOp"; break;
+			case 54: s = "invalid RelOp"; break;
+			case 55: s = "invalid AddOp"; break;
+			case 56: s = "invalid Factor"; break;
+			case 57: s = "invalid Factor"; break;
+			case 58: s = "invalid MulOp"; break;
 
 			default: s = "error " + n; break;
 		}

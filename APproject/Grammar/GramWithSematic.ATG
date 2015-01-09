@@ -203,36 +203,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																				 .) 
 				                                                              
 				)                                                            
-			                                                                 
-			| '('																(. node = new Node(Labels.FunCall, obj);
-																				   Obj owner = tab.getOwner();
-																				   if(owner != null){
-																				     if (owner.name == obj.name){
-																						 owner.recursive = true;
-																					  }
-																					} 
-																				.)
-																				   
-				  { ( 
-					    CompleteExpr<out type, out node1>						(. actualTypes.Enqueue(type);
-																				   ((Node)node).addChildren(node1); .)
-					   | AProcDecl<out robj, out node1>							(. actualTypes.Enqueue(Types.fun);
-																				   ((Node)node).addChildren(node1); .)
-					 
-					 )											 
-				  { ','
-				      ( 
-						CompleteExpr<out type, out node1>						(. actualTypes.Enqueue(type); 
-																				   ((Node)node).addChildren(node1); .)
-						| AProcDecl<out robj, out node1>						(. actualTypes.Enqueue(Types.fun);
-																				   ((Node)node).addChildren(node1); .)
-					  ) 
-				  } } ')' ';'													(. if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
-																						SemErr("object is not a function");
-																				   else if (obj.type != Types.fun)
-																						tab.checkActualFormalTypes(obj,actualTypes); .)
-                                                                                
-			                                                                  
+			                                                               			                                                                  
 		)                                                       
 		                                                                     
 	| "if" CompleteExpr<out type, out node1>									   (.  int returnCounter = 0;
