@@ -106,9 +106,6 @@ namespace APproject
                 case Labels.Read:
                     translateRead(n);
                     break;
-                case Labels.For:
-                    translateFor(n);
-                    break;
                 case Labels.Async:
                     translateAsync(n);
                     break;
@@ -188,8 +185,9 @@ namespace APproject
                     else
                         safeWrite(n.ToString());
                 }
-
-				else safeWrite(n.ToString());
+                else if (n.value is string)
+                    safeWrite("\"" + n + "\"");
+                else safeWrite(n.ToString());
             }
 			else translate(n);
         }
@@ -236,20 +234,18 @@ namespace APproject
             safeWriteLine("open System\n");
             safeWriteLine("open System.IO\n");
             safeWriteLine("open System.Threading.Tasks\n");
-            safeWriteLine("open System.Net.Http\n");
-            safeWriteLine("open System.Text\n");
+            safeWriteLine("open funwaputility.PostMethods\n");
+            safeWriteLine("open funwaputility.Readline\n");
+    
             safeWriteLine("\n");
-            printgetPostAsync();
-
-            printReadln();
-            safeWriteLine("\n");
+ 
             
             foreach (ASTNode c in n.children)
             {
                 translateRecursive(c);
             }
         }
-
+        /*
         private void printReadln()
         {
             safeWriteLine("let _readln() =\n");
@@ -274,9 +270,9 @@ namespace APproject
 
         }
 
-        private void printgetPostAsync()
+        private void printgetPostAsyncInt()
         {
-            safeWriteLine("let getPostAsync (url:string, data) = \n");
+            safeWriteLine("let getPostAsyncInt (url:string, data) = \n");
             indentationLevel++;
             safeWriteLine("async {\n");
             indentationLevel++;
@@ -285,11 +281,32 @@ namespace APproject
             safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
             safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
             safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
-            safeWriteLine("return content }\n");
+            safeWriteLine("return Convert.ToInt32(content)\n");
+            safeWriteLine("}\n\n");
             indentationLevel--;
             indentationLevel--;
     
         }
+
+        private void printgetPostAsyncBool()
+        {
+            safeWriteLine("let getPostAsyncBool (url:string, data) = \n");
+            indentationLevel++;
+            safeWriteLine("async {\n");
+            indentationLevel++;
+            safeWriteLine("let httpClient = new System.Net.Http.HttpClient()\n");
+            safeWriteLine("let contentPost:StringContent = new StringContent( data , Encoding.UTF8, \"applicatio/json\")\n");
+            safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
+            safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
+            safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
+            safeWriteLine("return Convert.ToBoolean(content)\n");
+            safeWriteLine("}\n\n");
+            indentationLevel--;
+            indentationLevel--;
+
+        }
+
+        */
 
         /// <summary>
         /// This method translates the main.
@@ -359,7 +376,7 @@ namespace APproject
 			translateMutableParameters (nameParameters);
 			indentationLevel--;
 			translateRecursive (n.children[0]);
-			//safeWrite ("\n");
+			safeWrite ("\n");
 
             environment.removeScope();
         }
@@ -522,6 +539,9 @@ namespace APproject
 				var vartmp = (Obj)item.value;
 				if (vartmp.isUsedInAsync)
 					createStructureAsync (vartmp);
+                if(vartmp.isUsedInDasync)
+                    createStructureAsync(vartmp);
+
 			}
 		}
 
@@ -554,8 +574,8 @@ namespace APproject
             var tmpIndex = indexPar;
 			var actual = new List<string>();
 			foreach (ASTNode node in funCall.children) {
-                var varName = "_par_" + node + tmpIndex++;
-				safeWriteLine ("let "+ varName + " = ");
+                var varName = "_par_"  + node + tmpIndex++ ;
+                safeWriteLine("let " + varName + (node.type == Types.integer ? " : int " : " : bool ") + " = ");
 				actual.Add (varName);
 				bang = true;
 				translateRecursive (node);
@@ -580,9 +600,10 @@ namespace APproject
 				block.parent = null;
 
 				string data = HelperJson.SerializeWithEscape (actual, formal, block);
-                safeWriteLine("let tempJsonData = \"" +  data + "\"))\n");
-                var nameTaskDasync = "_task_" + varDAsync.name;// +indexPar++;
-                safeWriteLine("let "+nameTaskDasync +"= Async.StartAsTask( getPostAsync( " + url + ",tempJsonData ))\n");
+                safeWriteLine("let tempJsonData = \"" +  data + "\"\n");
+                var nameTaskDasync = "_task_" + varDAsync.name;
+                var postAsyncType = (varDAsync.type==Types.integer? "getPostAsyncInt": "getPostAsyncBool");
+                safeWriteLine(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
 				Console.WriteLine(data.Replace("\\\"","'"));
                 environment.addUpdateValue(varDAsync, true); 
 			}
@@ -673,39 +694,6 @@ namespace APproject
             safeWrite("_readln()");
         }
 
-        /// <summary>
-        /// Translate for statement from funW@p to F# syntax.
-        /// The syntax in f# is :
-        /// for pattern in enumerable-expression do
-        ///    body-expression
-        /// </summary>
-        /// <param name="n">Node represents a For statement.</param>
-        public void translateFor(ASTNode n)
-        {
-            /**
-             *  for i := 0; i < 10; i++ 
-             *  { a += i }
-             * 
-             * for i in 0 .. 10 do
-             *     <block>
-             *    
-             * */
-            List<ASTNode> children = n.children;
-            safeWriteLine("for ");
-            ASTNode assFor = children.ElementAt(0);
-            Term pattern = (Term)assFor.children.ElementAt(0);
-            safeWrite(pattern.ToString());
-            safeWrite(" in ");
-            Term valueStart = (Term)assFor.children.ElementAt(1);
-            safeWrite(valueStart.ToString());
-            safeWrite(" .. ");
-            ASTNode expFor = children.ElementAt(1);
-            Term valueExp = (Term)expFor.children.ElementAt(1);
-            translateRecursive(valueExp);
-            safeWrite(" do \n");
-            translateRecursive(children.ElementAt(3));  // block 
-
-        }
         /// <summary>
         /// This method translates the async node inthe f# syntax
         /// </summary>

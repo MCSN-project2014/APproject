@@ -312,7 +312,9 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
     | "println"'('																(.  tab.setAsyncControl(true);
 																					node = new Node(Labels.Print); .)
 				  ( CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
-				    |string													    (. ((Node)node).addChildren(new Term(t.val)); .)
+				    |string													    (.  string s = t.val.Remove(0, 1); 
+																					s = s.Remove(s.Length-1,1);
+																					((Node)node).addChildren(new Term(s)); .)
 				  )
 				  ')' ';'						
 																				  
