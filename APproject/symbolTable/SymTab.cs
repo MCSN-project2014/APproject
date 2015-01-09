@@ -51,6 +51,7 @@ namespace APproject
 
 		public int curLevel;	// nesting level of current scope
         public int ifNesting;   // nesting level of if used
+        public bool dasyncused; // indicates if the dasync is used somewhere in the code
 		public Obj undefObj;	// object node for erroneous symbols
 		public Obj topScope;	// topmost procedure scope
 		
@@ -61,6 +62,7 @@ namespace APproject
 			topScope = null;
             curLevel = 0;
             ifNesting = 0;
+            dasyncused = false;
 			undefObj = new Obj();
 			undefObj.name  =  "undef"; 
             undefObj.type = Types.undef;
