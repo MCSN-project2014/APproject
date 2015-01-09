@@ -357,6 +357,7 @@ public SymbolTable   tab;
 					Expect(9);
 					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					obj.isUsedInDasync = true;
+					tab.dasyncused = true;
 					Node dasync = new Node(Labels.Dsync); 
 					if (la.kind == 1) {
 						Ident(out name1);
@@ -464,6 +465,7 @@ public SymbolTable   tab;
 					Get();
 					Expect(9);
 					obj.isUsedInDasync = true;
+					tab.dasyncused = true;
 					Node dasync = new Node(Labels.Dsync); 
 					if (la.kind == 1) {
 						Ident(out name1);
