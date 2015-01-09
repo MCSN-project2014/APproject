@@ -333,7 +333,7 @@ namespace APproject
 			translateMutableParameters (nameParameters);
 			indentationLevel--;
 			translateRecursive (n.children[0]);
-			//safeWrite ("\n");
+			safeWrite ("\n");
 
             environment.removeScope();
         }
@@ -554,9 +554,9 @@ namespace APproject
 				block.parent = null;
 
 				string data = HelperJson.SerializeWithEscape (actual, formal, block);
-                safeWriteLine("let tempJsonData = \"" +  data + "\"))\n");
-                var nameTaskDasync = "_task_" + varDAsync.name;// +indexPar++;
-                safeWriteLine("let "+nameTaskDasync +"= Async.StartAsTask( getPostAsync( " + url + ",tempJsonData ))\n");
+                safeWriteLine("let tempJsonData = \"" +  data + "\"\n");
+                var nameTaskDasync = "_task_" + varDAsync.name;
+                safeWriteLine("let "+nameTaskDasync +"= Async.StartAsTask( getPostAsync( !" + url + ",tempJsonData ))\n");
 				Console.WriteLine(data.Replace("\\\"","'"));
                 environment.addUpdateValue(varDAsync, true); 
 			}

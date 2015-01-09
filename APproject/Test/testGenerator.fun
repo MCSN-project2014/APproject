@@ -1,17 +1,16 @@
 
 
-fun minus ( n int , m int ) int {
-	return n-m;
+fun minus ( n int  ) int {
+	return n-1;
 }
 
 fun fib (n int) int {
 	var b int;
-	var g int = 4;
-	var f int = 3 ;
 	var u url = 'http://127.0.0.1:5000';
-	b = dasync{ u , return minus(g , f ) };
-	g = dasync{ u , return minus ( g , f )};
-	return b+g;
+	if  true {
+		b = dasync{ u , return minus( n ) };
+	}
+	return b;
 }
 
 
