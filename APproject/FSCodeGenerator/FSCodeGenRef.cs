@@ -106,9 +106,6 @@ namespace APproject
                 case Labels.Read:
                     translateRead(n);
                     break;
-                case Labels.For:
-                    translateFor(n);
-                    break;
                 case Labels.Async:
                     translateAsync(n);
                     break;
