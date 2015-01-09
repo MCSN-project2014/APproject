@@ -36,7 +36,7 @@ namespace APproject
 		public static string SerializeWithEscape(List<string> actual, List<string> formal, ASTNode node){
 			string jsonPar = "[";
 			for (int i=0; i < actual.Count; i++) {
-				jsonPar += "{\\\""+formal[i]+"\\\" : \"+"+ actual[i] + "+\"}" +
+                jsonPar += "{\\\"" + formal[i] + "\\\" : \"+ Convert.ToString (" + actual[i] + ")+\"}" +
 					(i<actual.Count-1 ? ",":""); 
 			}
 			jsonPar += "]";

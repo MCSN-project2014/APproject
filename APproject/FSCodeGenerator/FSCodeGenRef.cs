@@ -446,8 +446,7 @@ namespace APproject
 				createAsync (children [1].children [0], (Obj)children [0].value);
 				break;
 			case Labels.Dsync:
-                    //funCall, varAsync, url
-              
+                 //funCall, varAsync, url
                 createDAsync(children[1].children[1], (Obj)children[0].value, children[1].children[0].ToString());
 				break;
 			default:
@@ -555,9 +554,11 @@ namespace APproject
 				block.parent = null;
 
 				string data = HelperJson.SerializeWithEscape (actual, formal, block);
-
-				safeWriteLine ("let _task_a = Async.StartAsTask( getPostAsync( "+url+",\""+data+"\"))\n");
+                safeWriteLine("let tempJsonData = \"" +  data + "\"))\n");
+                var nameTaskDasync = "_task_" + varDAsync.name;// +indexPar++;
+                safeWriteLine("let "+nameTaskDasync +"= Async.StartAsTask( getPostAsync( " + url + ",tempJsonData ))\n");
 				Console.WriteLine(data.Replace("\\\"","'"));
+                environment.addUpdateValue(varDAsync, true); 
 			}
 		}
 
