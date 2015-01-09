@@ -4,8 +4,10 @@ namespace APproject
 {
 	public static class HelperParser
 	{
+
 		public static bool TryParse (string file, out ASTNode node)
 		{
+			node = null;
 			Console.WriteLine("parse file: " + file);
 			Scanner scanner = new Scanner(file);
 			Parser parser = new Parser(scanner);
@@ -17,7 +19,6 @@ namespace APproject
 				return true;
 			}
 			else{
-				node = null;
 				return false;
 			}
 		}
