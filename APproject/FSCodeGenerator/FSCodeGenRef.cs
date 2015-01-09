@@ -26,7 +26,7 @@ namespace APproject
 		private Dictionary<Obj,ASTNode> decFunctions; 
 		private int indexPar;
 
-        public FSCodeGenRef(string outputFileName)
+		public FSCodeGenRef(string outputFileName)
         {
 			indexPar = 0;
 			decFunctions = new Dictionary<Obj,ASTNode> ();
