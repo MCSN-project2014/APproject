@@ -20,8 +20,8 @@ fun checkDasync( ) bool {
 	var b bool;
 	var u url = 'http://127.0.0.1:5000';
 	var n int ;
-	println("insrisci un numero ")
-	n  =  readln();
+	println( "Insert an integer, Server check if is greater than zero. Insert O for Exit.");
+	n = readln();
 	while n != 0 {	
 			b = dasync{ u , return checkPositive( n ) };
 			println( b);

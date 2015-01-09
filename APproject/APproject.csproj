@@ -87,6 +87,7 @@
     <Compile Include="Helpers\HelperHttpClient.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Code _ funW%40P\checkPositiveDasync.fun" />
     <None Include="App.config" />
     <None Include="Grammar\GramWithSematic.ATG" />
     <None Include="Grammar\OnlyGram.ATG" />
@@ -96,7 +97,6 @@
     <None Include="Test\fibonacci.fun" />
     <None Include="Test\parameterTest.fun" />
     <None Include="Test\TestForAsync.fun" />
-    <None Include="Test\testGenerator.fun" />
     <None Include="Test\vardeclTest.fun" />
     <None Include="Test\testLuca.fun" />
     <None Include="Test\asyncTest.fun" />
