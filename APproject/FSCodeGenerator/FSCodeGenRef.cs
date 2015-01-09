@@ -240,6 +240,9 @@ namespace APproject
             safeWriteLine("open System.Text\n");
             safeWriteLine("\n");
             printgetPostAsync();
+
+            printReadln();
+            safeWriteLine("\n");
             
             foreach (ASTNode c in n.children)
             {
@@ -247,8 +250,31 @@ namespace APproject
             }
         }
 
+        private void printReadln()
+        {
+            safeWriteLine("let _readln() =\n");
+            indentationLevel++;
+            safeWriteLine("let mutable tmp = true\n");
+            safeWriteLine("let input = ref(0)\n");
+            safeWriteLine("while tmp do\n");
+            indentationLevel++;
+            safeWriteLine("try\n");
+            indentationLevel++;
+            safeWriteLine("input := Convert.ToInt32(Console.ReadLine())\n");
+            safeWriteLine("tmp <- false;\n");
+            indentationLevel--;
+            safeWriteLine("with\n");
+            safeWriteLine("| :? System.FormatException as ex ->\n");
+            indentationLevel++;
+            safeWriteLine("Console.WriteLine(\"funW@P->F# - Only integer input is allowed. Try again.\")\n");
+            indentationLevel--;
+            indentationLevel--;
+            safeWriteLine("!input");
+            indentationLevel--;
 
-        public void printgetPostAsync()
+        }
+
+        private void printgetPostAsync()
         {
             safeWriteLine("let getPostAsync (url:string, data) = \n");
             indentationLevel++;
@@ -644,7 +670,7 @@ namespace APproject
         /// 
         public void translateRead(ASTNode n)
         {
-            safeWrite("Convert.ToInt32(Console.ReadLine())");
+            safeWrite("_readln()");
         }
 
         /// <summary>
