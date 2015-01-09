@@ -5,19 +5,14 @@ fun minus ( n int) int {
 }
 
 fun fib (n int) int {
-	var a , b int ;
-	var g int = 4 ;
-	var u url = 'http://dididi';
-	//u = readln();
-	a = async{ return minus(g-1) };
+	var b int;
+	var g int = 4;
+	var u url = 'http://127.0.0.1:5000';
 	b = dasync{ u , minus(g-2) };
-	return a+ b;
+	return b;
 }
 
 
 fun main (){
-
-println( fib (4) );
-
-
+	println( fib (4) );
 }
