@@ -18,12 +18,12 @@ fun divTwo (x int) int{
 }
 
 fun main(){
-	var x, y, z, w int;
-	x = 3;
-	y = 5;
-	z = 8;
-	w = 9;
-	for  var i int = 4; i > 0; i = i - 1 {
+	var x int = 3;
+	var y int = 5;
+	var z int = 8;
+	var w int = 9;
+	var i int = 4;
+	while i > 0 {
 		var plus, minus, mul, div int;
 		if  i == 1 {
 			println("x");
@@ -57,5 +57,6 @@ fun main(){
 		println(minus);
 		println(mul);
 		println(div);
+		i = i - 1;
 	}
 }

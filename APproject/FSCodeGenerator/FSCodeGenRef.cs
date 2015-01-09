@@ -578,7 +578,7 @@ namespace APproject
             var tmpIndex = indexPar;
 			var actual = new List<string>();
 			foreach (ASTNode node in funCall.children) {
-                var varName = "_par_"  +tmpIndex++ ;
+                var varName = "_par_"  + node + tmpIndex++ ;
                 safeWriteLine("let " + varName + (node.type == Types.integer ? " : int " : " : bool ") + " = ");
 				actual.Add (varName);
 				bang = true;
