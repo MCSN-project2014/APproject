@@ -256,8 +256,7 @@ namespace APproject
 						}
 						string json = HelperJson.Serialize(actual, formal, funNode.children [0]);
 						var url = (string)actualMemory.GetValue ((Obj)children [0].value);
-						//menelaos
-						url = url.Substring(1,url.Length-2);
+						//url = url.Substring(1,url.Length-2);
 						return HelperHttpClient.PostAsyncRequest (url, json);
 					}
 					return null;
