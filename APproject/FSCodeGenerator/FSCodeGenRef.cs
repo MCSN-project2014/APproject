@@ -188,8 +188,9 @@ namespace APproject
                     else
                         safeWrite(n.ToString());
                 }
-
-				else safeWrite(n.ToString());
+                else if (n.value is string)
+                    safeWrite("\"" + n + "\"");
+                else safeWrite(n.ToString());
             }
 			else translate(n);
         }
@@ -239,7 +240,8 @@ namespace APproject
             safeWriteLine("open System.Net.Http\n");
             safeWriteLine("open System.Text\n");
             safeWriteLine("\n");
-            printgetPostAsync();
+            printgetPostAsyncInt();
+            printgetPostAsyncBool();
 
             printReadln();
             safeWriteLine("\n");
@@ -274,9 +276,9 @@ namespace APproject
 
         }
 
-        private void printgetPostAsync()
+        private void printgetPostAsyncInt()
         {
-            safeWriteLine("let getPostAsync (url:string, data) = \n");
+            safeWriteLine("let getPostAsyncInt (url:string, data) = \n");
             indentationLevel++;
             safeWriteLine("async {\n");
             indentationLevel++;
@@ -285,10 +287,29 @@ namespace APproject
             safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
             safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
             safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
-            safeWriteLine("return content }\n");
+            safeWriteLine("return Convert.ToInt32(content)\n");
+            safeWriteLine("}\n\n");
             indentationLevel--;
             indentationLevel--;
     
+        }
+
+        private void printgetPostAsyncBool()
+        {
+            safeWriteLine("let getPostAsyncBool (url:string, data) = \n");
+            indentationLevel++;
+            safeWriteLine("async {\n");
+            indentationLevel++;
+            safeWriteLine("let httpClient = new System.Net.Http.HttpClient()\n");
+            safeWriteLine("let contentPost:StringContent = new StringContent( data , Encoding.UTF8, \"applicatio/json\")\n");
+            safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
+            safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
+            safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
+            safeWriteLine("return Convert.ToBoolean(content)\n");
+            safeWriteLine("}\n\n");
+            indentationLevel--;
+            indentationLevel--;
+
         }
 
         /// <summary>
@@ -522,6 +543,9 @@ namespace APproject
 				var vartmp = (Obj)item.value;
 				if (vartmp.isUsedInAsync)
 					createStructureAsync (vartmp);
+                if(vartmp.isUsedInDasync)
+                    createStructureAsync(vartmp);
+
 			}
 		}
 
@@ -554,8 +578,8 @@ namespace APproject
             var tmpIndex = indexPar;
 			var actual = new List<string>();
 			foreach (ASTNode node in funCall.children) {
-                var varName = "_par_" + node + tmpIndex++;
-				safeWriteLine ("let "+ varName + " = ");
+                var varName = "_par_"  +tmpIndex++ ;
+                safeWriteLine("let " + varName + (node.type == Types.integer ? " : int " : " : bool ") + " = ");
 				actual.Add (varName);
 				bang = true;
 				translateRecursive (node);
@@ -582,7 +606,8 @@ namespace APproject
 				string data = HelperJson.SerializeWithEscape (actual, formal, block);
                 safeWriteLine("let tempJsonData = \"" +  data + "\"\n");
                 var nameTaskDasync = "_task_" + varDAsync.name;
-                safeWriteLine("let "+nameTaskDasync +"= Async.StartAsTask( getPostAsync( !" + url + ",tempJsonData ))\n");
+                var postAsyncType = (varDAsync.type==Types.integer? "getPostAsyncInt": "getPostAsyncBool");
+                safeWriteLine(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
 				Console.WriteLine(data.Replace("\\\"","'"));
                 environment.addUpdateValue(varDAsync, true); 
 			}
