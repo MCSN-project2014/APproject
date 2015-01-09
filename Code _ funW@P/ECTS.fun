@@ -40,7 +40,5 @@ fun main(){
 				println("F");
 			}
 		}
-	}
-	
-	
+	}		
 }
