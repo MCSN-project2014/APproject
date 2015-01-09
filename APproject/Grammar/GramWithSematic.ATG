@@ -281,34 +281,8 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 	 '{' {   Stat<out node1>														(. ((Node)whileBlock).addChildren(node1);.) 
 		   | VarDecl<out node1>														(. ((Node)whileBlock).addChildren(node1); .)	 
 	  } '}'																			(. ((Node)node).addChildren(whileBlock);
-																						tab.CloseScope(); .)
-	                                
-	| "for"																				    (. tab.OpenScope(); 
-																							   node = new Node(Labels.For); .) 
-	   "var" Ident<out name> Type<out type> '=' CompleteExpr<out type1, out node1>';'	    (. if (!(type == type1 || type1 == Types.fun))
-																								   SemErr("incompatible types");
-																							   obj = tab.NewObj(name, Kinds.var, type);
-																							   Node declAssig = new Node (Labels.AssigDecl);
-																							   ((Node)declAssig).addChildren(new Term(obj));
-																							   ((Node)declAssig).addChildren(node1);
-																							   ((Node)node).addChildren(declAssig); .)
-		    CompleteExpr<out type, out node1>';'											(. ((Node)node).addChildren(node1);
-																							   if (type != Types.boolean) 
-																								   SemErr("boolean type expected"); .)
-		    Ident<out name1> '=' CompleteExpr<out type, out node1>						    (. obj = tab.Find(name1); 
-																							   Node assig = new Node(Labels.Assig);
-																							   ((Node)assig).addChildren(new Term(obj));
-																							   ((Node)assig).addChildren(node1);
-																							   ((Node)node).addChildren(assig);
-																							   Node forBlock =new Node(Labels.Block);
-																							   if (!(type == obj.type || type == Types.fun))
-					    																		   SemErr("incompatible types"); .)				
-			  																		
-	 '{' { Stat<out node1>																	(. ((Node)forBlock).addChildren(node1);.) 
-		   | VarDecl<out node1>																(. ((Node)forBlock).addChildren(node1); .)	 
-	  } '}'																					(. ((Node)node).addChildren(forBlock);
-																								tab.CloseScope(); .)
-																				
+																						tab.CloseScope(); .)	
+
     | "println"'('																(.  tab.setAsyncControl(true);
 																					node = new Node(Labels.Print); .)
 				  ( CompleteExpr<out type, out node1>							(.  ((Node)node).addChildren(node1); .)
