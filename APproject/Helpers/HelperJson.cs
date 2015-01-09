@@ -15,21 +15,32 @@ namespace APproject
 			//StringEscapeHandling = StringEscapeHandling.EscapeHtml
 
 		};
+			
+		public static string Serialize(List<string> actual, List<string> formal, ASTNode node){
+			string jsonPar = "[";
+			for (int i=0; i < actual.Count; i++) {
+				jsonPar += "{\""+formal[i]+"\" : "+ actual[i] + "}" +
+					(i<actual.Count-1 ? ",":""); 
+			}
+			jsonPar += "]";
 
-		public static string serialize(List<Dictionary<string,object>> parameters, ASTNode node){
-			var parameter = JsonConvert.SerializeObject (parameters, setting);
+			node.parent = null;
 			var jsonNode = JsonConvert.SerializeObject (node, setting);
-			return "{\"parameter\": " + parameter + ", \"block\": " + jsonNode + "}";
+			var tmp =  jsonPar + "&" + jsonNode;
+			tmp = tmp.Replace ('\"', '\'');
+			Console.WriteLine (tmp);
+			return tmp;
 		}
 
-		public static string serialize(List<string> actual, List<string> formal, ASTNode node){
-		
+
+		public static string SerializeWithEscape(List<string> actual, List<string> formal, ASTNode node){
 			string jsonPar = "[";
 			for (int i=0; i < actual.Count; i++) {
 				jsonPar += "{\\\""+formal[i]+"\\\" : \"+"+ actual[i] + "+\"}" +
 					(i<actual.Count-1 ? ",":""); 
 			}
-            jsonPar += "]";
+			jsonPar += "]";
+
 
 			var jsonNode = JsonConvert.SerializeObject (node, setting);
 			jsonNode = jsonNode.Replace ("\"", "\\\"");

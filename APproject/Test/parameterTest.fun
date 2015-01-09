@@ -1,27 +1,20 @@
-fun add() int{
-	if(true){
-		var x int = 8;
-		if false {
-			return x;
-		}else{
-			return x;
-		}
-		return 5;
-	}else {
-		var x bool;
-		if x {
-			var y int ;
-			return y;
-		}
-		while (true) {
-			x = x || x;
-		}
-		return 5;
-	}
+fun tick() fun() int{
+    var counter int = 0;
+    return fun() int{
+        counter = counter + 1;
+        return counter;
+    };
 }
 
-fun main() {
-		var u url = 'http://dkdlslkdlsl';
-		var y int;
-		y = dasync{u,add()};		
+fun main(){
+    var tick1 fun = tick();
+    var tmp int = (tick1());
+    while tmp != 10 {
+        var x int = readln();
+        if tick1() == 5 {
+            println("halfway through");
+        }
+        tmp = tick1();
+    }
+    println("It's over");
 }

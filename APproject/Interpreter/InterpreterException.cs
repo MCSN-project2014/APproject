@@ -41,5 +41,18 @@ namespace APproject
 			}
 		}
 	}
+
+	class DasyncException : InterpreterException {
+		private string error;
+		public DasyncException(string error){
+			this.error = error;
+		}
+
+		public override string Message {
+			get {
+				return base.Message + "The server fail with: " + error;
+			}
+		}
+	}
 }
 

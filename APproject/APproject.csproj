@@ -84,6 +84,7 @@
     <Compile Include="Interpreter\Interpreter.cs" />
     <Compile Include="Helpers\HelperParser.cs" />
     <Compile Include="Helpers\HelperJson.cs" />
+    <Compile Include="Helpers\HelperHttpClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

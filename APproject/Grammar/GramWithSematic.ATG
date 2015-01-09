@@ -162,7 +162,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 								  
 								   |URL<out url> 								(.  dasync.addChildren(new Term(url));  .)
 								  )		   				
-					              ',' return Ident<out name1>					(.  obj1 = tab.Find(name1);
+					              ',' "return" Ident<out name1>					(.  obj1 = tab.Find(name1);
 																				   	
 																				   Node call = new Node(Labels.FunCall, obj1); .)
 								 '(' {   CompleteExpr<out type, out node1>		(. actualTypes.Enqueue(type); 
@@ -185,7 +185,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																				   if(obj.type != obj1.type) 
 																					   SemErr("incompatible types"); .)
 
-					| CompleteExpr<out type, out node1>';'					    (. if (type != obj.type)
+					| CompleteExpr<out type, out node1>';'					    (. if ( !(type == obj.type || type == Types.fun) )
 																					    SemErr("incompatible types");
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(node1); .)
@@ -238,7 +238,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																					   node = new Node(Labels.If);
 																				       ((Node)node).addChildren(node1);
 																					   Node thenBlock = new Node(Labels.Block);
-																					   if (type != Types.boolean) 
+																					   if (!(type == Types.boolean || type == Types.fun)) 
 																						  SemErr("boolean type expected"); .)
 																					(. tab.OpenScope(); .) 
 	 '{' { Return<out node1>														(. if(tab.ifNesting == 1)
@@ -283,7 +283,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 	                                
 	| "for"																				    (. tab.OpenScope(); 
 																							   node = new Node(Labels.For); .) 
-	   "var" Ident<out name> Type<out type> '=' CompleteExpr<out type1, out node1>';'	    (. if (type != type1)
+	   "var" Ident<out name> Type<out type> '=' CompleteExpr<out type1, out node1>';'	    (. if (!(type == type1 || type1 == Types.fun))
 																								   SemErr("incompatible types");
 																							   obj = tab.NewObj(name, Kinds.var, type);
 																							   Node declAssig = new Node (Labels.AssigDecl);
@@ -299,7 +299,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																							   ((Node)assig).addChildren(node1);
 																							   ((Node)node).addChildren(assig);
 																							   Node forBlock =new Node(Labels.Block);
-																							   if (type != obj.type)
+																							   if (!(type == obj.type || type == Types.fun))
 					    																		   SemErr("incompatible types"); .)				
 			  																		
 	 '{' { Stat<out node1>																	(. ((Node)forBlock).addChildren(node1);.) 
@@ -385,7 +385,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 																				   ((Node)node).addChildren(new Node(Labels.Read)); .)	
 
 					    | CompleteExpr<out type1, out node1>';'				    (. obj = tab.NewObj((string)names[0], Kinds.var, type);
-																				   if (type != type1) 
+																				   if (!(type == type1 || type1 == Types.fun)) 
 																					   SemErr("incompatible types"); 
 																				   node =  new Node (Labels.AssigDecl);
 																				   ((Node)node).addChildren(new Term (obj));
@@ -472,7 +472,11 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode op, secondExpr; .)
 = Expr<out type,out node>													 
   { BoolOp<out op>																 
-	Expr<out type1,out secondExpr>			          							 (. if (type != type1)
+	Expr<out type1,out secondExpr>			          							 (. if(type == Types.fun)
+																						type = type1;
+																					if(type1 == Types.fun)
+																						type1 = type;	
+																					if (type != type1)
 																						SemErr("incompatible types");
 																					type = Types.boolean; 
 																					((Node)op).addChildren(node);
@@ -485,7 +489,11 @@ CompleteExpr<out Types type, out ASTNode node>									 (. Types type1; ASTNode 
 Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, secondSimpExpr; .)
 = SimpExpr<out type, out node>											 
   [ RelOp<out op>																 
-	SimpExpr<out type1, out secondSimpExpr>										 (. if (type != type1)
+	SimpExpr<out type1, out secondSimpExpr>										 (. if(type == Types.fun)
+																						type = type1;
+																					if(type1 == Types.fun)
+																						type1 = type;	
+																					if (type != type1)
 																	         		    SemErr("incompatible types");
 																				    type = Types.boolean;
 																					((Node)op).addChildren(node);
@@ -498,7 +506,11 @@ Expr<out Types type,out ASTNode node>											 (. Types type1; ASTNode op, sec
 SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op, secondTerm; .)
 = Term<out type, out node>													     	 
   { AddOp<out op>								
-    Term<out type1,out secondTerm>						     					 (. if (type != Types.integer || type1 != Types.integer)
+    Term<out type1,out secondTerm>						     					 (. if(type == Types.fun)
+																						type = Types.integer;
+																					if(type1 == Types.fun)
+																						type1 = Types.integer;	
+																					if (type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected"); 
 																					((Node)op).addChildren(node);
 																					((Node)op).addChildren(secondTerm);
@@ -509,9 +521,13 @@ SimpExpr<out Types type, out ASTNode node>										 (. Types type1; ASTNode op,
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/		  
 
 Term<out Types type, out ASTNode node>  										(. Types type1; ASTNode op, secondfactor; .)
-= Factor<out type, out node>												   
+= Factor<out type, out node>												    
   { MulOp<out op>																
-    Factor<out type1,out secondfactor>											(. if (type != Types.integer || type1 != Types.integer)
+    Factor<out type1,out secondfactor>											(.  if(type == Types.fun)
+																						type = Types.integer;
+																					if(type1 == Types.fun)
+																						type1 = Types.integer;																					
+																					if ( type != Types.integer || type1 != Types.integer)
 																					   SemErr("integer type expected");
 																				   ((Node)op).addChildren(node);
 																				   ((Node)op).addChildren(secondfactor);
