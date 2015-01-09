@@ -22,6 +22,7 @@ namespace APproject
         protected Obj _locals;                      // scopes: to locally declared objects
         protected bool _isUsedFromAfun;             // var : indicates if the variable is used in afun but is declared external
         protected bool _isUsedInAsync;              // var : indicates if the variable is used in async
+        protected bool _isUsedInDasync;             // var : indicates if the variable is used in dasunc
         protected bool _recursive;                  // indicates whether a function is recursive or not
         protected bool _asyncControl;               // proc : indicates if a function contains or not some println or readln 
         protected bool _returnIsSet;                // proc : indicates if the return statement is set
@@ -35,6 +36,7 @@ namespace APproject
         public Obj locals { get { return _locals; } set { _locals = value; } }          		        
         public bool isUsedFromAfun { get { return _isUsedFromAfun; } set { _isUsedFromAfun = value; } }
         public bool isUsedInAsync { get { return _isUsedInAsync; } set { _isUsedInAsync = value; } }
+        public bool isUsedInDasync { get { return _isUsedInDasync; } set { _isUsedInDasync = value; } }
         public bool recursive { get { return _recursive; } set { _recursive = value; } }
         public bool asyncControl { get { return _asyncControl; } set { _asyncControl = value; } }
         public bool returnIsSet { get { return _returnIsSet; } set { _returnIsSet = value; } }
@@ -135,6 +137,7 @@ namespace APproject
             {
                 obj.isUsedFromAfun = false;
                 obj.isUsedInAsync = false;
+                obj.isUsedInDasync = false;
             }
             if (kind == Kinds.proc)
             {
