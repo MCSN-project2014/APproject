@@ -722,7 +722,9 @@ public SymbolTable   tab;
 				((Node)node).addChildren(node1); 
 			} else if (la.kind == 4) {
 				Get();
-				((Node)node).addChildren(new Term(t.val)); 
+				string s = t.val.Remove(0, 1); 
+				s = s.Remove(s.Length-1,1);
+				((Node)node).addChildren(new Term(s)); 
 			} else SynErr(53);
 			Expect(8);
 			Expect(15);
