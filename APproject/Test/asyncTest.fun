@@ -1,13 +1,10 @@
-﻿fun test() bool{
-	return true;
+﻿fun test(a int, b int) int{
+	return a + b- 50;
 }
 
 fun main(){
-	var b,c bool;
-	c = async {return test()};
-	b = async {return test()};
-	println(b);
+	var u url = 'http://127.0.0.1:5000';
+	var c int; 
+	c = dasync {u, return test(1, 10)};
 	println(c);
-	b = false;
-	println(b);
 }

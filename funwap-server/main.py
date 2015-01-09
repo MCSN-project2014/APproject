@@ -11,18 +11,28 @@ app = Flask(__name__)
 def main():
     if request.method == 'POST':
         dataRow = request.data
-        if dataRow != None:
-            data = dataRow.split('&')
-            if platform.platform() == 'Linux':
-                comand = ['mono', 'bin/funwaps.exe', data[0], data[1]]
-            else:
-                comand = ['bin\\funwaps.exe', data[0], data[1]]
 
-            p = subprocess.Popen(comand,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            out, err = p.communicate()
+        if dataRow == '' and request.form.get('json') != None:
+            dataRow = request.form['json']
+        elif dataRow == '':
+            return 'data error'
+
+        data = dataRow.split('&')
+
+        if platform.system() == 'Linux':
+            comand = ['mono', 'bin/funwaps.exe', data[0], data[1]]
+        else:
+            comand = ['bin\\funwaps.exe', data[0], data[1]]
+
+        p = subprocess.Popen(comand,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if err == "":
+            print('result: '+out)
             return out
         else:
-            return 'data error'
+            print('error: '+err)
+            return "server internal error"
+
     # the code below is executed if the request method
     # was GET or the credentials were invalid
     return render_template('index.html')

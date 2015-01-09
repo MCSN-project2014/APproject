@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Net.Http;
 
 namespace APproject
 {
@@ -174,9 +175,11 @@ namespace APproject
 				if (node.value is Obj) {
 					object value = actualMemory.GetValue ((Obj)node.value);
 					if (value is Task<object>) {
-						//((Task<object>)value).Wait();
-						Console.WriteLine(CONSOL_INFO + "while computing '"+node+"'...");
+						Console.WriteLine (CONSOL_INFO + "while computing '" + node + "'...");
 						return ((Task<object>)value).Result;
+					} else if (value is Task<HttpResponseMessage>) {
+						Console.WriteLine (CONSOL_INFO + "while computing '" + node + "' on server...");
+						return HelperHttpClient.WaitResult ((Task<HttpResponseMessage>)value);
 					}else
 						return value;
 				}else
@@ -239,16 +242,24 @@ namespace APproject
 					});
 					return task;
 				case Labels.Dsync:
-					var parameter = children [0].children;
-					var funObj = (Obj)children [0].value;
-					var listParameter = new List<Dictionary<string,object>> ();
+					var parChildren = children [1].children;
+					var funObj = (Obj)children [1].value;
+					var formal = new List<string> ();
+					var actual = new List<string> ();
 					ASTNode funNode;
-					/*if (function.TryGetValue (funObj, funNode)) {
-						foreach (var par in parameter) {
-
+					if (function.TryGetValue (funObj, out funNode)) {
+						int i = 1;
+						foreach (var par in parChildren) {
+							formal.Add (funNode.children[i].ToString());
+							actual.Add (Convert.ToString(InterpretExp (par, actualMemory)));
+							i++;
 						}
-							
-					}*/
+						string json = HelperJson.Serialize(actual, formal, funNode.children [0]);
+						var url = (string)actualMemory.GetValue ((Obj)children [0].value);
+						//menelaos
+						url = url.Substring(1,url.Length-2);
+						return HelperHttpClient.PostAsyncRequest (url, json);
+					}
 					return null;
 				default:
 					return null;

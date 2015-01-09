@@ -554,9 +554,10 @@ namespace APproject
 				var block = funDec.children[0];
 				block.parent = null;
 
-				string data = HelperJson.serialize (actual, formal, block);
+				string data = HelperJson.SerializeWithEscape (actual, formal, block);
 
 				safeWriteLine ("let _task_a = Async.StartAsTask( getPostAsync( "+url+",\""+data+"\"))\n");
+				Console.WriteLine(data.Replace("\\\"","'"));
 			}
 		}
 

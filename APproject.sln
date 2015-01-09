@@ -19,8 +19,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02900E9D-EAA5-4C8C-BBE6-44E5E7446E60}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -47,7 +47,7 @@ Global
 		{E6A7449B-0FA5-40E3-864C-8F5DD1366531}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = funwaps\funwaps.csproj
+		StartupItem = funwapi\funwapi.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
