@@ -237,21 +237,18 @@ namespace APproject
             safeWriteLine("open System\n");
             safeWriteLine("open System.IO\n");
             safeWriteLine("open System.Threading.Tasks\n");
-            safeWriteLine("open System.Net.Http\n");
-            safeWriteLine("open System.Text\n");
+            safeWriteLine("open funwaputility.PostMethods\n");
+            safeWriteLine("open funwaputility.Readline\n");
+    
             safeWriteLine("\n");
-            printgetPostAsyncInt();
-            printgetPostAsyncBool();
-
-            printReadln();
-            safeWriteLine("\n");
+ 
             
             foreach (ASTNode c in n.children)
             {
                 translateRecursive(c);
             }
         }
-
+        /*
         private void printReadln()
         {
             safeWriteLine("let _readln() =\n");
@@ -311,6 +308,8 @@ namespace APproject
             indentationLevel--;
 
         }
+
+        */
 
         /// <summary>
         /// This method translates the main.
