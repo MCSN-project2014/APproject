@@ -154,6 +154,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																				   if(obj.type != obj1.type) 
 																					   SemErr("incompatible types"); .)
 					| "dasync" '{'												(. obj.isUsedInDasync = true;
+																				   tab.dasyncused = true;
 																				   Node dasync = new Node(Labels.Dsync); .)
 								  ( 
 									Ident<out name1>							(. obj1 = tab.Find(name1);
@@ -433,6 +434,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 
 					| "dasync" '{'												(. obj = tab.NewObj((string)names[0], Kinds.var, type);
 																				   obj.isUsedInDasync = true;
+																				   tab.dasyncused = true;
 																				   Node dasync = new Node(Labels.Dsync); .)
 								  ( 
 									Ident<out name1>							(. obj1 = tab.Find(name1);
