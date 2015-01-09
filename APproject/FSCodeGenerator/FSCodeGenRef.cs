@@ -699,39 +699,6 @@ namespace APproject
         }
 
         /// <summary>
-        /// Translate for statement from funW@p to F# syntax.
-        /// The syntax in f# is :
-        /// for pattern in enumerable-expression do
-        ///    body-expression
-        /// </summary>
-        /// <param name="n">Node represents a For statement.</param>
-        public void translateFor(ASTNode n)
-        {
-            /**
-             *  for i := 0; i < 10; i++ 
-             *  { a += i }
-             * 
-             * for i in 0 .. 10 do
-             *     <block>
-             *    
-             * */
-            List<ASTNode> children = n.children;
-            safeWriteLine("for ");
-            ASTNode assFor = children.ElementAt(0);
-            Term pattern = (Term)assFor.children.ElementAt(0);
-            safeWrite(pattern.ToString());
-            safeWrite(" in ");
-            Term valueStart = (Term)assFor.children.ElementAt(1);
-            safeWrite(valueStart.ToString());
-            safeWrite(" .. ");
-            ASTNode expFor = children.ElementAt(1);
-            Term valueExp = (Term)expFor.children.ElementAt(1);
-            translateRecursive(valueExp);
-            safeWrite(" do \n");
-            translateRecursive(children.ElementAt(3));  // block 
-
-        }
-        /// <summary>
         /// This method translates the async node inthe f# syntax
         /// </summary>
         /// <param name="n">A Afun node .</param>
