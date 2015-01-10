@@ -8,35 +8,33 @@ using System.Threading.Tasks;
 namespace APproject
 {
     ///<summary>
-    ///This class converts an AST of funW@P into the corresponding F#
-    ///code, simply by visiting the tree.
+    ///This class converts an AST of funW@P into the corresponding F# code,
+    ///simply by visiting the tree.
     ///Output is written into a outputFileName.fs file, 
     ///result of the translation.
     ///</summary>
     public class FSCodeGenRef
     {
-        //private StreamWriter fileWriter;
-        //private FileStream output;
+
         private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
         private string fileName;
-        //private int asyncTasksCounter;
-        private bool bang; //it indicates whether the operator bang! must be used or not
-        //Dictionary<string, Tuple<ASTNode, List<string>>> funDeclarations; //contains the reference to the nodes representing funDecl's
-        private Environment environment;
+        private bool bang;                      //it indicates whether the operator bang! must be used or not in the translation
+        private Environment environment;        //used for memorize varibles for different translations (same environment of interpreter)
 		private Dictionary<Obj,ASTNode> decFunctions; 
-		private int indexPar;
+		private int indexPar;                   //incremental number for generating unique variable names.
 
+        ///<summary>
+        ///The constructor of FSCodeGenRef. 
+        ///Output of the translation is written into a outputFileName.fs file.
+        ///</summary> 
 		public FSCodeGenRef(string outputFileName)
         {
 			indexPar = 0;
 			decFunctions = new Dictionary<Obj,ASTNode> ();
             indentationLevel = 0;
-            //asyncTasksCounter = 0;
             fileName = outputFileName + ".fs";
             environment = new Environment();
             bang = false;
-
-            //funDeclarations = new Dictionary<string, Tuple<ASTNode, List<string>>>();
 
             if (outputFileName == string.Empty)
             {
@@ -106,9 +104,9 @@ namespace APproject
                 case Labels.Read:
                     translateRead(n);
                     break;
-                case Labels.Async:
-                    translateAsync(n);
-                    break;
+                 // case Labels.Async:
+                //    translateAsync(n);
+                 //   break;
                 //  case Labels.Dsync:
                 //     translateDsync(n);
                 //    break;
@@ -164,14 +162,12 @@ namespace APproject
 
         ///<summary>
         ///This is a helper method which calls the method 'translate'
-        ///if needed or prints the content of a node if it's a terminal
-        ///one.
+        ///if needed or prints the content of a node if it's a terminal one.
         ///</summary>
         ///<param name="n">n.</param>
         private void translateRecursive(ASTNode n)
         {
-
-             //terminal synchronously assigned
+         //terminal synchronously assigned
             if (n.isTerminal())
             {
 				if (n.value is Obj)
@@ -193,8 +189,8 @@ namespace APproject
         }
 
         /// <summary>
-        /// This is a helper method which allows to make a safe use of 
-        /// the file being written.
+        /// This is a helper method which writes a string in the fsharp file.
+        /// It doesn't introduce any indentation or white spaces.
         /// </summary>
         /// <param name="s">String to be written within the output file.</param>
         private void safeWrite(string s)
@@ -205,13 +201,20 @@ namespace APproject
             }
         }
 
+        /// <summary>
+        /// This method writes a number of white spaces and after 
+        /// the string in the fsharp file.
+        /// It doesn't write the new line.
+        /// </summary>
+        /// <param name="s">String to be written within the output file.</param>
+
 		private void safeWriteLine(string s){
 			var tmp = indent () + s;
 			safeWrite (tmp);
 		}
 
         /// <summary>
-        /// This method prints n \s's according to the passed parameter. 
+        /// This method prints n four spaces according to the passed parameter. 
         /// http://msdn.microsoft.com/en-us/library/dd233191.aspx
         /// </summary>
         /// <param name="n">Indentation level to be used.</param>
@@ -235,78 +238,15 @@ namespace APproject
             safeWriteLine("open System.IO\n");
             safeWriteLine("open System.Threading.Tasks\n");
             safeWriteLine("open funwaputility.PostMethods\n");
-            safeWriteLine("open funwaputility.Readline\n");
-    
+            safeWriteLine("open funwaputility.Readline\n");   
             safeWriteLine("\n");
  
-            
             foreach (ASTNode c in n.children)
             {
                 translateRecursive(c);
             }
         }
-        /*
-        private void printReadln()
-        {
-            safeWriteLine("let _readln() =\n");
-            indentationLevel++;
-            safeWriteLine("let mutable tmp = true\n");
-            safeWriteLine("let input = ref(0)\n");
-            safeWriteLine("while tmp do\n");
-            indentationLevel++;
-            safeWriteLine("try\n");
-            indentationLevel++;
-            safeWriteLine("input := Convert.ToInt32(Console.ReadLine())\n");
-            safeWriteLine("tmp <- false;\n");
-            indentationLevel--;
-            safeWriteLine("with\n");
-            safeWriteLine("| :? System.FormatException as ex ->\n");
-            indentationLevel++;
-            safeWriteLine("Console.WriteLine(\"funW@P->F# - Only integer input is allowed. Try again.\")\n");
-            indentationLevel--;
-            indentationLevel--;
-            safeWriteLine("!input");
-            indentationLevel--;
-
-        }
-
-        private void printgetPostAsyncInt()
-        {
-            safeWriteLine("let getPostAsyncInt (url:string, data) = \n");
-            indentationLevel++;
-            safeWriteLine("async {\n");
-            indentationLevel++;
-            safeWriteLine("let httpClient = new System.Net.Http.HttpClient()\n");
-            safeWriteLine("let contentPost:StringContent = new StringContent( data , Encoding.UTF8, \"applicatio/json\")\n");
-            safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
-            safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
-            safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
-            safeWriteLine("return Convert.ToInt32(content)\n");
-            safeWriteLine("}\n\n");
-            indentationLevel--;
-            indentationLevel--;
-    
-        }
-
-        private void printgetPostAsyncBool()
-        {
-            safeWriteLine("let getPostAsyncBool (url:string, data) = \n");
-            indentationLevel++;
-            safeWriteLine("async {\n");
-            indentationLevel++;
-            safeWriteLine("let httpClient = new System.Net.Http.HttpClient()\n");
-            safeWriteLine("let contentPost:StringContent = new StringContent( data , Encoding.UTF8, \"applicatio/json\")\n");
-            safeWriteLine("let! response=  httpClient.PostAsync(url, contentPost) |> Async.AwaitTask\n");
-            safeWriteLine("response.EnsureSuccessStatusCode () |> ignore\n");
-            safeWriteLine("let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask\n");
-            safeWriteLine("return Convert.ToBoolean(content)\n");
-            safeWriteLine("}\n\n");
-            indentationLevel--;
-            indentationLevel--;
-
-        }
-
-        */
+      
 
         /// <summary>
         /// This method translates the main.
@@ -323,7 +263,6 @@ namespace APproject
 			foreach (Node c in n.children)
                 translateRecursive(c);
   			
-			//indentationLevel++;
             safeWriteLine("Console.ReadLine()|>ignore\n");
             safeWriteLine("0\n");
 			indentationLevel--;
@@ -331,9 +270,9 @@ namespace APproject
             environment.removeScope();
 
         }
+
         /// <summary>
-        /// This method translates the Block node and 
-        /// correctly indent it, by calling the method indent().
+        /// This method translates a Block node.
         /// </summary>
         /// <param name="n">the Block node</param>
         public void translateBlock(ASTNode n)
@@ -342,9 +281,6 @@ namespace APproject
 
             environment.addScope();
 
-            //if (n.parent.label != Labels.Main)
-            //{
-            // safeWrite("\n");
             indentationLevel++;
             foreach (Node c in children)
             {
@@ -357,8 +293,8 @@ namespace APproject
 
         /// <summary>
         /// This method translates a function declaration in F#.
-        /// The first child is the block Node, 
-        /// the other children are the parameters of the function.
+        /// The first child is the block Node,  other children are the parameters of the function.
+        /// If is a recursive function it writes the "rec" keyword.
         /// </summary>
         /// <param name="n">Node representing a function declaration.</param>
         /// 
@@ -409,7 +345,6 @@ namespace APproject
                 {
                     ASTNode temp = parameters[i];
 					nameParameters.Add(temp.ToString());
-                    //translateRecursive(temp);
                     safeWrite(" "+temp+" ");
                 }
                 if (parameters.Count == 1)
@@ -466,8 +401,7 @@ namespace APproject
         /// <param name="n">the Return node</param>
         public void translateReturn(ASTNode n)
         {
-            //safeWrite("\n");
-            // indent(indentationLevel);
+ 
             bang = true;
 			safeWriteLine ("");
             translateRecursive(n.children[0]);
@@ -478,6 +412,8 @@ namespace APproject
         /// <summary>
         /// This method translates the Assignment node and 
         /// its children, recursively.
+        /// If the second child is an Async node it calls recursice the translation of a async.
+        /// if is a Dasync node, calls thr tranlsation of a Dasync code.
         /// </summary>
         /// <param name="n">the Assignment node</param>
         public void translateAssig(ASTNode n)
@@ -493,7 +429,6 @@ namespace APproject
                 createDAsync(children[1].children[1], (Obj)children[0].value, children[1].children[0].ToString());
 				break;
 			default:
-
 				environment.addUpdateValue ((Obj)children [0].value, false);
 
 				safeWriteLine (children [0] + " := ");
@@ -517,22 +452,7 @@ namespace APproject
         {
 			foreach(ASTNode item in n.children)
             {
-                //if (i > 0)
-                //    indent(indentationLevel); //fix indentation for multiple declarations like var x, y, z int;
-
-				safeWriteLine("let " + item + " = ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
-                /*if (item.type == Types.integer)
-                    safeWrite(" = ref (0)\n"); // integer are initialized to '0'
-                
-                else if (item.type == Types.boolean)
-                {
-                    safeWrite(" = ref (true)\n"); // bool are initialized to 'true'
-                }
-                else
-                {
-                    safeWrite(" = ref (Unchecked.defaultof<'a>)\n");
-            	}*/
-
+			    safeWriteLine("let " + item + " = ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
         	}
 
 			foreach (ASTNode item in n.children) {
@@ -699,31 +619,9 @@ namespace APproject
         /// </summary>
         /// <param name="n">A Afun node .</param>
 
-        public void translateAsync(ASTNode n)
-        {
-            //ASTNode sisterNode = n.parent.children[0];
-            //environment.addUpdateValue(((Obj)sisterNode.value), true);
-			/*
-            safeWrite("_task_"+((Obj)sisterNode.value).name + " <- Async.StartAsTask( async{ return ");
-            translateRecursive(n.children[0]);
-            safeWrite("}))");
-*/
-        }
+ 
 
-        /// <summary>
-        /// This method produces the F# code performing 
-        /// the HTTP POST request for the dsync in funW@P.
-        /// </summary>
-        /// <param name="n">The node Dsync.</param>
-
-        /*
-         * 
-        public void translateDsync(ASTNode n)
-        {
-            string url = n.children[0].name;
-        }
-
-       */
+  
         /// <summary>
         /// This method translates into F# the anonymous function.
         /// The first child is the block, the second the return type(if there),
@@ -747,8 +645,7 @@ namespace APproject
 			translateMutableParameters (paramList);
             indentationLevel--;
             translateRecursive(children[0]);
-			
-
+	
 
 
             ////if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)

@@ -68,17 +68,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTGenerator\ASTGenerator.cs" />
-    <Compile Include="FSCodeGenerator\FSCodeGenEnvironment.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGenRef.cs" />
-    <Compile Include="FSCodeGenerator\MainTestFSCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
     <Compile Include="Interpreter\Environment.cs" />
     <Compile Include="AST\ASTNode.cs" />
-    <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
-    <Compile Include="FSCodeGenerator\FSCodeGenTestModule.cs" />
     <Compile Include="Interpreter\InterpreterTest.cs" />
     <Compile Include="Interpreter\InterpreterException.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
@@ -87,7 +83,6 @@
     <Compile Include="Helpers\HelperHttpClient.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Code _ funW%40P\checkPositiveDasync.fun" />
     <None Include="App.config" />
     <None Include="Grammar\GramWithSematic.ATG" />
     <None Include="Grammar\OnlyGram.ATG" />
