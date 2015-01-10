@@ -3,8 +3,6 @@
 }
 
 fun main(){
-	var test bool;
-	var u url;
-	test = dasync{u, test1(4,4)}; 
+	test1( 
 
 }

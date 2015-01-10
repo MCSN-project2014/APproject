@@ -3,7 +3,7 @@ fun add() int{
 }
 
 fun main(){
-   var u url = 'http://daichefunziona.com';
-   println("hola hola ");
-   var x int = dasync{u,return add()};
+var x int = add() + add();
+x = x + add();
+println(x);
 }
