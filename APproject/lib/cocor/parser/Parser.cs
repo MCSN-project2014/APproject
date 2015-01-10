@@ -930,8 +930,8 @@ public SymbolTable   tab;
 				}
 				Expect(8);
 				if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
-				SemErr("object is not a function");
-				else if (obj.type != Types.fun)
+				SemErr(name+" is not a function");
+				else 
 				tab.checkActualFormalTypes(obj, actualTypes); 
 			}
 			if (!control && obj.kind != Kinds.var)
