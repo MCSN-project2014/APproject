@@ -33,5 +33,5 @@ fun checkDasync( ) bool {
 
 
 fun main (){
-	checkDasync ( );
+	var a bool = checkDasync ( );
 }
