@@ -827,9 +827,19 @@ public SymbolTable   tab;
 	void Term(out Types type, out ASTNode node) {
 		Types type1; ASTNode op, secondfactor; 
 		Factor(out type, out node);
+		if(node.label == Labels.FunCall ){
+		Obj obj =(Obj)node.value;
+		if ( obj.kind == Kinds.proc && obj.type == Types.fun)
+		SemErr("the function "+ obj.name+" must to return a correct type for the expression");	
+		}		 
 		while (la.kind == 38 || la.kind == 39) {
 			MulOp(out op);
 			Factor(out type1,out secondfactor);
+			if(node.label == Labels.FunCall ){
+			Obj obj =(Obj) node.value;
+			if ( obj.kind == Kinds.proc && obj.type == Types.fun)
+			SemErr("the function "+ obj.name+" must to return a correct type for the expression");	
+			}
 			if(type == Types.fun)
 			type = Types.integer;
 			if(type1 == Types.fun)
