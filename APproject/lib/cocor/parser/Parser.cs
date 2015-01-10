@@ -30,6 +30,13 @@ public class Parser {
 
 public SymbolTable   tab;
 	public ASTGenerator  gen;
+	public void controlForProcedurs(ASTNode node){
+	if(node.label == Labels.FunCall ){
+		Obj obj =(Obj)node.value;
+		if ( obj.kind == Kinds.proc && obj.type == Types.fun)
+				SemErr("the function "+ obj.name +" must to return a correct type for the expression");	
+	 }	
+	}
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -282,6 +289,8 @@ public SymbolTable   tab;
 				case 1: case 3: case 6: case 23: case 24: case 25: {
 					CompleteExpr(out type1, out node1);
 					Expect(15);
+					if(type != Types.fun)
+					controlForProcedurs(node1);
 					obj = tab.NewObj((string)names[0], Kinds.var, type);
 					if (!(type == type1 || type1 == Types.fun)) 
 					SemErr("incompatible types"); 
@@ -325,11 +334,13 @@ public SymbolTable   tab;
 					Expect(6);
 					while (StartOf(3)) {
 						CompleteExpr(out type, out node1);
+						controlForProcedurs(node1);
 						actualTypes.Enqueue(type); 
 						((Node)call).addChildren(node1);	
 						while (la.kind == 7) {
 							Get();
 							CompleteExpr(out type, out node1);
+							controlForProcedurs(node1);
 							actualTypes.Enqueue(type);
 							((Node)call).addChildren(node1); 
 						}
@@ -378,11 +389,13 @@ public SymbolTable   tab;
 					Expect(6);
 					while (StartOf(3)) {
 						CompleteExpr(out type, out node1);
+						controlForProcedurs(node1);
 						actualTypes.Enqueue(type); 
 						((Node)call).addChildren(node1);	
 						while (la.kind == 7) {
 							Get();
 							CompleteExpr(out type, out node1);
+							controlForProcedurs(node1);
 							actualTypes.Enqueue(type);
 							((Node)call).addChildren(node1); 
 						}
@@ -434,11 +447,13 @@ public SymbolTable   tab;
 				Expect(6);
 				while (StartOf(3)) {
 					CompleteExpr(out type, out node1);
+					controlForProcedurs(node1);
 					actualTypes.Enqueue(type); 
 					((Node)call).addChildren(node1);	
 					while (la.kind == 7) {
 						Get();
 						CompleteExpr(out type, out node1);
+						controlForProcedurs(node1);
 						actualTypes.Enqueue(type);
 						((Node)call).addChildren(node1); 
 					}
@@ -484,11 +499,13 @@ public SymbolTable   tab;
 				Expect(6);
 				while (StartOf(3)) {
 					CompleteExpr(out type, out node1);
+					controlForProcedurs(node1);
 					actualTypes.Enqueue(type); 
 					((Node)call).addChildren(node1);	
 					while (la.kind == 7) {
 						Get();
 						CompleteExpr(out type, out node1);
+						controlForProcedurs(node1);
 						actualTypes.Enqueue(type);
 						((Node)call).addChildren(node1); 
 					}
@@ -512,6 +529,8 @@ public SymbolTable   tab;
 			} else if (StartOf(3)) {
 				CompleteExpr(out type, out node1);
 				Expect(15);
+				if (obj.type != Types.fun)
+				controlForProcedurs(node1);
 				if ( !(type == obj.type || type == Types.fun) )
 				SemErr("incompatible types");
 				((Node)node).addChildren(new Term(obj));
@@ -536,6 +555,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 18) {
 			Get();
 			CompleteExpr(out type, out node1);
+			controlForProcedurs(node1);
 			int returnCounter = 0;
 			tab.ifNesting++;
 			node = new Node(Labels.If);
@@ -597,6 +617,7 @@ public SymbolTable   tab;
 		} else if (la.kind == 20) {
 			Get();
 			CompleteExpr(out type, out node1);
+			controlForProcedurs(node1);
 			node = new Node(Labels.While);
 			((Node)node).addChildren(node1);
 			Node whileBlock =new Node(Labels.Block);
@@ -623,6 +644,7 @@ public SymbolTable   tab;
 			node = new Node(Labels.Print); 
 			if (StartOf(3)) {
 				CompleteExpr(out type, out node1);
+				controlForProcedurs(node1);
 				((Node)node).addChildren(node1); 
 			} else if (la.kind == 4) {
 				Get();
@@ -687,6 +709,8 @@ public SymbolTable   tab;
 		while (la.kind == 36 || la.kind == 37) {
 			BoolOp(out op);
 			Expr(out type1,out secondExpr);
+			controlForProcedurs(secondExpr);
+			
 			if(type == Types.fun)
 			type = type1;
 			if(type1 == Types.fun)
@@ -719,7 +743,11 @@ public SymbolTable   tab;
 			if(obj != null){
 			if(controlofblock)
 			obj.returnIsSet=true;
-			if( obj.type != type )
+			if(node1.label == Labels.FunCall){
+			robj =(Obj)node1.value;
+			tab.complexReturnTypeControl(obj.rtype,robj.rtype);
+			}
+			else if( obj.type != type )
 			SemErr("incompatible return type");
 			} else {
 			SemErr("return is not expected");
@@ -746,6 +774,7 @@ public SymbolTable   tab;
 		if (StartOf(5)) {
 			RelOp(out op);
 			SimpExpr(out type1, out secondSimpExpr);
+			controlForProcedurs(secondSimpExpr);
 			if(type == Types.fun)
 			type = type1;
 			if(type1 == Types.fun)
@@ -775,6 +804,7 @@ public SymbolTable   tab;
 		while (la.kind == 23 || la.kind == 29) {
 			AddOp(out op);
 			Term(out type1,out secondTerm);
+			controlForProcedurs(secondTerm);
 			if(type == Types.fun)
 			type = Types.integer;
 			if(type1 == Types.fun)
@@ -827,19 +857,10 @@ public SymbolTable   tab;
 	void Term(out Types type, out ASTNode node) {
 		Types type1; ASTNode op, secondfactor; 
 		Factor(out type, out node);
-		if(node.label == Labels.FunCall ){
-		Obj obj =(Obj)node.value;
-		if ( obj.kind == Kinds.proc && obj.type == Types.fun)
-		SemErr("the function "+ obj.name+" must to return a correct type for the expression");	
-		}		 
 		while (la.kind == 38 || la.kind == 39) {
 			MulOp(out op);
 			Factor(out type1,out secondfactor);
-			if(node.label == Labels.FunCall ){
-			Obj obj =(Obj) node.value;
-			if ( obj.kind == Kinds.proc && obj.type == Types.fun)
-			SemErr("the function "+ obj.name+" must to return a correct type for the expression");	
-			}
+			controlForProcedurs(secondfactor);
 			if(type == Types.fun)
 			type = Types.integer;
 			if(type1 == Types.fun)
@@ -950,6 +971,7 @@ public SymbolTable   tab;
 			Get();
 			CompleteExpr(out type1, out node1);
 			Expect(8);
+			controlForProcedurs(node1);
 			node = new Node(Labels.Bracket);
 			((Node)node).addChildren(node1);
 			type = type1; 

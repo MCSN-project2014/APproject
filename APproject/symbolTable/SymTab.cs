@@ -215,6 +215,63 @@ namespace APproject
         }
 
 
+         /// <summary>
+        /// Control if the return type of the function is corrected. This metod is usefull only if the return type of the function 
+        /// is 'fun', otherwise it is sufficient to check whether procedure.type = return type
+        /// <summary>
+        /// <param name="procedure">obj of the function for which is needed control the return type.</param>
+        /// <param name="type">The obj of the function for which is needed to control if it match the return type of the function</param>
+        public void complexReturnTypeControl(FRType procedur, FRType robj)
+        {
+            FRType procrtype = procedur;
+            FRType returnobj = robj;
+
+            
+            
+            if (procrtype.type != returnobj.type)
+            {
+                parser.SemErr(procrtype.type + " return type expected");
+                return;
+            }
+
+            while (procrtype.next != null)
+            {
+                if (returnobj.next == null)
+                {
+                    parser.SemErr(procrtype.type + " return type expected");
+                }
+                else
+                {
+
+                    procrtype = procrtype.next;
+                    returnobj = returnobj.next;
+                    Types[] rTypeformals = procrtype.formals.ToArray();
+                    Types[] aFunFormals = returnobj.formals.ToArray();
+                    if (procrtype.type != returnobj.type)
+                    {
+                        parser.SemErr(procrtype.type + " return type expected");
+                        return;
+                    }
+                    if (aFunFormals.Length != rTypeformals.Length)
+                    {
+                        parser.SemErr("wrong parameter in return type");
+                    }
+                    else
+                    {
+
+                        for (int i = 0; i < aFunFormals.Length; i++)
+                        {
+                            if (aFunFormals[i] != rTypeformals[i])
+                            {
+                                parser.SemErr(rTypeformals[i] + " parameter in return type expected");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Control if the return type of the function is corrected. This metod is usefull only if the return type of the function 
         /// is 'fun', otherwise it is sufficient to check whether procedure.type = return type
@@ -223,6 +280,8 @@ namespace APproject
         /// <param name="type">The obj of the function for which is needed to control if it match the return type of the function</param>
         public void complexReturnTypeControl(Obj procedur, Obj robj)
         {
+
+
             FRType procrtype = procedur.rtype;
             FRType returnobj = robj.rtype;
             if (procedur.type != Types.fun)
