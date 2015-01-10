@@ -10,7 +10,7 @@ namespace APproject
 						For, If, While, Block,
 						Assig, Decl, AssigDecl, 
 						Return, Async, Print, Read, Dsync,  
-						Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq, NotEq, And, Or, Negativ,
+						Plus, Mul, Minus, Div, Gt, Gte, Lt, Lte, Eq, NotEq, And, Or, Negativ, Bracket,
 						FunCall};
 
 	public abstract class ASTNode{

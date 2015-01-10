@@ -940,7 +940,8 @@ public SymbolTable   tab;
 			Get();
 			CompleteExpr(out type1, out node1);
 			Expect(8);
-			node = node1;
+			node = new Node(Labels.Bracket);
+			((Node)node).addChildren(node1);
 			type = type1; 
 			break;
 		}

@@ -124,7 +124,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																			       node = new Node(Labels.Assig); .) 
 =																				
 	Ident<out name>																(. obj = tab.Find(name); .)                                                               
-		(                                                                    
+                                                       
 			'='																	(. if ( obj.kind != Kinds.var )
 																					   SemErr("cannot assign to procedure"); .)
 				(                                                            
@@ -202,9 +202,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																				   ((Node)node).addChildren(new Node(Labels.Read));
 																				 .) 
 				                                                              
-				)                                                            
-			                                                               			                                                                  
-		)                                                       
+				)                                                     
 		                                                                     
 	| "if" CompleteExpr<out type, out node1>									   (.  int returnCounter = 0;
 																					   tab.ifNesting++;
@@ -539,7 +537,8 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   type = Types.boolean; .)
 		| "false"																(. node = new Term(false);
 																				   type = Types.boolean; .)
-		|'(' CompleteExpr<out type1, out node1> ')'								(. node = node1;
+		|'(' CompleteExpr<out type1, out node1> ')'								(. node = new Node(Labels.Bracket);
+																				   ((Node)node).addChildren(node1);
 																				   type = type1; .)
 	).	 
 

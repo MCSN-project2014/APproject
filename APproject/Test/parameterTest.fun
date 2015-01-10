@@ -3,4 +3,7 @@ fun add() int{
 }
 
 fun main(){
+var x int = add();
+x = x + add() * (add());
+println(x);
 }
