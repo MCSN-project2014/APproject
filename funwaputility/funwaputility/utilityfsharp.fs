@@ -1,5 +1,4 @@
 ﻿
-
 // define a library for .fun (funW@p) code translated into f#.
 
 namespace funwaputility
