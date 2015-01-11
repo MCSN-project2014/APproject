@@ -104,12 +104,6 @@ namespace APproject
                 case Labels.Read:
                     translateRead(n);
                     break;
-                 // case Labels.Async:
-                //    translateAsync(n);
-                 //   break;
-                //  case Labels.Dsync:
-                //     translateDsync(n);
-                //    break;
                 case Labels.Afun:
                     translateAfun(n);
                     break;
@@ -704,10 +698,7 @@ namespace APproject
         public void translateBracket( ASTNode n )
         {
             safeWrite("(");
-            foreach ( ASTNode c in n.children)
-            {
-                translateRecursive(c);
-            }
+			translateRecursive(n.children[0]);
             safeWrite(")");
         }
 

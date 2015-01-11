@@ -14,11 +14,5 @@ fun add2() fun() int{
 }
 
 fun main(){
-	var f fun = add(3,5);
-	var x fun = fun(x int) fun() int{
-					return fun() int {
-						return 5;
-					};
-				};
-	println(x);
+	println( (1+3-2*(8-7))*2);
 }

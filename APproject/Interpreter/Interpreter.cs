@@ -215,6 +215,8 @@ namespace APproject
 					return InterpretCondition (children [0], actualMemory) && InterpretCondition (children [1], actualMemory);
 				case Labels.Or:
 					return InterpretCondition (children [0], actualMemory) || InterpretCondition (children [1], actualMemory);
+				case Labels.Bracket:
+					return InterpretExp (children [0], actualMemory);
 				case Labels.FunCall:
 					return FunctionCall (FunParameterPassing(node,actualMemory));
 				case Labels.Afun:
