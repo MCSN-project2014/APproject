@@ -53,6 +53,11 @@ Global
 		{C476F6C8-AF8A-4E6A-AD25-883D619F5675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C476F6C8-AF8A-4E6A-AD25-883D619F5675}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C476F6C8-AF8A-4E6A-AD25-883D619F5675}.Release|x86.ActiveCfg = Release|Any CPU
+
+
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = funwapi\funwapi.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
