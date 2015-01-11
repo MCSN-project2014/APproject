@@ -20,7 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="${TargetFile} ${SolutionDir}/Code_funW@P/checkPositiveDasync.fun" />
+        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/asyncTest.fun" />
       </CustomCommands>
     </CustomCommands>
     <Externalconsole>true</Externalconsole>

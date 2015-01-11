@@ -1,9 +1,14 @@
-fun add() int{
-   return 5;
+fun add() fun() int{
+   return fun() int{
+		return 5;
+   };
+}
+
+fun prova(x fun, y fun) fun() int{
+	return add();
 }
 
 fun main(){
-   var u url = 'http://daichefunziona.com';
-   println("hola hola ");
-   var x int = dasync{u,return add()};
+var x fun = add();
+
 }

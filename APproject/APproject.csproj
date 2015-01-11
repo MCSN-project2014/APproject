@@ -87,7 +87,6 @@
     <Compile Include="Helpers\HelperHttpClient.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Code _ funW%40P\checkPositiveDasync.fun" />
     <None Include="App.config" />
     <None Include="Grammar\GramWithSematic.ATG" />
     <None Include="Grammar\OnlyGram.ATG" />
