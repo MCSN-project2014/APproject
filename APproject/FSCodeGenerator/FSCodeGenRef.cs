@@ -125,6 +125,9 @@ namespace APproject
                 case Labels.Negativ:
                     translateNegativ(n);
                     break;
+                case Labels.Bracket:
+                    translateBracket(n);
+                    break;
                 case Labels.Div:
                     translateOp("/", n);
                     break;
@@ -465,13 +468,19 @@ namespace APproject
 			}
 		}
 
-		public void createStructureAsync(Obj var){
+		private void createStructureAsync(Obj var){
 			safeWriteLine ("let mutable " + "_task_" + var.name +
 				" = Async.StartAsTask( async{ return " +
 				(var.type == Types.integer ? "0" : "true") + "})\n");
 			environment.addUpdateValue (var, true);
 		}
 
+
+        /// <summary>
+        /// Creates the code in f# for the async operation.
+        /// </summary>
+        /// <param name="funCall">FunCall node in the async.</param>
+        /// <param name="varAsync">The variable in wich the result will be stored.</param>
 		private void createAsync (ASTNode funCall, Obj varAsync){
 
 			createTmpParameter (funCall);
@@ -490,6 +499,12 @@ namespace APproject
 			
 		}
 
+
+        /// <summary>
+        /// Helper method to translate the paramter of a function call in f#.
+        /// </summary>
+        /// <param name="funCall">FunCall node .</param>
+
 		private List<string> createTmpParameter(ASTNode funCall){
             var tmpIndex = indexPar;
 			var actual = new List<string>();
@@ -505,6 +520,17 @@ namespace APproject
 			return actual;
 		}
 
+
+        /// <summary>
+        /// This method translates a Dasync into f# code.
+        /// Convert the parameters of the function in the Dasync and it's body 
+        /// in a json form.
+        /// Call the method for the post operation ( for bool and int return function).
+        /// Write a task in result to a Dasync operation, with the url specified and the json structure.
+        /// </summary>
+        /// <param name="funCall">FunCall node in the Dasync structure.</param>
+        /// <param name="varDAsync">Variable to assign the returned dasync value.</param>
+        /// <param name="url">String representing the url, where the function will be executed</param>
 		private void createDAsync (ASTNode funCall, Obj varDAsync, string url){
 			List<string> actual = createTmpParameter (funCall);
 
@@ -595,7 +621,6 @@ namespace APproject
         /// 
         public void translatePrint(ASTNode n)
         {
-            //indent(indentationLevel);
             safeWriteLine("Console.WriteLine( ");
             bang = true;
             translateRecursive(n.children[0]);
@@ -613,15 +638,8 @@ namespace APproject
         {
             safeWrite("_readln()");
         }
-
-        /// <summary>
-        /// This method translates the async node inthe f# syntax
-        /// </summary>
-        /// <param name="n">A Afun node .</param>
-
  
 
-  
         /// <summary>
         /// This method translates into F# the anonymous function.
         /// The first child is the block, the second the return type(if there),
@@ -675,6 +693,22 @@ namespace APproject
         {
             safeWrite("-");
             translateRecursive(n.children[0]);
+        }
+
+
+        /// <summary>
+        /// This method translates into F# the brackets in a 
+        /// boolean expressions.
+        /// </summary>
+        /// <param name="n">The bracket node.</param>
+        public void translateBracket( ASTNode n )
+        {
+            safeWrite("(");
+            foreach ( ASTNode c in n.children)
+            {
+                translateRecursive(c);
+            }
+            safeWrite(")");
         }
 
         /// <summary>
