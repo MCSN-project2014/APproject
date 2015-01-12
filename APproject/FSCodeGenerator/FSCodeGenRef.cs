@@ -586,7 +586,7 @@ namespace APproject
         {
             List<ASTNode> children = n.children;
             dynamic tmp = n.value;
-            if (tmp.kind == Kinds.proc)
+            if (tmp.kind == Kinds.fundec)
                 safeWrite(tmp.name + " ");
             else
                 safeWrite("!"+tmp.name + " ");
