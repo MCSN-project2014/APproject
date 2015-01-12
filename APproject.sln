@@ -56,7 +56,7 @@ Global
 		{E6A7449B-0FA5-40E3-864C-8F5DD1366531}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = funwapc\funwapc.csproj
+		StartupItem = funwapi\funwapi.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

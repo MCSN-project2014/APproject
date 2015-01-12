@@ -12,7 +12,12 @@
 fun add2() fun() int{
 	return add(3,5);
 }
+fun test()int{
+	return 4;
+}
 
 fun main(){
-	println( (1+3-2*(8-7))*2);
+	var u url = 'http://123.23.4.5';
+	var i int = dasync{ u, return test()};
+	println(i);
 }

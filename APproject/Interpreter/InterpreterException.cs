@@ -25,6 +25,7 @@ namespace APproject
 		}
 	}
 
+	/*
 	public class VariableNotInitialized : InterpreterException
 	{
 		private string var;
@@ -39,6 +40,7 @@ namespace APproject
 			}
 		}
 	}
+	*/
 
 	public class CantPrintFunction : InterpreterException
 	{
@@ -76,6 +78,21 @@ namespace APproject
 		public override string Message {
 			get {
 				return base.Message + "The server fail with: " + error;
+			}
+		}
+	}
+
+	class ServerConnectionException : InterpreterException {
+
+		private string error;
+
+		public ServerConnectionException(string error){
+			this.error = error;
+		}
+
+		public override string Message {
+			get {
+				return base.Message + "Impossible to connect to the server: " + error;
 			}
 		}
 	}
