@@ -95,6 +95,7 @@
     <None Include="Test\vardeclTest.fun" />
     <None Include="Test\testLuca.fun" />
     <None Include="Test\asyncTest.fun" />
+    <None Include="Test\menelaos_error.fun" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
