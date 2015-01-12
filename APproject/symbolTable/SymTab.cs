@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace APproject
 {
 	public enum Types {undef,integer,boolean,fun,url}
-	public enum Kinds {var,proc,scope}
+	public enum Kinds {var,fundec,scope}
 
     public class FRType
     {
@@ -141,7 +141,7 @@ namespace APproject
                 obj.isUsedInAsync = false;
                 obj.isUsedInDasync = false;
             }
-            if (kind == Kinds.proc)
+            if (kind == Kinds.fundec)
             {
                 obj.formals = new Queue<Obj>();
                 obj.asyncControl = false;
@@ -432,10 +432,7 @@ namespace APproject
 
         public bool getAsyncControl(Obj obj)
         {
-            if (obj.asyncControl != null)
-                return obj.asyncControl;
-            else
-                return false;
+             return obj.asyncControl;
         }
 
        
