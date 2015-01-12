@@ -30,8 +30,11 @@ public class Parser {
 
 public SymbolTable   tab;
 	public ASTGenerator  gen;
+	private int Afunid = 0;
 	public void controlForProcedurs(ASTNode node){
-	if(node.label == Labels.FunCall ){
+
+	if(node != null && node.label == Labels.FunCall ){
+	
 		Obj obj =(Obj)node.value;
 		if ( obj.kind == Kinds.proc && obj.type == Types.fun)
 				SemErr("the function "+ obj.name +" must to return a correct type for the expression");	
@@ -268,7 +271,7 @@ public SymbolTable   tab;
 				if (type == Types.fun)
 				SemErr("you cannot declare a type fun without assign it");	
 				node =  new Node (Labels.Decl);
-				((Node)node).addChildren(new Term (obj));                             
+				((Node)node).addChildren(new Term (obj));                   
 			} else if (la.kind == 12) {
 				Get();
 				switch (la.kind) {
@@ -663,7 +666,7 @@ public SymbolTable   tab;
 		string name; Types type; FRType rtype; Obj formal;
 		ASTNode block, vardeclnode, statnode; Term parameter;
 		node = new Node(Labels.Afun);
-		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
+		robj = tab.NewObj(Convert.ToString(Afunid++), Kinds.proc, Types.undef);		    
 		tab.OpenScope(robj); 
 		Expect(5);
 		Expect(6);
