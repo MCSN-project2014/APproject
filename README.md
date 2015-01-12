@@ -1,4 +1,4 @@
-![alt text](fun_logo.jpg)
+![alt text](fun_logo-min.jpg)
 
 #FunW@P - An Imperative-Functional Programming Language
 
