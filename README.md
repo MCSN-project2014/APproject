@@ -1,5 +1,6 @@
-#FunW@P - An Imperative-Functional Programming Language
 ![alt text](fun_logo.jpg)
+
+#FunW@P - An Imperative-Functional Programming Language
 
 ##Developing Guide
 1. clone the project
