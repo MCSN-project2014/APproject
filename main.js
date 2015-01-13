@@ -11,7 +11,7 @@ function groupController($scope, $http){
   $scope.interpret = function(){
     console.log("send function");
     $scope.hideButton = true;
-    $http.post('http://127.0.0.1:5000/interpret', $scope.prog).success(function(data){
+    $http.post('http://tryfunwap.sfcoding.com/interpret', $scope.prog).success(function(data){
       success(data);
     });
   };
@@ -19,7 +19,7 @@ function groupController($scope, $http){
   $scope.compile = function(){
     console.log("send function");
     $scope.hideButton = true;
-    $http.post('http://127.0.0.1:5000/compile', $scope.prog).success(function(data){
+    $http.post('http://tryfunwap.sfcoding.com/compile', $scope.prog).success(function(data){
       success(data);
     });
   };
