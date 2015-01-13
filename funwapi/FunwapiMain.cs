@@ -20,7 +20,7 @@ namespace funwapi
                     Interpreter inter = new Interpreter (root);
                     inter.Start ();
                 }
-                Console.Read();
+                //Console.Read();
             }
             else
                 Console.Write("-- No source file specified");
