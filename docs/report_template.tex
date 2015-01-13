@@ -30,51 +30,33 @@ All the information provided here will also be available at the official page of
 
 
 %%%%%%%%%%%%%%%%%%%%%%
-%%% Acknowledgments
-
-\chapter*{Acknowledgments}
-
-In your Acknowledgments section, give credit to all the people who helped you in your project.
-
-%%%%%%%%%%%%%%%%%%%%%%
 %%% Introduction
 
 \chapter{Introduction}
 
+The report structure follows closely the project's one and focuses on the most important developing phases. After reporting the complete description of the \textit{funW@P} grammar and a brief summary about the tools used for generating the tokenizer, the parser and the type-checker (see Chapter~\ref{chapter2}), a recapitulation about the chosen intermediate representation (see Chapter~\ref{chapter3}) is offered. Then, the \texttt{F\#} code generator (see Chapter~\ref{chapter4}) and the language interpreter (see Chapter~\ref{chapter5}) are reviewed. To conclude, Chapter~\ref{chapter5} and ~\ref{chapter6} are an overview of the testing phase and a quick user guide respectively.
 
-The project report is a very important part of your project and its preparation and presentation should be of extremely high quality. Remember that a large portion of the marks for your project are awarded for this report. The following sections will provide some detailed guidelines and advice on the writing of this report.
+\chapter{\label{chapter2} Designing the Language}
 
-The format of the final report is fixed by the template of this document and you must  strictly adhere to it.  Note that the length of your report is strictly limited. Apart from a cover page, abstract, table of contents and references, the recommended number of content pages\footnote{In terms of the report length, appendices are also considered as content pages.} is 30 of which at most 10 are dedicated to background research. You should not write more than 30 pages unless you feel you have good reason to, but in any case the maximum acceptable report length is 35 content pages. These limits mean that you do not need to write dross to ``pad out'' your report. At the same time it does not make your task easy. Recall Pascal's remark: ``I am sorry for the length of my letter, but I had not the time to write a short one.''
+The grammar design has been a complex, delicate and continuous task of the project, since the grammar represents the true definition of a language in formal terms and it revealed to be of crucial importance for all the subsequent phases. Lots of on the fly adjustments and corrections leaded to the definition reported in the following section.
 
-Also remember that any implementation produced should also be submitted (see Chapter~\ref{chapter2})
+\section{EBNF Grammar}
 
-\chapter{\label{chapter2} Submission Policy}
+The whole grammar is described by means of the Extended Backus-Naur Form (EBNF, \cite{ebnf}) which is metasyntax, commonly adopted by parser generators nowadays. We first introduce the used tokens, which are the following ones:
 
-\section{Submission of Project Code}
+\begin{lstlisting}
+TOKENS
+ident  = letter {letter | digit}.
+url = ap "http://" {UrlInLine} ap.
+number = digit {digit}.
+string = '"' {AnyButDoubleQuote | "\\\""} '"'.
+\end{lstlisting}
 
-Most projects involve the development of a piece of software, or some other implementation artefact. This must also be submitted, along with information on the development environment used and instructions for creating an executable. 
-
-It is likely that your implementations will be examined and the factors that will be taken into account in assessing them include:
-
-\begin{enumerate}
-\item {\sl Correctness:} The software should perform as described in the final report. Minor deviations are not a problem, but any major aspect described in the report should also be present in the software.
-\item {\sl Robustness:} The software should operate reliably and be not subject to frequent abnormal terminations.
-\item {\sl Code Quality:} In your years in UCD you have encountered many design and implementation heuristics. It should be apparent in the code you have written that these have guided your work.
-\end{enumerate}
-
-Needless to say, a violation under point (1), that is to say a flagrant misstatement in your report of what your implementation actually does, is a very serious matter.
-
+Then we provide all the needed productions:
 
 \section{Submission of Project Report}
 
-Your final project report must be lodged with the School administration staff on or before the hand-in date. You will receive an acknowledgment of your timely submission.
-
-Two hard copies  and a soft-copy of the report should be submitted. Late delivery will result in a sanction except where documented extenuating circumstances exist. Late receipt of a project report will normally be penalised by a loss of a full 5\% for each day, or part thereof. This means that a project that is deserving of a final mark of 65\% will actually be awarded only 60\%, if the interim report is submitted a single day late (weekends included). Please understand from this that it is simply not acceptable to be late in the submission of either report.
-
-As well as the hardcopy submission of the final report, a softcopy in Portable Document Format (PDF) format must also be submitted. It is a simple matter to create a PDF file from a Word file, and automatic if you are using \LaTeX.
-
-
-\chapter{Preparing your Project Report}
+\chapter{\label{chapter3} Designing the Grammar}
 
 Report writing is an important skill. No matter what field you are engaged in, you will almost certainly find it necessary to be able to write a clear report on your work. If you have a talent for technical writing, you will no doubt find it an easier task. However, it is a skill that can be acquired with practice and it is an essential part of your project work. Be sure to allow yourself enough time to write the report; the process generally takes {\bf at least} two weeks. 
 
@@ -261,6 +243,7 @@ static public void main(String[] args) {
 \newpage
 \begin{thebibliography}{99}
 \bibitem{DAWSON:2000} Christian Dawson. \emph{The Essence of Computing Projects -- A Student's Guide}. 192 pages. ISBN: 013021972X. Pearson Education, 2000.
+\bibitem{ebnf}\emph{EBNF on Wikipedia}. \href{http:\/\/en.wikipedia.org\/wiki\/Extended\_Backus\%E2\%80\%93Naur\_Form}{http:\/\/en.wikipedia.org\/wiki\/Extended\_Backus\%E2\%80\%93Naur\_Form}
 \end{thebibliography}
 
 \end{document}

@@ -1,0 +1,96 @@
+PRODUCTIONS
+				 
+Fun =  { ProcDecl }                                        
+
+ProcDecl = "fun"
+			(
+			    Ident '(' {Ident Type{',' Ident Type}} ')' FRType '{' {VarDecl | Stat} '}'
+				
+			  | "main" '(' ')' '{'  { VarDecl | Stat } '}'
+			).   			
+                                                             
+AProcDecl = "fun" '(' {Ident Type{',' Ident Type}} ')' FRType '{' {VarDecl | Stat} '}'.                         			                                                             
+                                                                           
+Stat = Ident '=' 
+		(                                                            
+		"async" '{' "return" Ident '(' { CompleteExpr {',' CompleteExpr}} ')' '}'';'
+		| "dasync"'{'
+			(
+				Ident 
+				|URL
+			) ',' "return" Ident '(' { CompleteExpr {',' CompleteExpr}} ')' '}'';'
+		| CompleteExpr ';'
+		| AProcDecl                                  
+		| "readln" '(' ')'';'
+		)                                                                                                                            					                                                                     
+	| "if" CompleteExpr '{'{Return | Stat | VarDecl}'}' 
+	[ "else" '{'{Return | Stat | VarDecl}'}' ]                                        
+	| "while" CompleteExpr '{'{ Stat | VarDecl}'}'                                                      
+    | "println" '(' ( CompleteExpr | String )')' ';'
+	| Return.
+
+Return = "return" ( CompleteExpr | AProcDecl ).
+
+VarDecl = "var" Ident
+		(
+		',' Ident {',' Ident} Type ';'
+		
+		| Type 
+		  (
+			';'
+			| '=' 
+			( 
+			"readln" '('')'';'
+			| CompleteExpr ';'
+			| AProcDecl ';'
+			| URL ';'
+			| "async" '{'"return" Ident '(' { CompleteExpr {',' CompleteExpr}} ')''}' ';'
+			| "dasync"'{'
+					(
+						Ident 
+						|URL
+					) ',' "return" Ident '(' { CompleteExpr {',' CompleteExpr}} ')' '}'';'
+			)
+		)
+		).		  
+  
+CompleteExpr = Expr { BoolOp Expr }.
+		  
+Expr = SimpExpr [ RelOp SimpExpr ].
+	  
+SimpExpr = Term { AddOp Term }.
+
+Term = Factor { MulOp Factor}.
+	  
+Factor = Ident ['(' { ( CompleteExpr | AProcDecl ) { ',' ( CompleteExpr | AProcDecl ) } } ')'] 
+		| number | '-'Factor | "true" | "false" | '(' CompleteExpr ')'
+
+FRType = (
+			"fun" '(' { Type{',' Type}} ')' FRType
+			| "int" | "bool"
+		).
+
+Type = (
+		"fun" | "int" | "bool" |"url"	
+		).
+		
+		  
+AddOp = (
+		'+' | '-'.
+		).
+	  
+RelOp = (
+		'<' | '>' | "==" | "!=" | "<=" | ">="
+		). 
+		  
+BoolOp = (
+		"&&" | "||"
+		).
+
+MulOp =  (
+		'*' | '/'
+		).
+
+Ident = ident.
+
+URL = url.
