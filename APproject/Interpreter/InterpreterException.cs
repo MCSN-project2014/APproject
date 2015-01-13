@@ -4,7 +4,14 @@ namespace APproject
 {
 	public class InterpreterException : Exception
 	{
+		int column;
+		int row;
 		public InterpreterException(){
+		}
+
+		public InterpreterException(int column, int row){
+			this.column = column;
+			this.row = row;
 		}
 
 		public override string Message {
@@ -12,8 +19,13 @@ namespace APproject
 				return "FanW@p RUNTIME EXCEPTION:\n";
 			}
 		}
+
+		public string CodePosition{
+			get{return "(line: "+row+", column: "+column+")";}
+		}
 	}
 
+	/*
 	public class VariableNotInitialized : InterpreterException
 	{
 		private string var;
@@ -28,22 +40,37 @@ namespace APproject
 			}
 		}
 	}
+	*/
+
+	public class CantPrintFunction : InterpreterException
+	{
+		public CantPrintFunction(int column, int row):base(column, row){
+		}
+
+		public override string Message {
+			get {
+				return base.Message + "the value of the print is a function. "+CodePosition;
+			}
+		}
+	}
 
 	public class ReadNotIntegerValue : InterpreterException
 	{
-		public ReadNotIntegerValue()
+		public ReadNotIntegerValue (int column, int row) : base(column, row)
 		{
 		}
 
 		public override string Message {
 			get {
-				return base.Message + "The read input is not a number";
+				return base.Message + "The readed input is not a number. "+CodePosition;
 			}
 		}
 	}
 
 	class DasyncException : InterpreterException {
+
 		private string error;
+
 		public DasyncException(string error){
 			this.error = error;
 		}
@@ -51,6 +78,21 @@ namespace APproject
 		public override string Message {
 			get {
 				return base.Message + "The server fail with: " + error;
+			}
+		}
+	}
+
+	class ServerConnectionException : InterpreterException {
+
+		private string error;
+
+		public ServerConnectionException(string error){
+			this.error = error;
+		}
+
+		public override string Message {
+			get {
+				return base.Message + "Impossible to connect to the server: " + error;
 			}
 		}
 	}

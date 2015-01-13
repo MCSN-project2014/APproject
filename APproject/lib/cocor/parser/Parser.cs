@@ -30,10 +30,13 @@ public class Parser {
 
 public SymbolTable   tab;
 	public ASTGenerator  gen;
+	private int Afunid = 0;
 	public void controlForProcedurs(ASTNode node){
-	if(node.label == Labels.FunCall ){
+
+	if(node != null && node.label == Labels.FunCall ){
+	
 		Obj obj =(Obj)node.value;
-		if ( obj.kind == Kinds.proc && obj.type == Types.fun)
+		if ( obj.kind == Kinds.fundec && obj.type == Types.fun)
 				SemErr("the function "+ obj.name +" must to return a correct type for the expression");	
 	 }	
 	}
@@ -116,7 +119,7 @@ public SymbolTable   tab;
 		Expect(5);
 		if (la.kind == 1) {
 			Ident(out name);
-			proc = tab.NewObj(name, Kinds.proc, Types.undef);
+			proc = tab.NewObj(name, Kinds.fundec, Types.undef);
 			fundecl = new Node(Labels.FunDecl, proc);
 			
 			tab.OpenScope(proc);                             
@@ -158,7 +161,7 @@ public SymbolTable   tab;
 			tab.CloseScope(); 
 		} else if (la.kind == 11) {
 			Get();
-			tab.NewObj("Main", Kinds.proc, Types.undef);
+			tab.NewObj("Main", Kinds.fundec, Types.undef);
 			fundecl = new Node(Labels.Main);
 			tab.OpenScope();	
 			Expect(6);
@@ -268,7 +271,7 @@ public SymbolTable   tab;
 				if (type == Types.fun)
 				SemErr("you cannot declare a type fun without assign it");	
 				node =  new Node (Labels.Decl);
-				((Node)node).addChildren(new Term (obj));                             
+				((Node)node).addChildren(new Term (obj));                   
 			} else if (la.kind == 12) {
 				Get();
 				switch (la.kind) {
@@ -351,7 +354,7 @@ public SymbolTable   tab;
 					((Node)async).addChildren(call);
 					((Node)node).addChildren(new Term(obj));
 					((Node)node).addChildren(async); 
-					if (obj1.kind != Kinds.proc) 
+					if (obj1.kind != Kinds.fundec) 
 					   SemErr("object is not a procedure");
 					else if(tab.getAsyncControl(obj1))
 					SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -406,7 +409,7 @@ public SymbolTable   tab;
 					((Node)dasync).addChildren(call);
 					((Node)node).addChildren(new Term(obj));
 					((Node)node).addChildren(dasync); 
-					if (obj1.kind != Kinds.proc) 
+					if (obj1.kind != Kinds.fundec) 
 					   SemErr("object is not a procedure");
 					else if(tab.getAsyncControl(obj1))
 					SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -464,7 +467,7 @@ public SymbolTable   tab;
 				((Node)async).addChildren(call);
 				((Node)node).addChildren(new Term(obj));
 				((Node)node).addChildren(async); 
-				if (obj1.kind != Kinds.proc) 
+				if (obj1.kind != Kinds.fundec) 
 				   SemErr("object is not a procedure");
 				else if(tab.getAsyncControl(obj1))
 				SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -516,7 +519,7 @@ public SymbolTable   tab;
 				((Node)dasync).addChildren(call);
 				((Node)node).addChildren(new Term(obj));
 				((Node)node).addChildren(dasync); 
-				if (obj1.kind != Kinds.proc) 
+				if (obj1.kind != Kinds.fundec) 
 				   SemErr("object is not a procedure");
 				else if(tab.getAsyncControl(obj1))
 				SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -663,7 +666,7 @@ public SymbolTable   tab;
 		string name; Types type; FRType rtype; Obj formal;
 		ASTNode block, vardeclnode, statnode; Term parameter;
 		node = new Node(Labels.Afun);
-		robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
+		robj = tab.NewObj(Convert.ToString(Afunid++), Kinds.fundec, Types.undef);		    
 		tab.OpenScope(robj); 
 		Expect(5);
 		Expect(6);
@@ -929,7 +932,7 @@ public SymbolTable   tab;
 					}
 				}
 				Expect(8);
-				if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
+				if (!(obj.type == Types.fun || obj.kind == Kinds.fundec) ) 
 				SemErr(name+" is not a function");
 				else 
 				tab.checkActualFormalTypes(obj, actualTypes); 

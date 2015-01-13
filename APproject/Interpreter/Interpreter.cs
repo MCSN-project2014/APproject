@@ -100,17 +100,6 @@ namespace APproject
 						condition = InterpretCondition (children [0], actualMemory);
 					}
 					break;
-				case Labels.For:
-					Interpret (children [0], actualMemory);
-					condition = InterpretCondition (children [1], actualMemory);
-					while (condition) {
-						ret = Interpret (children [3], actualMemory);
-						if (ret != null)
-							return ret;
-						Interpret (children [2], actualMemory);
-						condition = InterpretCondition (children [1], actualMemory);
-					}
-					break;
 				case Labels.Decl:
                     foreach (ASTNode n in children)
                     {
@@ -129,14 +118,19 @@ namespace APproject
 				case Labels.Print:
                     if (children[0].isTerminal() && children[0].value is string)
                     {
-                        char[] quotes = new char[1];
+                        /*char[] quotes = new char[1];
                         quotes[0] = '"';
                         string tmpString = ((string)children[0].value).TrimStart(quotes);
-                        tmpString = tmpString.TrimEnd(quotes);
-                        Console.WriteLine(CONSOL_PRINT + tmpString);
+                        tmpString = tmpString.TrimEnd(quotes);*/
+						Console.WriteLine(CONSOL_PRINT + children[0]);
                     }
-                    else
-                        Console.WriteLine(CONSOL_PRINT + Convert.ToString(InterpretExp(children[0], actualMemory)));
+					else{
+						var tmp2 = InterpretExp(children[0], actualMemory);
+						if (tmp2 is bool || tmp2 is int)
+							Console.WriteLine (CONSOL_PRINT + Convert.ToString (tmp2));
+						else
+							throw new CantPrintFunction (children[0].column, children[0].line);
+					}
 					break;
 				case Labels.Return:
 					object tmp = InterpretExp (children [0], actualMemory);
@@ -221,6 +215,8 @@ namespace APproject
 					return InterpretCondition (children [0], actualMemory) && InterpretCondition (children [1], actualMemory);
 				case Labels.Or:
 					return InterpretCondition (children [0], actualMemory) || InterpretCondition (children [1], actualMemory);
+				case Labels.Bracket:
+					return InterpretExp (children [0], actualMemory);
 				case Labels.FunCall:
 					return FunctionCall (FunParameterPassing(node,actualMemory));
 				case Labels.Afun:
@@ -232,7 +228,7 @@ namespace APproject
 						Console.Write ("\n");
 						return Convert.ToInt32 (read);
 					} catch (FormatException) {
-						throw new ReadNotIntegerValue ();
+						throw new ReadNotIntegerValue (node.column, node.line);
 					}
 				case Labels.Async:
 					var fun = FunParameterPassing (node.children[0], actualMemory);

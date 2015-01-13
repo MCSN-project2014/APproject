@@ -12,10 +12,13 @@ COMPILER Fun
 	
 	public SymbolTable   tab;
 	public ASTGenerator  gen;
+	private int Afunid = 0;
 	public void controlForProcedurs(ASTNode node){
-	if(node.label == Labels.FunCall ){
+
+	if(node != null && node.label == Labels.FunCall ){
+	
 		Obj obj =(Obj)node.value;
-		if ( obj.kind == Kinds.proc && obj.type == Types.fun)
+		if ( obj.kind == Kinds.fundec && obj.type == Types.fun)
 				SemErr("the function "+ obj.name +" must to return a correct type for the expression");	
 	 }	
 	}
@@ -64,7 +67,7 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 																				    FRType rtype; ASTNode fundecl, node1; Term parameter;     .)
 			"fun"																	
 			(
-			    Ident<out name>													 (. proc = tab.NewObj(name, Kinds.proc, Types.undef);
+			    Ident<out name>													 (. proc = tab.NewObj(name, Kinds.fundec, Types.undef);
 																				    fundecl = new Node(Labels.FunDecl, proc);
 																				   
 																				    tab.OpenScope(proc);                             .)
@@ -88,7 +91,7 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 																				    gen.addChildren((Node)fundecl);
 																				    tab.CloseScope(); .)
 
-			  | "main"															 (. tab.NewObj("Main", Kinds.proc, Types.undef);
+			  | "main"															 (. tab.NewObj("Main", Kinds.fundec, Types.undef);
 																				    fundecl = new Node(Labels.Main);
 																				    tab.OpenScope();	.)
 																				 
@@ -104,7 +107,7 @@ ProcDecl =																		 (. Types type; string name; Obj proc; Obj formal;
 AProcDecl<out Obj robj, out ASTNode node> 									    (. string name; Types type; FRType rtype; Obj formal;
 																					ASTNode block, vardeclnode, statnode; Term parameter;.)
  =																				(. node = new Node(Labels.Afun);
-																				   robj = tab.NewObj(null, Kinds.proc, Types.undef);		    
+																				   robj = tab.NewObj(Convert.ToString(Afunid++), Kinds.fundec, Types.undef);		    
 																				   tab.OpenScope(robj); .)	
 			"fun"'(' {Ident<out name> Type<out type>							(. formal = tab.NewObj(name, Kinds.var, type); 
 																				   tab.addFormal(robj,formal); 
@@ -152,7 +155,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 											 '}'';'								(. ((Node)async).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(async); .)
-																				(. if (obj1.kind != Kinds.proc) 
+																				(. if (obj1.kind != Kinds.fundec) 
 																				       SemErr("object is not a procedure");
 																				   else if(tab.getAsyncControl(obj1))
 																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -187,7 +190,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 											 '}'';'								(. ((Node)dasync).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(dasync); .)
-																				(. if (obj1.kind != Kinds.proc) 
+																				(. if (obj1.kind != Kinds.fundec) 
 																				       SemErr("object is not a procedure");
 																				   else if(tab.getAsyncControl(obj1))
 																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -341,7 +344,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 																				   if (type == Types.fun)
 																						SemErr("you cannot declare a type fun without assign it");	
 																				   node =  new Node (Labels.Decl);
-																				   ((Node)node).addChildren(new Term (obj));                             .)
+																				   ((Node)node).addChildren(new Term (obj));                   .)
 				| '=' 
 					(	"readln" '('')'';'										(. obj  =  tab.NewObj((string)names[0], Kinds.var, type);
 																				   tab.setAsyncControl(true);
@@ -390,7 +393,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 											 '}'';'								(. ((Node)async).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(async); .)
-																				(. if (obj1.kind != Kinds.proc) 
+																				(. if (obj1.kind != Kinds.fundec) 
 																				       SemErr("object is not a procedure");
 																				   else if(tab.getAsyncControl(obj1))
 																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -426,7 +429,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 											 '}'';'								(. ((Node)dasync).addChildren(call);
 																				   ((Node)node).addChildren(new Term(obj));
 																				   ((Node)node).addChildren(dasync); .)
-																				(. if (obj1.kind != Kinds.proc) 
+																				(. if (obj1.kind != Kinds.fundec) 
 																				       SemErr("object is not a procedure");
 																				   else if(tab.getAsyncControl(obj1))
 																					   SemErr("procedure " + obj1.name + " contain println or readln ");																				   																				   
@@ -548,7 +551,7 @@ Factor<out Types type, out ASTNode node>									(. int n; Obj obj,robj; string 
 																				   ((Node)node).addChildren(node1); .)
 			  
 			   ) 
-			 } } ')'															(. if (!(obj.type == Types.fun || obj.kind == Kinds.proc) ) 
+			 } } ')'															(. if (!(obj.type == Types.fun || obj.kind == Kinds.fundec) ) 
 																						SemErr(name+" is not a function");
 																				   else 
 																						tab.checkActualFormalTypes(obj, actualTypes); .)

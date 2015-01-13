@@ -73,10 +73,10 @@ namespace APproject
 			value = null;
 			for (int i = lastIndex; i >= 0; i--) {
 				if (mem [i].TryGetValue (var.name, out value)) {
-					if (value != null)
+					//if (value != null)
 						return true;
-					else
-						throw new VariableNotInitialized (var.name);
+					//else
+					//	throw new VariableNotInitialized (var.name);
 				}
 			}
 			return false;
@@ -91,10 +91,10 @@ namespace APproject
 		public object GetValue(Obj var){
 			object result;
 			if (TryGetValue (var, out result))
-				if (result != null)
+				//if (result != null)
 					return result;
-				else
-					throw new VariableNotInitialized (var.name);
+				//else
+					//throw new VariableNotInitialized (var.name);
 			else
 				throw new VariableNotFoundException();
 		}

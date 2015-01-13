@@ -72,7 +72,7 @@ namespace  funwapc
             if (HelperParser.TryParse(mc.sourceFile, out root))
             {
                 String pathOutputname = mc.directoryOutput + mc.outputFileName;
-                FSCodeGenRef genFsharp = new FSCodeGenRef(pathOutputname);
+                FSCodeGen genFsharp = new FSCodeGen(pathOutputname);
                 genFsharp.translate(root);
             }
 
@@ -80,4 +80,5 @@ namespace  funwapc
            
 
     }
+
 }

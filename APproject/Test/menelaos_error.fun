@@ -1,4 +1,16 @@
-﻿fun add(a fun, b fun) fun(bool)bool{
+﻿fun test() int {
+	return 1;
+}
+
+fun main(){
+	test();
+}
+
+
+
+//------LAKDLDKAJ---//
+
+/*fun add(a fun, b fun) fun(bool)bool{
 	var c bool = b();
 	return fun (a1 bool) bool{
 		return a() != a1;
@@ -14,4 +26,4 @@ fun main(){
 						return true;
 					}); 
 	println(y(true));
-}
+}*/

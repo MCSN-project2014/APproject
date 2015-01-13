@@ -52,6 +52,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -68,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTGenerator\ASTGenerator.cs" />
-    <Compile Include="FSCodeGenerator\FSCodeGenRef.cs" />
+    <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +97,7 @@
     <None Include="Test\vardeclTest.fun" />
     <None Include="Test\testLuca.fun" />
     <None Include="Test\asyncTest.fun" />
+    <None Include="Test\menelaos_error.fun" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\cocor\Coco.exe" />
