@@ -11,6 +11,9 @@
 \def\moderatorname{Gianluigi Ferrari Antonio Cisternino}
 
 
+\newcommand{\fwap}{\texttt{funW@P }}
+\newcommand{\fsharp}{\texttt{F\# }}
+
 \begin{document}
 
 \maketitle
@@ -21,11 +24,12 @@
 
 \begin{abstract}
 
-The aim of this report is to offer an overview of the \texttt{funW@P} implementation and of the main design choices made during its development. Also, this document is intended both as a reference and a manual for the user wishing to use or extend our simple language. 
+The aim of this report is to offer an overview of the  \fwap  implementation and of the main design choices made during its development. Also, this document is intended both as a reference and a manual for the user wishing to use or extend our simple language. 
 
 All the information provided here will also be available at the official page of the project on GitHub \href{https://github.com/MCSN-project2014/APproject}{(https://github.com/MCSN-project2014/APproject)}.
 
 \end{abstract}
+
 \newpage
 
 
@@ -34,35 +38,14 @@ All the information provided here will also be available at the official page of
 
 \chapter{Introduction}
 
-The report structure follows closely the project's one and focuses on the most important developing phases. After reporting the complete description of the \texttt{funW@P} grammar and a brief summary about the tools used for generating the tokenizer, the parser and the type-checker (see Chapter~\ref{chapter2}), a recapitulation about the chosen intermediate representation (see Chapter~\ref{chapter3}) is offered. Then, the \texttt{F\#} code generator (see Chapter~\ref{chapter4}) and the language interpreter (see Chapter~\ref{chapter5}) are reviewed. To conclude, Chapter~\ref{chapter6} and ~\ref{chapter7} are an overview of the testing phase and a quick user guide respectively.
+The report structure follows closely the project's one and focuses on the most important developing phases. After reporting the complete description of the \fwap grammar and a brief summary about the tools used for generating the tokenizer, the parser and the type-checker (see Chapter~\ref{chapter2}), a recapitulation about the chosen intermediate representation (see Chapter~\ref{chapter3}) is offered. Then, the \fsharp code generator (see Chapter~\ref{chapter4}) and the language interpreter (see Chapter~\ref{chapter5}) are reviewed. To conclude, Chapter~\ref{chapter6} and ~\ref{chapter7} are an overview of the testing phase and a quick user guide respectively.
 
-\chapter{\label{chapter2} Designing the Language}
+\include{ch2}
+\include{ch3}
+\include{ch4}
+\include{ch5}
+\include{ch6}
 
-The grammar design has been a complex, delicate and continuous task of the project, since the grammar represents the true definition of a language in formal terms and it revealed to be of crucial importance for all the subsequent phases. Lots of on the fly adjustments and corrections leaded to the definition reported in the following section.
-
-\section{EBNF Grammar}
-
-The whole grammar is described by means of the Extended Backus-Naur Form (EBNF, \cite{ebnf}) which is metasyntax, commonly adopted by parser generators nowadays. We first introduce the used tokens, which are the following ones:
-
-\begin{lstlisting}
-TOKENS
-ident  = letter {letter | digit}.
-url = ap "http://" {UrlInLine} ap.
-number = digit {digit}.
-string = '"' {AnyButDoubleQuote | "\\\""} '"'.
-\end{lstlisting}
-
-Then we provide all the needed productions:
-
-\section{Submission of Project Report}
-
-\chapter{\label{chapter3} The Abstract Syntax Tree (AST)}
-
-\chapter{\label{chapter4} The \texttt{F\#} Code Generator}
-
-\chapter{\label{chapter5} The \texttt{funW@P} Interpreter}
-\chapter{\label{chapter6} The System Testing}
-\chapter{\label{chapter7} A Quick User Guide}
 
 %%%% ADD YOUR BIBLIOGRAPHY HERE
 \newpage
