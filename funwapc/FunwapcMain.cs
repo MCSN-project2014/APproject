@@ -22,7 +22,7 @@ namespace  funwapc
             { "h|help",  "show this message and exit", 
               v => show_help = v != null },
             { "<>", "name of source file",   //default: string without options 
-                v => sourceFile = v}
+                v => {sourceFile = v; show_help = false;}}
             };
 
              try

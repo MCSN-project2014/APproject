@@ -555,14 +555,9 @@ namespace APproject
                 safeWriteIndent("let tempJsonData = \"" +  data + "\"\n");
                 var nameTaskDasync = "_task_" + varDAsync.name;
                 var postAsyncType = (varDAsync.type==Types.integer? "getPostAsyncInt": "getPostAsyncBool");
-<<<<<<< HEAD:APproject/FSCodeGenerator/FSCodeGenRef.cs
-                safeWriteLine(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
-				//Console.WriteLine(data.Replace("\\\"","'"));
-=======
                 safeWriteIndent(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
-				Console.WriteLine(data.Replace("\\\"","'"));
->>>>>>> 288d325f19d86ac0b9dc04881dc0fc381e27a37a:APproject/FSCodeGenerator/FSCodeGen.cs
-                environment.addUpdateValue(varDAsync, true); 
+				//Console.WriteLine(data.Replace("\\\"","'"));
+
 			}
 		}
 
