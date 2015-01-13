@@ -14,7 +14,7 @@ namespace  funwapc
 				String fileName = "translated_file";   //can be args[1]  argument with some parameter ( e.g -t filename) 
 				bool useDasyncLibrary;
 				if (HelperParser.TryParse(args[0], out root)){
-					FSCodeGenRef genFsharp = new FSCodeGenRef(fileName);
+					FSCodeGen genFsharp = new FSCodeGen(fileName);
 					genFsharp.translate(root);
 				}
 				Console.Read();

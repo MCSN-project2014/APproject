@@ -9,25 +9,27 @@ namespace APproject
 {
     ///<summary>
     ///This class converts an AST of funW@P into the corresponding F# code,
-    ///simply by visiting the tree.
-    ///Output is written into a outputFileName.fs file, 
+    ///simply by visiting the tree, according to a breadth-first fashion.
+    ///The output is written into a outputFileName.fs file, 
     ///result of the translation.
     ///</summary>
-    public class FSCodeGenRef
+    public class FSCodeGen
     {
 
-        private int indentationLevel; //it stores the number of \s needed to get the perfect indentation ;)
+        private int indentationLevel;           //it stores the number of \s needed to get the perfect F# indentation ;)
         private string fileName;
         private bool bang;                      //it indicates whether the operator bang! must be used or not in the translation
-        private Environment environment;        //used for memorize varibles for different translations (same environment of interpreter)
+        private Environment environment;        //it keeps variables that must be translated differently in F#(same Environment class of interpreter)
 		private Dictionary<Obj,ASTNode> decFunctions; 
-		private int indexPar;                   //incremental number for generating unique variable names.
+		private int indexPar;                   //counter for generating unique variable names.
 
         ///<summary>
         ///The constructor of FSCodeGenRef. 
-        ///Output of the translation is written into a outputFileName.fs file.
+        ///The outputFileName.fs file is created.
+        ///If the file is already there, the old version
+        ///is deleted.
         ///</summary> 
-		public FSCodeGenRef(string outputFileName)
+		public FSCodeGen(string outputFileName)
         {
 			indexPar = 0;
 			decFunctions = new Dictionary<Obj,ASTNode> ();
@@ -60,7 +62,8 @@ namespace APproject
         ///<summary>
         /// This method calls the necessary ones in order to translate 
         /// the AST into F# code.
-        /// It is recursively called by all other methods.
+        /// It is recursively called by all other methods, by using
+        /// the translateRecursive() method below.
         /// Just a big switch case.
         ///</summary>
         /// <param name="Node n">n.</param>
@@ -159,7 +162,8 @@ namespace APproject
 
         ///<summary>
         ///This is a helper method which calls the method 'translate'
-        ///if needed or prints the content of a node if it's a terminal one.
+        ///if needed or prints the correct string if a node
+        ///is a terminal one.
         ///</summary>
         ///<param name="n">n.</param>
         private void translateRecursive(ASTNode n)
@@ -186,7 +190,7 @@ namespace APproject
         }
 
         /// <summary>
-        /// This is a helper method which writes a string in the fsharp file.
+        /// This is a helper method which writes a string in the F# file.
         /// It doesn't introduce any indentation or white spaces.
         /// </summary>
         /// <param name="s">String to be written within the output file.</param>
@@ -199,22 +203,22 @@ namespace APproject
         }
 
         /// <summary>
-        /// This method writes a number of white spaces and after 
-        /// the string in the fsharp file.
-        /// It doesn't write the new line.
+        /// This method writes a number of white spaces and followed 
+        /// by the string in the F# file.
+        /// It doesn't write the new line \n.
         /// </summary>
         /// <param name="s">String to be written within the output file.</param>
 
-		private void safeWriteLine(string s){
+		private void safeWriteIndent(string s){
 			var tmp = indent () + s;
 			safeWrite (tmp);
 		}
 
         /// <summary>
-        /// This method prints n four spaces according to the passed parameter. 
+        /// This method prints four spaces according to the 
+        /// indentationLevel content.
         /// http://msdn.microsoft.com/en-us/library/dd233191.aspx
         /// </summary>
-        /// <param name="n">Indentation level to be used.</param>
 		private string indent()
         {
 			string res = "";
@@ -226,17 +230,17 @@ namespace APproject
 
         /// <summary>
         /// This method translates all the function declarations and the 
-        /// main, recursively.
+        /// main, recursively. It prints the needed "open" statements in F#.
         /// </summary>
-        /// <param name="n">the Program node</param>
+        /// <param name="n">The Program node.</param>
         public void translateProgram(ASTNode n)
         {
-            safeWriteLine("open System\n");
-            safeWriteLine("open System.IO\n");
-            safeWriteLine("open System.Threading.Tasks\n");
-            safeWriteLine("open funwaputility.PostMethods\n");
-            safeWriteLine("open funwaputility.Readline\n");   
-            safeWriteLine("\n");
+            safeWriteIndent("open System\n");
+            safeWriteIndent("open System.IO\n");
+            safeWriteIndent("open System.Threading.Tasks\n");
+            safeWriteIndent("open funwaputility.PostMethods\n");
+            safeWriteIndent("open funwaputility.Readline\n");   
+            safeWriteIndent("\n");
  
             foreach (ASTNode c in n.children)
             {
@@ -246,22 +250,22 @@ namespace APproject
       
 
         /// <summary>
-        /// This method translates the main.
+        /// This method translates the Main.
         /// </summary>
-        /// <param name="n">the Main node</param>
+        /// <param name="n">The Main node.</param>
         public void translateMain(ASTNode n)
         {
             environment.addScope();
 
-            safeWriteLine("\n[<EntryPoint>]\nlet main argv = \n");
+            safeWriteIndent("\n[<EntryPoint>]\nlet main argv = \n");
             
 			indentationLevel++;
 
 			foreach (Node c in n.children)
                 translateRecursive(c);
   			
-            safeWriteLine("Console.ReadLine()|>ignore\n");
-            safeWriteLine("0\n");
+            safeWriteIndent("Console.ReadLine()|>ignore\n");
+            safeWriteIndent("0\n");
 			indentationLevel--;
 
             environment.removeScope();
@@ -271,7 +275,7 @@ namespace APproject
         /// <summary>
         /// This method translates a Block node.
         /// </summary>
-        /// <param name="n">the Block node</param>
+        /// <param name="n">The Block node</param>
         public void translateBlock(ASTNode n)
         {
             List<ASTNode> children = n.children;
@@ -290,10 +294,11 @@ namespace APproject
 
         /// <summary>
         /// This method translates a function declaration in F#.
-        /// The first child is the block Node,  other children are the parameters of the function.
-        /// If is a recursive function it writes the "rec" keyword.
+        /// The first child is the block Node, the other children are the 
+        /// parameters of the function itslef.
+        /// If the function is recursive the "rec" keyword is used.
         /// </summary>
-        /// <param name="n">Node representing a function declaration.</param>
+        /// <param name="n">The FunDecl node.</param>
         /// 
         public void translateFunDecl(ASTNode n)
         {
@@ -301,12 +306,12 @@ namespace APproject
 
 			decFunctions.Add ((Obj)n.value, n);
          	
-			safeWriteLine ("let "+( ((Obj)n.value).recursive ? "rec " :  " ") + ((Obj)(n.value)).name);
+			safeWriteIndent ("let "+( ((Obj)n.value).recursive ? "rec " :  " ") + ((Obj)(n.value)).name);
 			List<string> nameParameters = translateParameters (n);
 			safeWrite (" =");
 			safeWrite("\n");
 			indentationLevel++;
-			translateMutableParameters (nameParameters);
+			translatePassedParameters (nameParameters);
 			indentationLevel--;
 			translateRecursive (n.children[0]);
 			safeWrite ("\n");
@@ -316,20 +321,20 @@ namespace APproject
 
 
         /// <summary>
-        /// This is a helper method, translating the paramters function
-        /// as mutable variable.
+        /// This is a helper method, translating the function parameters
+        /// that may be used within a function call.
         /// </summary>
-        /// <param name="iparList"></param>
-        private void translateMutableParameters(List<string> parList)
+        /// <param name="iparList">List of parameters to be printed out.</param>
+        private void translatePassedParameters(List<string> parList)
         {
             foreach (string s in parList)
-				safeWriteLine("let " + s + " = ref(" + s + ")\n");
+				safeWriteIndent("let " + s + " = ref(" + s + ")\n");
         }
 
 
         /// <summary>
-        /// This is a helper method, translating the function
-        /// parameters.
+        /// This is a helper method, translating the formal
+        /// function parameters.
         /// </summary>
         /// <param name="initPar"></param>
         /// <param name="n"></param>
@@ -357,12 +362,12 @@ namespace APproject
         /// This method translates the If node and 
         /// its children, recursively.
         /// </summary>
-        /// <param name="n">the If node</param>
+        /// <param name="n">The If node.</param>
         public void translateIf(ASTNode n)
         {
             List<ASTNode> children = n.children;
 
-            safeWriteLine("if ");
+            safeWriteIndent("if ");
             bang = true;
             translateRecursive(children.ElementAt(0));
             bang = false;
@@ -370,7 +375,7 @@ namespace APproject
             translateRecursive(children.ElementAt(1));
             if (children.Count == 3)
             {
-                safeWriteLine("else\n");
+                safeWriteIndent("else\n");
                 translateRecursive(children.ElementAt(2));
             }
         }
@@ -379,11 +384,11 @@ namespace APproject
         /// This method translates the While node and 
         /// its children, recursively.
         /// </summary>
-        /// <param name="n">the While node</param>
+        /// <param name="n">The While node</param>
         public void translateWhile(ASTNode n)
         {
             List<ASTNode> children = n.children;
-            safeWriteLine("while ");
+            safeWriteIndent("while ");
             bang = true;
             translateRecursive(children[0]);
             bang = false;
@@ -395,12 +400,11 @@ namespace APproject
         /// This method translates the Return node
         /// (F# has no explicit "return" statement").
         /// </summary>
-        /// <param name="n">the Return node</param>
+        /// <param name="n">The Return node</param>
         public void translateReturn(ASTNode n)
         {
- 
             bang = true;
-			safeWriteLine ("");
+			safeWriteIndent ("");
             translateRecursive(n.children[0]);
             safeWrite("\n");
             bang = false;
@@ -409,10 +413,11 @@ namespace APproject
         /// <summary>
         /// This method translates the Assignment node and 
         /// its children, recursively.
-        /// If the second child is an Async node it calls recursice the translation of a async.
-        /// if is a Dasync node, calls thr tranlsation of a Dasync code.
+        /// If the second child is an Async node it calls recursively the 
+        /// translator for an Async node if it is a Dasync node, 
+        /// same for a Dasync code.
         /// </summary>
-        /// <param name="n">the Assignment node</param>
+        /// <param name="n">The Assignment node.</param>
         public void translateAssig(ASTNode n)
         {
             List<ASTNode> children = n.children;
@@ -428,7 +433,7 @@ namespace APproject
 			default:
 				environment.addUpdateValue ((Obj)children [0].value, false);
 
-				safeWriteLine (children [0] + " := ");
+				safeWriteIndent (children [0] + " := ");
 				bang = true;
 				translateRecursive (children.ElementAt (1));
 				bang = false;
@@ -440,16 +445,17 @@ namespace APproject
 
         /// <summary>
         /// This method translates the Declaration node and 
-        /// its children, recursively. In F# all mutable variables
-        /// MUST be initialized: thus int variables are set to 0,
-        /// bool variables to true.
+        /// its children, recursively. In F# all ref variables
+        /// MUST be initialized: thus int variables are set 
+        /// by default to 0, bool variables to 'true'.
+        /// Same happens with the funW@P interpreter.
         /// </summary>
         /// <param name="n">the declaration node</param>
         public void translateDecl(ASTNode n)
         {
 			foreach(ASTNode item in n.children)
             {
-			    safeWriteLine("let " + item + " = ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
+			    safeWriteIndent("let " + item + " = ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
         	}
 
 			foreach (ASTNode item in n.children) {
@@ -458,12 +464,17 @@ namespace APproject
 					createStructureAsync (vartmp);
                 if(vartmp.isUsedInDasync)
                     createStructureAsync(vartmp);
-
 			}
 		}
 
+        /// <summary>
+        /// Private method creating the Task to be associated
+        /// to a variable which is objet of an Async assignment.
+        /// </summary>
+        /// <param name="var">The variable Obj.</param>
+
 		private void createStructureAsync(Obj var){
-			safeWriteLine ("let mutable " + "_task_" + var.name +
+			safeWriteIndent ("let mutable " + "_task_" + var.name +
 				" = Async.StartAsTask( async{ return " +
 				(var.type == Types.integer ? "0" : "true") + "})\n");
 			environment.addUpdateValue (var, true);
@@ -471,7 +482,7 @@ namespace APproject
 
 
         /// <summary>
-        /// Creates the code in f# for the async operation.
+        /// This method writes the F# code for the async operation.
         /// </summary>
         /// <param name="funCall">FunCall node in the async.</param>
         /// <param name="varAsync">The variable in wich the result will be stored.</param>
@@ -480,7 +491,7 @@ namespace APproject
 			createTmpParameter (funCall);
 
 			var funObj = (Obj)funCall.value;
-			safeWriteLine("_task_" + varAsync.name + " <- Async.StartAsTask( async{ return "+funObj.name+" ");
+			safeWriteIndent("_task_" + varAsync.name + " <- Async.StartAsTask( async{ return "+funObj.name+" ");
 
 			int i=0;
 			foreach (ASTNode node in funCall.children) {
@@ -495,16 +506,17 @@ namespace APproject
 
 
         /// <summary>
-        /// Helper method to translate the paramter of a function call in f#.
+        /// Helper method to translate the actual
+        /// parameter of a function call in F#.
         /// </summary>
-        /// <param name="funCall">FunCall node .</param>
+        /// <param name="funCall">FunCall node.</param>
 
 		private List<string> createTmpParameter(ASTNode funCall){
             var tmpIndex = indexPar;
 			var actual = new List<string>();
 			foreach (ASTNode node in funCall.children) {
                 var varName = "_par_"  + node + tmpIndex++ ;
-                safeWriteLine("let " + varName + (node.type == Types.integer ? " : int " : " : bool ") + " = ");
+                safeWriteIndent("let " + varName + (node.type == Types.integer ? " : int " : " : bool ") + " = ");
 				actual.Add (varName);
 				bang = true;
 				translateRecursive (node);
@@ -514,13 +526,13 @@ namespace APproject
 			return actual;
 		}
 
-
         /// <summary>
-        /// This method translates a Dasync into f# code.
-        /// Convert the parameters of the function in the Dasync and it's body 
-        /// in a json form.
-        /// Call the method for the post operation ( for bool and int return function).
-        /// Write a task in result to a Dasync operation, with the url specified and the json structure.
+        /// This method translates a Dasync into F# code.
+        /// It converts the parameters of the Dasync function and it's body 
+        /// in a JSON string.
+        /// It calls the method for the POST operation (both for bool and int functions).
+        /// It writes a task in result to a Dasync operation, 
+        /// with the url specified and the json structure.
         /// </summary>
         /// <param name="funCall">FunCall node in the Dasync structure.</param>
         /// <param name="varDAsync">Variable to assign the returned dasync value.</param>
@@ -540,10 +552,10 @@ namespace APproject
 				block.parent = null;
 
 				string data = HelperJson.SerializeWithEscape (actual, formal, block);
-                safeWriteLine("let tempJsonData = \"" +  data + "\"\n");
+                safeWriteIndent("let tempJsonData = \"" +  data + "\"\n");
                 var nameTaskDasync = "_task_" + varDAsync.name;
                 var postAsyncType = (varDAsync.type==Types.integer? "getPostAsyncInt": "getPostAsyncBool");
-                safeWriteLine(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
+                safeWriteIndent(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
 				Console.WriteLine(data.Replace("\\\"","'"));
                 environment.addUpdateValue(varDAsync, true); 
 			}
@@ -563,9 +575,7 @@ namespace APproject
 			}
 
 			if (children [1].label != Labels.Async) {
-				safeWriteLine ("let "+children[0]+" = ref(");
-				//translateRecursive (); // contains the variable name 
-				//safeWrite (" = ref(");
+				safeWriteIndent ("let "+children[0]+" = ref(");
 			}
 
             bang = true;
@@ -580,7 +590,7 @@ namespace APproject
         /// This method translates the call of function node and 
         /// its children, recursively. 
         /// </summary>
-        /// <param name="n">the function call node</param>
+        /// <param name="n">the FunCall node</param>
         /// 
         public void translateFunCall(ASTNode n)
         {
@@ -611,11 +621,11 @@ namespace APproject
         /// This method translates a println() call node into the 
         /// correspondent printfn() of F#. 
         /// </summary>
-        /// <param name="n">the println call node</param>
+        /// <param name="n">the Println node</param>
         /// 
         public void translatePrint(ASTNode n)
         {
-            safeWriteLine("Console.WriteLine( ");
+            safeWriteIndent("Console.WriteLine( ");
             bang = true;
             translateRecursive(n.children[0]);
             bang = false;
@@ -624,7 +634,21 @@ namespace APproject
 
         /// <summary>
         /// This method translates a readln() call node into the 
-        /// correspondent Console.ReadLine() of F#. 
+        /// correspondent F# _readln() which is defined in the 
+        /// funwaputilities.dll library as:
+        /// 
+            ///let _readln() =
+            ///     let mutable tmp = true
+            ///     let input = ref(0)
+            ///     while tmp do
+            ///     try
+            ///        input := Convert.ToInt32(Console.ReadLine())
+            ///        tmp <- false;
+            ///    with
+            ///    | :? System.FormatException as ex ->
+            ///        Console.WriteLine("funW@P->F# - Only integer input is allowed. Try again.")
+            ///!input
+        ///
         /// </summary>
         /// <param name="n">the readln call node</param>
         /// 
@@ -635,11 +659,11 @@ namespace APproject
  
 
         /// <summary>
-        /// This method translates into F# the anonymous function.
-        /// The first child is the block, the second the return type(if there),
-        /// other children are the parameters.
+        /// This method translates into F# an anonymous function.
+        /// The first child is the block, the second the return type(if there is one),
+        /// the other children are the parameters.
         /// </summary>
-        /// <param name="n">The node representing an anonymous fuunction.</param>
+        /// <param name="n">The Afun node.</param>
         /// 
         public void translateAfun(ASTNode n)
         {
@@ -654,35 +678,15 @@ namespace APproject
             
 
             indentationLevel++;
-			translateMutableParameters (paramList);
+			translatePassedParameters (paramList);
             indentationLevel--;
             translateRecursive(children[0]);
-	
-
-
-            ////if (numElement >= 2 && children.ElementAt(1).label == Labels.Return)
-            //{
-            //    translateParameters(2, n);
-                
-            //    //translateRecursive(children.ElementAt(1));
-            //    safeWrite(" -> \n");
-            //    translateRecursive(children.ElementAt(0));
-            //}
-
-            //if (numElement >= 2 && children.ElementAt(1).label != Labels.Return)
-            //{   
-
-            //    translateParameters(1, n);
-            //    safeWrite(" -> \n");
-            //    translateRecursive(children.ElementAt(0));
-            //}
-
-
         }
+
         /// <summary>
         /// This method translates into F#  the unary minus.
         /// </summary>
-        /// <param name="n">The node.</param>
+        /// <param name="n">The Negativ node.</param>
         public void translateNegativ(ASTNode n)
         {
             safeWrite("-");
@@ -707,7 +711,7 @@ namespace APproject
         /// boolean expressions.
         /// </summary>
         /// <param name="op">The symbol of the operator within a string.</param>
-        /// <param name="n">The node.</param>
+        /// <param name="n">The Op node.</param>
         public void translateOp(string op, ASTNode n)
         {
             List<ASTNode> children = n.children;
