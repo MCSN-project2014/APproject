@@ -1,5 +1,4 @@
 #ignore latex files
-report_template.pdf
 *.aux
 *.glo
 *.idx

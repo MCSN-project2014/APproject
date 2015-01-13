@@ -7,3 +7,4 @@
 \contentsline {chapter}{\numberline {4} The \texttt {F\# }Code Generator}{6}{chapter.4}
 \contentsline {chapter}{\numberline {5} The \texttt {funW@P }Interpreter}{7}{chapter.5}
 \contentsline {chapter}{\numberline {6} The System Testing}{8}{chapter.6}
+\contentsline {chapter}{\numberline {7} A Quick User Guide}{9}{chapter.7}

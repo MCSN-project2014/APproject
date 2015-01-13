@@ -32,22 +32,19 @@ All the information provided here will also be available at the official page of
 
 \newpage
 
+%%%%%%%%%%%%%%%%%%%%% Introduction
 
-%%%%%%%%%%%%%%%%%%%%%%
-%%% Introduction
+\include{chapters/introduction}
 
-\chapter{Introduction}
-
-The report structure follows closely the project's one and focuses on the most important developing phases. After reporting the complete description of the \fwap grammar and a brief summary about the tools used for generating the tokenizer, the parser and the type-checker (see Chapter~\ref{chapter2}), a recapitulation about the chosen intermediate representation (see Chapter~\ref{chapter3}) is offered. Then, the \fsharp code generator (see Chapter~\ref{chapter4}) and the language interpreter (see Chapter~\ref{chapter5}) are reviewed. To conclude, Chapter~\ref{chapter6} and ~\ref{chapter7} are an overview of the testing phase and a quick user guide respectively.
-
-\include{ch2}
-\include{ch3}
-\include{ch4}
-\include{ch5}
-\include{ch6}
-
+\include{chapters/design}  		% explains the design of the language
+\include{chapters/ast}			% expalins the AST
+\include{chapters/codegen}		% explains the f# code generator
+\include{chapters/interpreter}  % expalins the interpreter
+\include{chapters/testing}  	% expalins  the testing
+\include{chapters/userguide}	% user guide manual 
 
 %%%% ADD YOUR BIBLIOGRAPHY HERE
+
 \newpage
 \begin{thebibliography}{99}
 \bibitem{DAWSON:2000} Christian Dawson. \emph{The Essence of Computing Projects -- A Student's Guide}. 192 pages. ISBN: 013021972X. Pearson Education, 2000.
