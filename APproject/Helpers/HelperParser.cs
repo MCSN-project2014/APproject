@@ -8,7 +8,7 @@ namespace APproject
 		public static bool TryParse (string file, out ASTNode node)
 		{
 			node = null;
-			Console.WriteLine("parse file: " + file);
+			Console.WriteLine("parse file: " + file +"\n");
 			Scanner scanner = new Scanner(file);
 			Parser parser = new Parser(scanner);
 			parser.tab = new SymbolTable(parser);

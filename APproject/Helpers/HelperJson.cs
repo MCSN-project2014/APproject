@@ -28,7 +28,7 @@ namespace APproject
 			var jsonNode = JsonConvert.SerializeObject (node, setting);
 			var tmp =  jsonPar + "&" + jsonNode;
 			tmp = tmp.Replace ('\"', '\'');
-			Console.WriteLine (tmp);
+			//Console.WriteLine (tmp);
 			return tmp;
 		}
 
@@ -45,7 +45,7 @@ namespace APproject
 			var jsonNode = JsonConvert.SerializeObject (node, setting);
 			jsonNode = jsonNode.Replace ("\"", "\\\"");
 			var tmp =  jsonPar + "&" + jsonNode;
-			Console.WriteLine (tmp);
+			//Console.WriteLine (tmp);
 			return tmp;
 		}
 		/*

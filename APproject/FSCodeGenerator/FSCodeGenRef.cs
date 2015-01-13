@@ -550,7 +550,7 @@ namespace APproject
                 var nameTaskDasync = "_task_" + varDAsync.name;
                 var postAsyncType = (varDAsync.type==Types.integer? "getPostAsyncInt": "getPostAsyncBool");
                 safeWriteLine(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
-				Console.WriteLine(data.Replace("\\\"","'"));
+				//Console.WriteLine(data.Replace("\\\"","'"));
                 environment.addUpdateValue(varDAsync, true); 
 			}
 		}
