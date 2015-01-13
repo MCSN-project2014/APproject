@@ -34,7 +34,7 @@ namespace APproject
 			indexPar = 0;
 			decFunctions = new Dictionary<Obj,ASTNode> ();
             indentationLevel = 0;
-            fileName = outputFileName + ".fs";
+            fileName = outputFileName;
             environment = new Environment();
             bang = false;
 

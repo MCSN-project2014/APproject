@@ -56,6 +56,9 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OptionsLibrary">
+      <HintPath>lib\OptionsLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -71,13 +74,13 @@
   <ItemGroup>
     <Compile Include="ASTGenerator\ASTGenerator.cs" />
     <Compile Include="FSCodeGenerator\FSCodeGen.cs" />
+    <Compile Include="Helpers\HelperOption.cs" />
     <Compile Include="lib\cocor\parser\Parser.cs" />
     <Compile Include="lib\cocor\parser\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="symbolTable\SymTab.cs" />
     <Compile Include="Interpreter\Environment.cs" />
     <Compile Include="AST\ASTNode.cs" />
-    <Compile Include="Interpreter\InterpreterTest.cs" />
     <Compile Include="Interpreter\InterpreterException.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
     <Compile Include="Helpers\HelperParser.cs" />
@@ -127,5 +130,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
 </Project>

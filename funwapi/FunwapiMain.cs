@@ -12,28 +12,21 @@ namespace funwapi
         static void Main(string[] args)
         {
             Console.WriteLine("APproject - funwapi");
-            if (args.Length > 0)
+            if (HelperOption.ParseInterpreter(args))
             {
-				ASTNode root;
-				if (HelperParser.TryParse(args[0], out root)){
-                    InterpreterTest.printAST(root);
+                ASTNode root;
+                if (HelperParser.TryParse(HelperOption.inputFileName, out root)){
+                    if (HelperOption.verbose)
+                    {
+                        HelperParser.printAST(root);
+                    }
                     Interpreter inter = new Interpreter (root);
                     inter.Start ();
+                }else
+                {
+                    Console.WriteLine("ERROR: Can't open file " + HelperOption.inputFileName);
                 }
-                Console.Read();
             }
-            else
-                Console.Write("-- No source file specified");
-
-            //var list = new List<Dictionary<string,object>> (new Dictionary<string,object>[]{
-            //    new Dictionary<string,object>() {{ "cat", 2 }},
-            //    new Dictionary<string,object>() {{ "asd", true }},
-            //    new Dictionary<string,object>() {{ "cd", 2 }},
-            //    new Dictionary<string,object>() {{ "ctt", 2 }}
-
-            //});
-
-			//Console.WriteLine (HelperJson.serialize (list, InterpreterTest.test1()));
 		}
 	}
 }
