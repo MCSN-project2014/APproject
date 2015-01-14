@@ -55,7 +55,7 @@ namespace APproject
 						keys.MoveNext();
 						var key = keys.Current;
 						object value = item[key];
-						mem.addUpdateValue(new Obj{name=key}, value);
+						mem.AddValue(new Obj{name=key}, value);
 					}
 					Console.Write(Interpret(startNode,mem));
 				}
@@ -104,17 +104,33 @@ namespace APproject
                     foreach (ASTNode n in children)
                     {
                         if (n.type == Types.boolean)
-                            actualMemory.addUpdateValue((Obj)n.value, true);
+                            actualMemory.AddValue((Obj)n.value, true);
                         if (n.type == Types.integer)
-                            actualMemory.addUpdateValue((Obj)n.value, 0);
+                            actualMemory.AddValue((Obj)n.value, 0);
                     }
 					break;
 				case Labels.AssigDecl:
-					Assignment (children, actualMemory);
+					object value1 = InterpretExp(children[1], actualMemory);
+                    Obj variable1 = (Obj)children[0].value;
+                    if (value1 is Tuple<ASTNode, Environment>)
+                    {
+                        var tuple = (Tuple<ASTNode, Environment>)value1;
+                        actualMemory.AddValue(variable1, tuple.Item1, tuple.Item2);
+                    }
+                    else
+                        actualMemory.AddValue(variable1, value1);
 					break;
 				case Labels.Assig:
-					Assignment (children, actualMemory);
-					break;
+					object value2 = InterpretExp(children[1], actualMemory);
+                    Obj variable2 = (Obj)children[0].value;
+                    if (value2 is Tuple<ASTNode, Environment>)
+                    {
+                        var tuple = (Tuple<ASTNode, Environment>)value2;
+                        actualMemory.UpdateValue(variable2, tuple.Item1, tuple.Item2);
+                    }
+                    else
+                        actualMemory.UpdateValue(variable2, value2);
+                    break;
 				case Labels.Print:
                     if (children[0].isTerminal() && children[0].value is string)
                     {
@@ -144,15 +160,17 @@ namespace APproject
 			return null;
 		}
 
+        /*
 		private void Assignment(List<ASTNode> children, Environment actualMemory){
 			object value = InterpretExp (children [1], actualMemory);
 			Obj variable = (Obj) children[0].value;
 			if (value is Tuple<ASTNode,Environment>) {
 				var tuple = (Tuple<ASTNode,Environment>)value;
-				actualMemory.addUpdateValue (variable, tuple.Item1, tuple.Item2);
+				actualMemory.AddValue (variable, tuple.Item1, tuple.Item2);
 			}else
-				actualMemory.addUpdateValue (variable, value);
+				actualMemory.AddValue (variable, value);
 		}
+        */
 
 		private bool InterpretCondition (ASTNode node, Environment actualMemory)
 		{
@@ -279,10 +297,17 @@ namespace APproject
 			}
 			funMem.addScope ();
 			int i = 1;
-			foreach (ASTNode actual in node.children) {
-				funMem.addUpdateValue ((Obj)funNode.children [i].value, InterpretExp (actual, actualMemory));
-				i++;
-			}
+            if (node.children.Count == funNode.children.Count-1)
+            {
+                foreach (ASTNode actual in node.children)
+                {
+                    funMem.AddValue((Obj)funNode.children[i].value, InterpretExp(actual, actualMemory));
+                    i++;
+                }
+            }
+            else
+                throw new ParameterNumberException(funName.name);
+
 			return new Tuple<ASTNode,Environment> (funNode, funMem);
 		}
 

@@ -16,7 +16,7 @@ namespace APproject
 
 		public override string Message {
 			get {
-				return "FanW@p RUNTIME EXCEPTION:\n";
+				return "funW@p RUNTIME EXCEPTION:\n";
 			}
 		}
 
@@ -49,7 +49,7 @@ namespace APproject
 
 		public override string Message {
 			get {
-				return base.Message + "the value of the print is a function. "+CodePosition;
+				return base.Message + "Println of a function is not allowed. "+CodePosition;
 			}
 		}
 	}
@@ -62,10 +62,27 @@ namespace APproject
 
 		public override string Message {
 			get {
-				return base.Message + "The readed input is not a number. "+CodePosition;
+				return base.Message + "The inserted input is not a number. "+CodePosition;
 			}
 		}
 	}
+
+    public class ParameterNumberException : InterpreterException
+    {
+        string fun;
+        public ParameterNumberException(string fun)
+        {
+            this.fun = fun;
+        }
+
+        public override string Message
+        {
+            get
+            {
+                return base.Message + "Wrong number of parameters in function call '" + fun + "'";
+            }
+        }
+    }
 
 	class DasyncException : InterpreterException {
 
@@ -77,7 +94,7 @@ namespace APproject
 
 		public override string Message {
 			get {
-				return base.Message + "The server fail with: " + error;
+				return base.Message + "The server failed with: " + error;
 			}
 		}
 	}
@@ -92,7 +109,7 @@ namespace APproject
 
 		public override string Message {
 			get {
-				return base.Message + "Impossible to connect to the server: " + error;
+				return base.Message + "it's not possible to connect to the server: " + error;
 			}
 		}
 	}
