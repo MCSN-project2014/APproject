@@ -4,7 +4,7 @@ The grammar design has been a complex, delicate and continuous task of the proje
 
 \section{BNF Grammar}
 
-The whole grammar is described by means of the Backus-Naur Form (BNF, \cite{bnf}), despite the fact that the Coco/R metasyntax is much closer to the Extended Backus-Naur Form (EBNF, \cite{ebnf}), since the authors retained it less readable.  We first introduce the used tokens, which are the following ones:
+The whole grammar is described by means of the Backus-Naur Form (BNF, \cite{bnf}), despite the fact that the Coco/R metasyntax is much closer to the Extended Backus-Naur Form (EBNF, \cite{ebnf}), since the authors retained it less readable.  We first introduce the used tokens, which are the following ones:\\
 
 \begin{lstlisting} [caption=The \fwap tokens.]
 TOKENS
@@ -131,7 +131,7 @@ The Coco/R input, provided with all the semantic annotations, is contained withi
 
 \section{Symbol Table and Type Checking}
 
-The \texttt{SymTable.cs} class represents the \fwap symbol table which - being the scope static by design choice - allows both type and environment checking. In fact, a \texttt{SymTable.cs} can register the name of any variable and declared function with all their type information (i.e. also the return type for the functions). In order to manage those associations, the \texttt{Obj} class has been coded; an \texttt{Obj.cs} instance can be
+The \texttt{SymTable.cs} class represents the \fwap symbol table which - being the language scope static by design choice - allows both type and environment checking. In fact, \texttt{SymTable.cs} can register the name of any variable and declared function with all their type information (i.e. also the return type for the functions). In order to manage those associations, the \texttt{Obj} class has been coded; an \texttt{Obj.cs} instance can be
 
 \begin{itemize}
 	\item a variable
