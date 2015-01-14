@@ -19,7 +19,6 @@ namespace APproject
 
 		public Interpreter( ASTNode node){
 			startNode = node;
-			//main = new Obj{ name = "main" };
 			function = new Dictionary<Obj, ASTNode> ();
 		}
 			
@@ -31,7 +30,6 @@ namespace APproject
 						if (node.label == Labels.FunDecl)
 							function.Add ((Obj)node.value, node);
 						if (node.label == Labels.Main) {
-							//funMem.addNameSpace (main);
 							var mem = new Environment ();
 							mem.addScope ();
 							Interpret (node, mem);
@@ -134,11 +132,7 @@ namespace APproject
 				case Labels.Print:
                     if (children[0].isTerminal() && children[0].value is string)
                     {
-                        /*char[] quotes = new char[1];
-                        quotes[0] = '"';
-                        string tmpString = ((string)children[0].value).TrimStart(quotes);
-                        tmpString = tmpString.TrimEnd(quotes);*/
-						Console.WriteLine(CONSOL_PRINT + children[0]);
+                        Console.WriteLine(CONSOL_PRINT + children[0]);
                     }
 					else{
 						var tmp2 = InterpretExp(children[0], actualMemory);
@@ -172,26 +166,47 @@ namespace APproject
 		}
         */
 
+        /// <summary>
+        /// Interpret an ASTnode and return a boolean value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="actualMemory"></param>
+        /// <returns></returns>
 		private bool InterpretCondition (ASTNode node, Environment actualMemory)
 		{
 			return (bool) InterpretExp(node,actualMemory);
 		}
 
+        /// <summary>
+        /// Interpret an ASTnode and return a integer value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="actualMemory"></param>
+        /// <returns></returns>
 		private int InterpretExpInt (ASTNode node, Environment actualMemory){
 			return (int) InterpretExp(node,actualMemory);
 		}
 
+        /// <summary>
+        /// interpret an ASTNode and return an object 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="actualMemory"></param>
+        /// <returns></returns>
 		private object InterpretExp (ASTNode node, Environment actualMemory)
 		{
 			if (node.isTerminal ()) {
-				if (node.value is Obj) {
+                if (node.value is Obj) {
+                    //the node is a variable
 					object value = actualMemory.GetValue ((Obj)node.value);
 					if (value is Task<object>) {
-						Console.WriteLine (CONSOL_INFO + "while computing '" + node + "'...");
-						return ((Task<object>)value).Result;
+						//the value of the variable is computing by a async
+                        Console.WriteLine (CONSOL_INFO + "while computing '" + node + "'...");
+						return ((Task<object>)value).Result; //wait the task
 					} else if (value is Task<HttpResponseMessage>) {
+                        //the value of the variable is computing by a dasync
 						Console.WriteLine (CONSOL_INFO + "while computing '" + node + "' on server...");
-						return HelperHttpClient.WaitResult ((Task<HttpResponseMessage>)value);
+						return HelperHttpClient.WaitResult ((Task<HttpResponseMessage>)value); //wait the task
 					}else
 						return value;
 				}else
@@ -249,12 +264,13 @@ namespace APproject
 						throw new ReadNotIntegerValue (node.column, node.line);
 					}
 				case Labels.Async:
+                    //interpret the function parameter
 					var fun = FunParameterPassing (node.children[0], actualMemory);
+                    //crate a new task that interpret the function
 					Task<object> task = Task.Run (() => {
-						//Thread.Sleep(2000);
 						return FunctionCall (fun);
 					});
-					return task;
+					return task; //return the task
 				case Labels.Dsync:
 					var parChildren = children [1].children;
 					var funObj = (Obj)children [1].value;
@@ -274,7 +290,6 @@ namespace APproject
 							url = (string)actualMemory.GetValue ((Obj)children [0].value);
 						else
 							url = children [0].ToString(); 
-						//url = url.Substring(1,url.Length-2);
 						return HelperHttpClient.PostAsyncRequest (url, json);
 					}
 					return null;
@@ -316,6 +331,5 @@ namespace APproject
 			fun.Item2.removeScope ();
 			return ret;
 		}
-
 	}
 }
