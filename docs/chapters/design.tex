@@ -144,3 +144,12 @@ distinguished by the \texttt{kind} field. All possible kinds are listed below.
 \begin{lstlisting}[caption=Labels for \texttt{Node}'s.]
 public enum Kinds {var,fundec,scope}
 \end{lstlisting}
+
+\texttt{Obj.cs}'s are then inserted as terminal within the Abstract Syntax Tree (AST, see Chapter\ref{chapter3}) that allows the interpreter and the compiler to access the type information of each variable. Type checking is executed while parsing the \fwap code, accordingly to the semantics rules (i.e. pieces of code) defined within the \textit{GramWithSemantics.ATG} file. In particular
+\begin{itemize}
+	\item the variable declarations/assignments (e.g. \texttt{var x bool = 35;} is not valid)
+	\item the formal vs. actual parameters for a function call of a declared procedure
+	\item the return type of declared functions 
+\end{itemize}
+are statically checked. On the other hand, because of the language syntax, it was not possible to type-check nor the return type of the anonymous functions nor the actual parameters coherence with respect to the formal ones, after the assignment of the function itself to a \texttt{fun} variable.
+
