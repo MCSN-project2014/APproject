@@ -129,7 +129,7 @@ Then, we provide all the needed productions. Even though the grammar is not LL(1
 
 The Coco/R input, provided with all the semantic annotations, is contained within the file \textit{GramWithSemantics.ATG}.
 
-\section{Symbol Table and Type Checking}
+\section{\label{typecheck}Symbol Table and Type Checking}
 
 The \texttt{SymTable.cs} class represents the \fwap symbol table which - being the language scope static by design choice - allows both type and environment checking. In fact, \texttt{SymTable.cs} can register the name of any variable and declared function with all their type information (i.e. also the return type for the functions). In order to manage those associations, the \texttt{Obj} class has been coded; an \texttt{Obj.cs} instance can be
 
