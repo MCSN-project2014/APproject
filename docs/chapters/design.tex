@@ -2,11 +2,11 @@
 
 The grammar design has been a complex, delicate and continuous task of the project, since it represents the true definition of a language in formal terms and it revealed to be of crucial importance for all the subsequent phases. Lots of on the fly adjustments and corrections leaded to the definition reported and discussed in the following section.
 
-\section{EBNF Grammar}
+\section{BNF Grammar}
 
-The whole grammar is described by means of the Extended Backus-Naur Form (EBNF, \cite{ebnf}) which is metasyntax, commonly adopted by parser generators nowadays. We first introduce the used tokens, which are the following ones:
+The whole grammar is described by means of the Backus-Naur Form (BNF, \cite{bnf}), despite the fact that the Coco/R metasyntax is much closer to the Extended Backus-Naur Form (EBNF, \cite{ebnf}), since the authors retained it less readable.  We first introduce the used tokens, which are the following ones:\\
 
-\begin{lstlisting}
+\begin{lstlisting} [caption=The \fwap tokens.]
 TOKENS
 ident  = letter {letter | digit}.
 url = ap "http://" {UrlInLine} ap.
@@ -14,6 +14,151 @@ number = digit {digit}.
 string = '"' {AnyButDoubleQuote | "\\\""} '"'.
 \end{lstlisting}
 
-Then we provide all the needed productions:
+Then, we provide all the needed productions. Even though the grammar is not LL(1), the Coco/R parser generator was able to handle LL(k) situations.
 
-\section{Submission of Project Report}
+\begin{grammar}
+<Fun> ::=  { <ProcDecl> } 
+
+<ProcDecl> ::=  
+'fun' <Ident> '(' <FormalsDeclList> ')' <FRType> '\{' <Bolck> '\}'
+\alt 'fun' 'main' '(' ')' '\{' <Bolck> '\}' 
+
+<AProcDecl> ::= 'fun' '(' <FormalsDeclList> ')' <FRType> '\{' <Bolck> '\}'
+
+<Block> ::=  <VarDecl> <Block> | <Stat> <Block> | $\varepsilon$
+
+<FormalsDeclList> ::= 	<FormalsDeclTail> 
+						\alt <Ident> <Type> <FormalsDeclTail> 
+
+<FormalsDeclTail> ::= ',' <Ident> <Type> | $\varepsilon$
+
+<Stat> ::= 
+			<Ident> '=' 'async' '\{' 'return' <Ident> '(' <ActualSyncList> ')' '\}' ';'
+			\alt <Ident> '=' 'dasync' '\{' <Ident> ',' 'return' <Ident> '(' <ActualSyncList> ')' '\}'';'
+			\alt <Ident> '=' 'dasync' '\{' <URL> ',' 'return' <Ident> '(' <ActualSyncList> ')' '\}'';'
+			\alt <Ident> '=' <CompleteExpr> ';'
+			\alt <Ident> '=' <AProcDecl>                                  
+			\alt <Ident> '=' 'readln' '(' ')'';'
+			\alt 'if' <CompleteExpr> '\{' <Bolck> '\}' <Else>                                        
+			\alt 'while' <CompleteExpr> '\{' <Bolck> '\}'                                                      
+			\alt 'println' '(' <CompleteExpr> ')' ';'
+			\alt 'println' '(' <String> ')' ';'
+			\alt <Return>.
+
+<Else> :: =  'else' '\{' <Bolck> '\}' | $\varepsilon$
+
+<Return> ::= 
+			'return' <CompleteExpr>
+			\alt 'return' <AProcDecl>
+
+<VarDecl> ::= 	<VarDeclList> ';' 
+				'var' <Ident>  <Type> '=' 'readln' '('')'';'
+				\alt 'var' <Ident>  <Type> '=' <CompleteExpr> ';' 
+				\alt 'var' <Ident>  <Type> '=' <AProcDecl> ';'
+				\alt 'var' <Ident>  <Type> '=' <URL> ';'
+				\alt 'var' <Ident>  <Type> '=' 'async' '\{' 'return' <Ident> '(' <ActualSyncList> ')''\}' ';'
+				\alt 'var' <Ident>  <Type> '=' 'dasync' '\{'<Ident> ',' 'return' <Ident> '(' <ActualSyncList> ')' '\}' ';'
+				\alt 'var' <Ident>  <Type> '=' 'dasync' '\{'<URL> ',' 'return' <Ident> '(' <ActualSyncList> ')' '\}' ';'
+							
+<VarDeclList> ::= 'var' <Ident> <VarDeclTail>
+
+<VarDeclTail> ::= <Type> | ',' <Ident> <VarDeclTail> | $\varepsilon$ 
+
+<ActualSyncList> ::= <ActualSyncTail>
+\alt <CompleteExpr> <ActualSyncTail>
+
+<ActualSyncTail> ::= ',' <CompleteExpr> | $\varepsilon$
+
+<CompleteExpr> ::= <Expr> <CompleteExprTail> 
+
+<CompleteExprTail> ::= <BoolOp> <Expr> <CompleteExprTail> | $\varepsilon$
+		  
+<Expr> ::= <SimpExpr> <ExprTail>
+
+<ExprTail> ::=  <RelOp> <SimpExpr> <ExprTail> | $\varepsilon$
+	  
+<SimpExpr> ::= <Term> <SimpExprTail>
+
+<SimpExprTail> ::=  <AddOp> <Term> <SimpExprTail> | $\varepsilon$
+
+<Term> ::= <Factor> <TermTail>
+
+<TermTail> ::= <MulOp> <Factor> <TermTail> | $\varepsilon$
+
+<Factor> ::= 
+		<Ident>
+		\alt <Ident> '(' <ActualsList> ')' 
+		\alt 'number' 
+		\alt '-'<Factor> 	
+		\alt 'true' 
+		\alt 'false' 
+		\alt '(' <CompleteExpr> ')'
+		
+<ActualsList> ::= 	<ActualsListTail> 
+					\alt <CompleteExpr> <ActualsListTail>
+					\alt <AProcDecl> <ActualsListTail>
+
+<ActualsListTail> ::= 	',' <CompleteExpr> <ActualsListTail>
+						\alt ',' <AProcDecl> <ActualsListTail>
+						\alt $\varepsilon$					
+		
+<FRType> ::= 'fun' '(' <TypeList> ')' <FRType>
+			\alt 'int' 
+			\alt 'bool'
+
+<TypeList> ::= 	<TypeListTail> 
+				\alt <Type> <TypeListTail>
+
+<TypeListTail> ::= ',' <Type> <TypeListTail> | $\varepsilon$	
+			
+<Type> ::= 'fun' | 'int' | 'bool' | 'url'
+
+<AddOp> ::= '+' | '-'
+	  
+<RelOp> ::= '<' | '>' | '==' | '!=' | '$\leq$' | '$\geq$'
+		  
+<BoolOp> ::= '$\& \&$ ' | '$\|$ '
+
+<MulOp> ::= '*' | '/'
+
+<Ident> ::= ident
+
+<URL> ::= url	
+
+\end{grammar}
+
+The Coco/R input, provided with all the semantic annotations, is contained within the file \textit{GramWithSemantics.ATG}.
+
+\section{\label{typecheck}Symbol Table and Type Checking}
+
+The \texttt{SymTable.cs} class represents the \fwap symbol table which - being the language scope static by design choice - allows both type and environment checking. In fact, \texttt{SymTable.cs} can register the name of any variable and declared function with all their type information (i.e. also the return type for the functions). In order to manage those associations, the \texttt{Obj} class has been coded; an \texttt{Obj.cs} instance can be
+
+\begin{itemize}
+	\item a variable
+	\item a declared function
+	\item a scope
+\end{itemize}
+
+distinguished by the \texttt{kind} field. All possible kinds are listed below.
+
+\begin{lstlisting}[caption=Labels for \texttt{Node}'s.]
+public enum Kinds {var,fundec,scope}
+\end{lstlisting}
+
+\texttt{Obj.cs}'s are then inserted as terminal within the Abstract Syntax Tree (AST, see Chapter\ref{chapter3}) that allows the interpreter and the compiler to access the type information of each variable. Type checking is executed while parsing the \fwap code, accordingly to the semantics rules (i.e. pieces of code) defined within the \textit{GramWithSemantics.ATG} file. In particular
+\begin{itemize}
+	\item the variable declarations/assignments (e.g. \texttt{var x bool = 35;} is not valid)
+	\item the formal vs. actual parameters for a function call of a declared procedure
+	\item the return type of declared functions 
+\end{itemize}
+are statically checked. On the other hand, because of the language syntax, it was not possible to type-check nor the return type of the anonymous functions nor the actual parameters coherence with respect to the formal ones, after the assignment of the function itself to a \texttt{fun} variable. In addition to that, the parser is able to check whether all the program flows within a function end with a \texttt{return} statement, accordingly to the language syntax. 
+
+Eventually, the \texttt{async\{\}} and \texttt{dasync\{\}} primitives are guaranteed to respect the following restrictions:
+\begin{enumerate}
+	\item they must contain one and only one function call of a declared function, since calling anonymous function may lead to race conditions among threads
+	\item the called function must be \texttt{println()} and \texttt{readln()} free, for trivial reasons
+	\item the called function must not return a function, for the same reasons in (1).
+\end{enumerate}
+
+No control is provided on whether the function object of a \texttt{dasync\{\}} comprehend other function calls. Thus, it is highly recommended to ensure that the function is self-contained before inserting it in a \texttt{dasync\{\}} block. 
+

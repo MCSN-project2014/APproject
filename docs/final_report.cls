@@ -133,7 +133,7 @@
 \textsf{\Large  \textbf{Lecturers:}  \moderatorname}\\[1.8cm]
 
 \textsf{\Large 
-\textsc{MSc Computer Science and Networking\\}
+\textsc{MSc in Computer Science and Networking\\}
 \textsc{Academic Year 2014/2015}\\}
 \end{center}
 \vfil

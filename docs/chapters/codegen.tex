@@ -21,8 +21,16 @@ The assignment translation -- and, analogously, the declaration/assignment -- wa
 
 Firstly, using the \texttt{ref} cell variables everywhere in the target code was an inducted design choice, since \fsharp anonymous functions only support them as parameters. Even if \texttt{mutable} variables were the team's first choice, being lighter for the target run-time support, the mixed use with \texttt{ref} was not worth the implementation effort. Also, it turned out to be fairly simple to add the \textbf{!} (\textit{bang} operator) when it was needed on the right handside of some assignment statement.
 
-Secondarily, the same class \texttt{Environment.cs} used for the interpreter (see Chapter~\ref{chapter4}) has been adopted here in order to keep track of the association between each variable and a boolean value, set to true when that given variable is object of an async/dasync operation.The boolean value is then reset to false, immediately before issuing another non-async/non-dsync assignment of the variable. Asynchronous calls are translate into .NET \texttt{Task}'s, as shown in %%%%%%%%%%%%INSERT LISTING HERE :D%%%%%%%%%%%%%%%%%%%%.
+Secondarily, the same class \texttt{Environment.cs} used for the interpreter (see Chapter~\ref{chapter4}) has been adopted here in order to keep track of the association between each variable and a boolean value, set to true when that given variable is object of an async/dasync operation.The boolean value is then reset to false, immediately before issuing another non-async/non-dsync assignment of the variable. Asynchronous calls are translate into .NET \texttt{Task}'s, as shown below.
 
+\begin{lstlisting}[caption=Example of \texttt{async\{\}} block translation.]
+CODE FUN:
+var tmp int = async{ return increment(5) };
 
-
+CODE F#:
+let mutable _task_tmp = Async.StartAsTask( async{ return 0})
+let tmp = ref (0)
+let _par_<unique_index> : int  = 5
+_task_tmp <- Async.StartAsTask( async{ return increment _par_<unique_index>})
+\end{lstlisting}
 
