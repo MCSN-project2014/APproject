@@ -3,7 +3,7 @@
 }
 
 fun main(){
-  var a int = dasync {'http://funwap.sfcoding.com', return test()};
+  var a int = async {return test()};
   a = a + 1;
   println(a);
 }
