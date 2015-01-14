@@ -31,6 +31,9 @@
   <PropertyGroup>
     <StartupObject>funwaps.FunwapsMain</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">
@@ -49,4 +52,9 @@
       <Name>APproject</Name>
     </ProjectReference>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
+move $(TargetDir)\$(TargetFileName) $(OutDir)\Realese-server
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
