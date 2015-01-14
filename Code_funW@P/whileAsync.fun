@@ -23,7 +23,7 @@ fun main(){
 	y = 5;
 	z = 8;
 	w = 9;
-	var int i = 4;
+	var i int= 4;
 	while i > 0 {
 		var plus, minus, mul, div int;
 		if  i == 1 {
