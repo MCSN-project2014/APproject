@@ -1,1 +1,10 @@
 \chapter{\label{chapter4} The \fwap Interpreter}
+
+The interpreter module is capable of running the \fwap intermediate representation (AST) and produce the correct results. The executable for this piece of software is contained within the release file \textit{funwapi.exe}. 
+
+\section{\texttt{Environment.cs}}
+
+Each instance of \texttt{Environment.cs} keeps track of the value of the variables in a given function (main included), during the execution of a program. It is then of fundamental importance for the interpreter to work. It is structured as a \texttt{List<Dictionary<string, object>>} because it must maintain the associations related to each single scope, i.e. when the code enters/exits a scope the a dictionary is added/removed from the list.
+
+The method \texttt{addValue(Obj var, object value)} inserts a new variable (and the associated value) within the last opened scope; the method \texttt{updateValue(Obj var, object value)} search for the first variable with a given name in the 'nearest' scope and updates its value (according to the static scope rule).
+

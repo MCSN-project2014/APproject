@@ -438,7 +438,7 @@ namespace APproject
 				safeWriteIndent (children [0] + " := ");
 				bang = true;
 				translateRecursive (children.ElementAt (1));
-				environment.addUpdateValue ((Obj)children [0].value, Async);
+				environment.UpdateValue ((Obj)children [0].value, Async);
 				bang = false;
 				safeWrite ("\n");
 				break;
@@ -478,7 +478,7 @@ namespace APproject
 			safeWriteIndent ("let mutable " + "_task_" + var.name +
 				" = Async.StartAsTask( async{ return " +
 				(var.type == Types.integer ? "0" : "true") + "})\n");
-			environment.addUpdateValue (var, true);
+			environment.UpdateValue (var, true);
 		}
 
 

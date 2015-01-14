@@ -21,3 +21,7 @@ FunCall};
 \end{lstlisting}
 
 \texttt{Term}'s contain a generic \texttt{object} that could be one among an integer, a boolean, a string or an \texttt{Obj} that acts as a variable (see Section\ref{typecheck}).
+
+\section{Building the AST}
+
+The following pictures illustrate how each possible \texttt{Node} is built by the parser. An agreement on the order of the children from left to right was needed for implementing the interpreter and the \fsharp compiler.

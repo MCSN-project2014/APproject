@@ -98,6 +98,7 @@
     <None Include="startCocor.bat" />
     <None Include="lib\cocor\Parser.frame" />
     <None Include="lib\cocor\Scanner.frame" />
+    <None Include="Test\bugDec.fun" />
     <None Include="Test\fibonacci.fun" />
     <None Include="Test\parameterTest.fun" />
     <None Include="Test\TestForAsync.fun" />

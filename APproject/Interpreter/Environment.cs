@@ -31,36 +31,65 @@ namespace APproject
 		}
 
 		/// <summary>
-		/// Add or Update an anonymus function in the actual scope
+		/// Update an anonymus function in the actual scope
 		/// </summary>
 		/// <param name="var">Variable.</param>
 		/// <param name="fun">Fun.</param>
 		/// <param name="mem">Mem.</param>
-		public void addUpdateValue (Obj var , ASTNode fun, Environment mem){
-			addUpdateValue(var.name, new Tuple<ASTNode,Environment>(fun,mem));
+		public void UpdateValue (Obj var , ASTNode fun, Environment mem){
+			UpdateValue(var.name, new Tuple<ASTNode,Environment>(fun,mem));
 		}
 
 		/// <summary>
-		/// Add or Update a variable in the actual scope.
+		/// Update a variable in the actual scope.
 		/// </summary>
 		/// <param name="var">Variable.</param>
 		/// <param name="value">Value.</param>
-		public void addUpdateValue(Obj var, object value){
-			addUpdateValue (var.name, value);
+		public void UpdateValue(Obj var, object value){
+			UpdateValue (var.name, value);
 		}
 
-		private void addUpdateValue(string var, object value){
+		private void UpdateValue(string var, object value){
 			bool find = false;
-			foreach (var scope in mem) {
-				find = scope.ContainsKey (var);
-				if (find) {
-					scope [var] = value;
-					break;
-				}
-			}
+            for (int i = mem.Count - 1; i >= 0; i-- )
+                {
+                    find = mem[i].ContainsKey(var);
+                    if (find)
+                    {
+                        mem[i][var] = value;
+                        break;
+                    }
+                }
 			if (!find)
 				mem [lastIndex].Add (var, value);
 		}
+
+        /// <summary>
+        /// Add an anonymus function in the actual scope
+        /// </summary>
+        /// <param name="var">Variable.</param>
+        /// <param name="fun">Fun.</param>
+        /// <param name="mem">Mem.</param>
+        public void AddValue(Obj var, ASTNode fun, Environment mem)
+        {
+            AddValue(var.name, new Tuple<ASTNode, Environment>(fun, mem));
+        }
+
+        /// <summary>
+        /// Add a variable in the actual scope.
+        /// </summary>
+        /// <param name="var">Variable.</param>
+        /// <param name="value">Value.</param>
+        public void AddValue(Obj var, object value)
+        {
+            AddValue(var.name, value);
+        }
+
+        private void AddValue(string var, object value)
+        {
+            if (!mem[lastIndex].ContainsKey(var))
+                mem[lastIndex].Add(var, value);
+        }
 
 		/// <summary>
 		/// Try to get a variable value from the memory.
@@ -108,7 +137,7 @@ namespace APproject
 			funMem.addScope ();
 			foreach (var scope in mem) {
 				foreach (var dic in scope) {
-					funMem.addUpdateValue (dic.Key, dic.Value);
+					funMem.UpdateValue (dic.Key, dic.Value);
 				}
 			}
 			return funMem;
