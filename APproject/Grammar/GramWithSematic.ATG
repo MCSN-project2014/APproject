@@ -330,6 +330,8 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 			',' Ident<out name>													(. names.Add(name); .) 
 			{',' Ident<out name>												(. names.Add(name); .)
 			} Type<out type> ';'												(. node =  new Node (Labels.Decl);
+																				   if (type == Types.fun)
+																						SemErr("you cannot declare a type fun without assign it");	
 																				   foreach(string n in names)
 																				   {
 						    															obj = tab.NewObj(n, Kinds.var, type);
@@ -341,7 +343,7 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 			| Type<out type>
 			  
 			  (
-				';'																(. obj  =  tab.NewObj((string)names[0], Kinds.var, type);
+				';'																(. obj = tab.NewObj((string)names[0], Kinds.var, type);
 																				   if (type == Types.fun)
 																						SemErr("you cannot declare a type fun without assign it");	
 																				   node =  new Node (Labels.Decl);
