@@ -251,7 +251,11 @@ namespace APproject
 							i++;
 						}
 						string json = HelperJson.Serialize(actual, formal, funNode.children [0]);
-						var url = (string)actualMemory.GetValue ((Obj)children [0].value);
+						string url;
+						if (children [0].value is Obj)
+							url = (string)actualMemory.GetValue ((Obj)children [0].value);
+						else
+							url = children [0].ToString(); 
 						//url = url.Substring(1,url.Length-2);
 						return HelperHttpClient.PostAsyncRequest (url, json);
 					}

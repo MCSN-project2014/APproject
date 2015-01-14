@@ -20,7 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/asyncTest.fun" />
+        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/dasyncTest.fun" />
       </CustomCommands>
     </CustomCommands>
     <Externalconsole>true</Externalconsole>
@@ -33,8 +33,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <DocumentationFile>
-    </DocumentationFile>
     <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
