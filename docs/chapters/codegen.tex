@@ -1,11 +1,16 @@
 
 \chapter{\label{chapter4} The \fsharp Code Generator}
 
-The compiler that translate a program written in \fwap into a \fsharp syntax. 
-The compiler is the \textit{funwapc} program. \href{https://github.com/MCSN-project2014/APproject/wiki/How-to-use-the-Compiler}{Here} you can find a  wiki to  use it.
+The code generator module is responsible for translating the \fwap intermediate representation (AST) into compilable \fsharp programs. The module itself can be thought of as a fully working \textit{compiler} (i.e. a computer program performing a translation from a source into another target language, \cite{dragon}). The executable for this piece of software is contained within the release file \textit{funwapc.exe}. 
 
-\section{The \textit{FSCodeGen} class}
-The \textit{FSCodeGen.cs} class is the main class performing the translation.
-Starting from the AST (Abstract syntax tree) of the program tranlsate recursivly each node of the tree in a \fsharp code.
+During this chapter, we will go through the organization of the \texttt{FSCodeGen.cs} class, in which the whole translator has been implemented.
 
+\section{The \texttt{FSCodeGen.cs} class}
+
+The overall design of the compiler could be intuitively explained by having a look at the method \texttt{translate(ASTNode n)}, listed below. 
+
+\lstinputlisting[frame=trBL,firstline=70,lastline=115,caption={The \texttt{translate(ASTNode n)} method.}]{../APproject/FSCodeGenerator/FSCodeGen.cs }
+
+
+Depending on the node's label, it calls the appropriate method to perform the translation and it is recursively called by a method 
 

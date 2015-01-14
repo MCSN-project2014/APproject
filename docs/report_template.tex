@@ -1,5 +1,6 @@
 \documentclass[]{final_report}
 \usepackage{graphicx}
+\usepackage{color} 
 \usepackage{hyperref} %must be upload inthe last line.
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -9,10 +10,23 @@
 \def\supervisorname{Advanced Programming (301AA)}
 \def\moderatorname{Gianluigi Ferrari - Antonio Cisternino}
 
+\lstset{
+basicstyle=\small\ttfamily,%
+keywordstyle=\color{blue},%\bfseries,%
+commentstyle=\color{green},%
+stringstyle=\color{red},%
+numberstyle=\tiny,%
+stepnumber=5,%
+numbers=left,%
+language=C++,
+frameround=fttt
+}
 
-\newcommand{\fwap}{\texttt{funW@P }}
+\newcommand{\fwap}{\emph{funW@P} }
 \newcommand{\fsharp}{F\texttt{\#} }
 \begin{document}
+
+
 
 \maketitle
 \tableofcontents\pdfbookmark[0]{Table of Contents}{toc}\newpage
@@ -28,7 +42,7 @@
 \end{flushright}
 The aim of this report is to offer an overview of the  \fwap  implementation and of the main design choices, made during its development. Also, it is intended both as a synthetic reference and a manual for the user wishing to use or extend our simple language.
 
-Since an actual printed document may seem an old-fashioned tool to the modern reader, all the information provided here will be also available at the official Wiki of the project on \href{https://github.com/MCSN-project2014/APproject}{GitHub}. 
+Since an actual printed document may seem an old-fashioned tool to the modern reader, all the information provided here will be also available at the official Wiki of the project on \href{https://github.com/MCSN-project2014/APproject}{GitHub}\cite{proj}. 
 
 \end{abstract}
 
