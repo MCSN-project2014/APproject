@@ -1,6 +1,5 @@
-/** A test for the the bracket
+/** A test for the the brackets
 */
-
 
 
 fun main(){
