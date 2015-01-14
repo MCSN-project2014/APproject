@@ -36,3 +36,29 @@ _task_tmp <- Async.StartAsTask( async{
 						})
 \end{lstlisting}
 
+For what concerns the dasync{} conversion, a few functions have been designed and inserted in the \textit{funwaputility.dll} library, explained in the following section.
+
+\section{Funwap Utility}
+The \textit{funwaputility.dll} provides \fsharp runtime support for the compiled code. In particular for the \texttt{readln} function and the \textit{dasync}. The readln support consists of a while loop that handles the exceptions raised up until the input is not a number.\\
+
+\begin{lstlisting}[caption=All \fwap \texttt{readln()}'s are compiled into \fsharps \texttt{\_readln()}'s.]
+let _readln() =
+        let mutable tmp = true
+        let input = ref(0)
+        while tmp do
+            try
+                input := Convert.ToInt32(Console.ReadLine())
+                tmp <- false;
+            with
+            | :? System.FormatException as ex ->
+                Console.WriteLine("funW@P->F# Insert input again:")
+        !input
+\end{lstlisting}
+
+On the other side the dasync is provided with these methods:
+\begin{itemize}
+	\item 
+\end{itemize}
+ 
+
+
