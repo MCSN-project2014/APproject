@@ -17,7 +17,7 @@ funwapc [OPTIONS] <input_file.fun>
          -v|--verbose   ->    print extra information
          -h|--help      ->    show help
 ```
-to use the primitive command `dasync{<url>, return <funCall>} you have to install and run a [funw@p-server](https://github.com/MCSN-project2014/funwap-server) on your pc or a remote machine.
+to use the primitive command `dasync{ url , return funCall() }` you have to install and run a [funw@p-server](https://github.com/MCSN-project2014/funwap-server) on your pc or a remote machine.
 
 ##Get funW@ap
 You can compile the two executible from source, downloading this repository or downloading the binary file from here [here](https://github.com/MCSN-project2014/APproject/releases)
