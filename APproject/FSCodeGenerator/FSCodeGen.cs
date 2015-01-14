@@ -110,6 +110,9 @@ namespace APproject
                 case Labels.Afun:
                     translateAfun(n);
                     break;
+                case Labels.FunCall:
+                    translateFunCall(n);
+                    break;
                 case Labels.Plus:
                     translateOp("+", n);
                     break;
@@ -142,9 +145,6 @@ namespace APproject
                     break;
                 case Labels.Eq:
                     translateOp("=", n);
-                    break;
-                case Labels.FunCall:
-                    translateFunCall(n);
                     break;
                 case Labels.And:
                     translateOp("&&", n);

@@ -117,13 +117,13 @@
 \null
 \vfil
 \begin{center}
-\includegraphics[height=2.5cm]{unipi} \hspace{1cm}
-\includegraphics[height=2.5cm]{sanna}\\
+\includegraphics[height=2.5cm]{images/unipi} \hspace{1cm}
+\includegraphics[height=2.5cm]{images/sanna}\\
 \textsf{\Large 
 \textsc{University of Pisa - Scuola Superiore Sant'Anna}\\
 \textsc{Department of Computer Science\\}
 \vfill}
-\includegraphics[height=4cm]{logo}\\
+\includegraphics[height=4cm]{images/logo}\\
 \title{\rule{4cm}{1pt}\\[0.7cm]
 \textbf{\projecttitle}}\\[1cm]
 \author{\LARGE \studentname}\\[0.5cm]\rule{4cm}{1pt}\\[0.5cm]

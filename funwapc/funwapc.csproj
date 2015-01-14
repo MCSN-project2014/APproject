@@ -81,7 +81,7 @@
   <ItemGroup>
     <Reference Include="OptionsLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\optionsutility\OptionsLibrary.dll</HintPath>
+      <HintPath>..\APproject\lib\OptionsLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

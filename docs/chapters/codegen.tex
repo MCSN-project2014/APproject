@@ -1,0 +1,28 @@
+
+\chapter{\label{chapter5} The \fsharp Code Generator}
+
+The code generator module is responsible for translating the \fwap intermediate representation (AST) into compilable \fsharp programs. The module itself can be thought of as a fully working \textit{compiler} (i.e. a computer program performing a translation from a source into another target language, \cite{dragon}). The executable for this piece of software is contained within the release file \textit{funwapc.exe}. 
+
+During this chapter, we will go through the organization of the \texttt{FSCodeGen.cs} class, in which the whole translator has been implemented.
+
+\section{The \texttt{FSCodeGen.cs} class}
+
+The overall design of the compiler could be intuitively explained by having a look at the method \texttt{translate (ASTNode n)}, partially listed below. \\
+
+\lstinputlisting[firstline=70,lastline=118,caption={The \texttt{translate(ASTNode n)} method.}]{../APproject/FSCodeGenerator/FSCodeGen.cs }
+
+Depending on the node's label, \texttt{translate(ASTNode n)} calls the appropriate method to perform the translation and it is recursively called by the auxiliary method \texttt{translateRecursive (ASTNode n)}, which also prints the terminal nodes when needed (i.e. the AST leaves). The aforementioned process performs a Breadth-First search over the AST structure and writes the \fsharp code into a specified output file (\textit{a.fs} by default).
+
+While a good amount of the translating methods are trivial to understand for any programmer, a more detailed treatment is reserved to the assignments translation methods, \texttt{translateAssig(ASTNode n)} and \texttt{translateAssigDecl(ASTNode n)}, which also compiles the \textbf{async\{\}} and \textbf{dasync\{\}} constructs.
+
+\section{Translating the Assignments}
+
+The assignment translation -- and, analogously, the declaration/assignment -- was subject to a subtle work in order to manage the anonymous functions and the \textbf{async\{\}} and \textbf{dasync\{\}} conversion into \fsharp. 
+
+Firstly, using the \texttt{ref} cell variables everywhere in the target code was an inducted design choice, since \fsharp anonymous functions only support them as parameters. Even if \texttt{mutable} variables were the team's first choice, being lighter for the target run-time support, the mixed use with \texttt{ref} was not worth the implementation effort. Also, it turned out to be fairly simple to add the \textbf{!} (\textit{bang} operator) when it was needed on the right handside of some assignment statement.
+
+Secondarily, the same class \texttt{Environment.cs} used for the interpreter (see Chapter~\ref{chapter4}) has been adopted here in order to keep track of the association between each variable and a boolean value, set to true when that given variable is object of an async/dasync operation.The boolean value is then reset to false, immediately before issuing another non-async/non-dsync assignment of the variable. Asynchronous calls are translate into .NET \texttt{Task}'s, as shown in %%%%%%%%%%%%INSERT LISTING HERE :D%%%%%%%%%%%%%%%%%%%%.
+
+
+
+
