@@ -6,5 +6,26 @@ The interpreter module is capable of running the \fwap intermediate representati
 
 Each instance of \texttt{Environment.cs} keeps track of the value of the variables in a given function (main included), during the execution of a program. It is then of fundamental importance for the interpreter to work. It is structured as a \texttt{List<Dictionary<string, object>>} because it must maintain the associations related to each single scope, i.e. when the code enters/exits a scope the a dictionary is added/removed from the list.
 
-The method \texttt{addValue(Obj var, object value)} inserts a new variable (and the associated value) within the last opened scope; the method \texttt{updateValue(Obj var, object value)} search for the first variable with a given name in the 'nearest' scope and updates its value (according to the static scope rule).
+The method \texttt{addValue(Obj var, object value)} inserts a new variable (and the associated value) within the last opened scope; the method \texttt{updateValue(Obj var, object value)} search for the first variable with a given name in the 'nearest' scope and updates its value (according to the static scope rule). Also a method to get the value of a variable is provided.
+
+\section{Interpreting \fwap}
+
+The interpreter starts with the method \texttt{Start()} which stores the name of the declared functions and a pointer to them and calls the \texttt{Interpret(ASTNode n, Environment env)} over the main node (creating a new \texttt{Environment.cs}). 
+
+While the \texttt{Interpret(ASTNode n, Environment env)} method is able to execute all the statements (\texttt{while}, \texttt{readln}...), the \texttt{InterpretExp(ASTNode n, Environment env)} is called to interpret any boolean or arithmetic expression. Recursive calls to both of them allow to follow the code flow and produce results.
+
+An interesting case of how the interpretation process works is the function call. First of all the pointer to the function declaration (which is a subtree of the AST) is looked for in the function dictionary built by \texttt{Start()}, if there isn't any then an anonymous function has been found -- i.e. its pointer will be in the Environment. After that, a new Environment instance is created and it is fulfilled with the association between the formal and the actual parameters. In the end, the function \texttt{Interpret(ASTNode n, Environment env)} is called over the function node in the newly set up environment.
+
+The listing below shows how the \texttt{async\{\}} primitive is interpreted (for how the task is waited check the code).
+
+\begin{lstlisting}[caption=Interpreting the \texttt{async\{\}}: how to create a task.]
+case Labels.Async:
+//interpret the function parameter
+var fun = FunParameterPassing (node.children[0], actualMemory);
+//crate a new task that interpret the function
+Task<object> task = Task.Run (() => {
+return FunctionCall (fun);
+});
+return task; //return the task
+\end{lstlisting}
 
