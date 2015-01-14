@@ -54,4 +54,11 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
+move $(TargetDir)\$(TargetFileName) $(OutDir)\Realese-app
+move $(TargetDir)\$(TargetFileName).config $(OutDir)\Realese-app\
+copy $(OutDir)\Realese-app\$(TargetFileName).config $(OutDir)\Realese-app\funwapc.exe.config 
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
