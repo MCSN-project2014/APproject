@@ -5,18 +5,18 @@
 </header>
 <body>
   <div class="header">
-    <h1>Try FunW@p<h1>
+    <h1>Try<img id="logo" src="img/fun_logo.jpg"></img><h1>
+  </div>
+  <div ng-app="" ng-controller="groupController" class="main">
+    <div id="parentTextBox">
+      <textarea ng-model="prog" id="textBox"></textarea>
     </div>
-    <div ng-app="" ng-controller="groupController" class="main">
-      <div id="parentTextBox">
-        <textarea ng-model="prog" id="textBox"></textarea>
-      </div>
-      <div ng-hide="hideButton">
-        <button type="button" ng-click="interpret()">Interpret</button>
-        <button type="button" ng-click="compile()">Compile</button>
-      </div>
-      <textarea readonly ng-bind="result" ng-hide="hideButton"></textarea>
-    </br><img ng-src="./img/wait.gif" ng-show="hideButton"></img>
+    <div ng-hide="hideButton">
+      <button type="button" ng-click="interpret()">Interpret</button>
+      <button type="button" ng-click="compile()">Compile</button>
+    </div>
+    <textarea readonly ng-bind="result" ng-hide="hideButton"></textarea>
+  </br><img id="wait" ng-src="./img/wait.gif" ng-show="hideButton"></img>
   </div>
 
   <script src="./lib/angular.min.js"></script>
