@@ -31,7 +31,7 @@ namespace APproject
 		}
 
 		/// <summary>
-		/// Add or Update an anonymus function in the actual scope
+		/// Update an anonymus function in the actual scope
 		/// </summary>
 		/// <param name="var">Variable.</param>
 		/// <param name="fun">Fun.</param>
@@ -41,7 +41,7 @@ namespace APproject
 		}
 
 		/// <summary>
-		/// Add or Update a variable in the actual scope.
+		/// Update a variable in the actual scope.
 		/// </summary>
 		/// <param name="var">Variable.</param>
 		/// <param name="value">Value.</param>
@@ -65,7 +65,7 @@ namespace APproject
 		}
 
         /// <summary>
-        /// Add or Update an anonymus function in the actual scope
+        /// Add an anonymus function in the actual scope
         /// </summary>
         /// <param name="var">Variable.</param>
         /// <param name="fun">Fun.</param>
@@ -76,7 +76,7 @@ namespace APproject
         }
 
         /// <summary>
-        /// Add or Update a variable in the actual scope.
+        /// Add a variable in the actual scope.
         /// </summary>
         /// <param name="var">Variable.</param>
         /// <param name="value">Value.</param>
