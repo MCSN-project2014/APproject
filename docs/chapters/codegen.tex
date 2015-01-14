@@ -7,10 +7,10 @@ During this chapter, we will go through the organization of the \texttt{FSCodeGe
 
 \section{The \texttt{FSCodeGen.cs} class}
 
-The overall design of the compiler could be intuitively explained by having a look at the method \texttt{translate(ASTNode n)}, listed below. 
+The overall design of the compiler could be intuitively explained by having a look at the method \texttt{translate (ASTNode n)}, partially listed below. 
 
-\lstinputlisting[frame=trBL,firstline=70,lastline=115,caption={The \texttt{translate(ASTNode n)} method.}]{../APproject/FSCodeGenerator/FSCodeGen.cs }
+\lstinputlisting[frame=trBL,firstline=70,lastline=118,caption={The \texttt{translate(ASTNode n)} method.}]{../APproject/FSCodeGenerator/FSCodeGen.cs }
 
 
-Depending on the node's label, it calls the appropriate method to perform the translation and it is recursively called by a method 
+Depending on the node's label, \texttt{translate (ASTNode n)} calls the appropriate method to perform the translation and it is recursively called by the auxiliary method \texttt{translateRecursive (ASTNode n)}, which also prints the terminal nodes (i.e. the AST leaves). The  useful to perform a Breadth-First search over the AST structure.
 
