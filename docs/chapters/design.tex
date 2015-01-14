@@ -153,12 +153,12 @@ public enum Kinds {var,fundec,scope}
 \end{itemize}
 are statically checked. On the other hand, because of the language syntax, it was not possible to type-check nor the return type of the anonymous functions nor the actual parameters coherence with respect to the formal ones, after the assignment of the function itself to a \texttt{fun} variable. In addition to that, the parser is able to check whether all the program flows within a function end with a \texttt{return} statement, accordingly to the language syntax. 
 
-Eventually, the \texttt{async} and \texttt{dasync} primitives are guaranteed to respect the following restrictions:
+Eventually, the \texttt{async\{\}} and \texttt{dasync\{\}} primitives are guaranteed to respect the following restrictions:
 \begin{enumerate}
 	\item they must contain one and only one function call of a declared function, since calling anonymous function may lead to race conditions among threads
 	\item the called function must be \texttt{println()} and \texttt{readln()} free, for trivial reasons
 	\item the called function must not return a function, for the same reasons in (1).
 \end{enumerate}
 
-No control is provided on whether the function object of a \texttt{dasync} comprehend other function calls. Thus, it is highly recommended to ensure that the function is self-contained before insert it in a \texttt{dasync} block. 
+No control is provided on whether the function object of a \texttt{dasync\{\}} comprehend other function calls. Thus, it is highly recommended to ensure that the function is self-contained before inserting it in a \texttt{dasync\{\}} block. 
 
