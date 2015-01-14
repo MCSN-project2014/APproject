@@ -19,6 +19,9 @@ fun positive ( a int ) bool {
 
 fun main (){
 	var n int = -1;
+	var u url ;
+	println("Insert the url of the server");
+	u = readln();
 	while n != 0 {
 		println("Insert a number,the server checks if is positive. For exit type 0");
 		n = readln();
