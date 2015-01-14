@@ -1,3 +1,23 @@
 \chapter{\label{chapter6} The System Testing}
 
-Testing of each module has been carried on while programming them. 
+The code testing has been conducted during the entire development of the project. During the last weeks the system has been tested on the whole, therefore a proper set of \fwap programs has been written and collected within the folder \textsl{Code_funW@P}. 
+
+All those files may also be a good reference to write new \fwap code. Here is the list of the tests and what aspects of the project they are checking:
+
+\begin{itemize}
+\item \textit{helloWorld.fun}, it is the classiv test function for any language all over the world
+\item \textit{bracket.fun}, it tests bracketed expressions and operators
+\item \textit{multipleDeclarations.fun}, it attempts to declare lots of variables, all together!
+\item \textit{anonymousClosureText.fun}, it is the example for function closure reported in the text of the assignment \cite{exercise}
+\item \textit{anonymousFuncs.fun}, yet another test for closures of anonymous function which defines a tick() counter
+\item \textit{anonymousFunctionClosure.fun}, the last anonymous functions test
+\item \textit{boolReduceAsync.fun}, it asynchronously computes the maximum among five numbers according to a reduce pattern
+\item \textit{fibonacci.fun}, a test in honour of a well famous "`pisano"', computing the 6th number of the fibonacci sequence
+\item \textit{fibAsync.fun}, it asynchronously computes the first five number of the Fibonacci sequence
+\item \textit{ECTS.fun}, it is a test for nested if's but is also a useful program converting university grades from the italian system into the European Credit Transfer System \cite{ects}
+\item \textit{whileAsync.fun}, it repeatedly runs four asynchronous computations
+\item \textit{whileDasync.fun}, same as before but with \texttt{dasync\{\}}
+\item \textit{whileAsyncDasync.fun}, mixed \texttt{dasync\{\}} and\texttt{async\{\}}, same computation as before
+\item \textit{maxTwoDasyncRemote.fun}, computes the maximum among four numbers with \texttt{dasync\{\}}
+\item \textit{whileRead.fun}, if you input the right number, it gives you a very nerdy Answer.
+\end{itemize}

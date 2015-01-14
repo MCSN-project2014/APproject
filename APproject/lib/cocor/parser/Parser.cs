@@ -256,6 +256,8 @@ public SymbolTable   tab;
 			Type(out type);
 			Expect(15);
 			node =  new Node (Labels.Decl);
+			if (type == Types.fun)
+			SemErr("you cannot declare a type fun without assign it");	
 			foreach(string n in names)
 			{
 			obj = tab.NewObj(n, Kinds.var, type);
@@ -267,7 +269,7 @@ public SymbolTable   tab;
 			Type(out type);
 			if (la.kind == 15) {
 				Get();
-				obj  =  tab.NewObj((string)names[0], Kinds.var, type);
+				obj = tab.NewObj((string)names[0], Kinds.var, type);
 				if (type == Types.fun)
 				SemErr("you cannot declare a type fun without assign it");	
 				node =  new Node (Labels.Decl);
@@ -284,9 +286,9 @@ public SymbolTable   tab;
 					tab.setAsyncControl(true);
 					if(type != Types.integer)
 					SemErr("incompatible types"); 
-					node =  new Node (Labels.AssigDecl);
+					node = new Node (Labels.AssigDecl);
 					((Node)node).addChildren(new Term (obj));
-					((Node)node).addChildren(new Node(Labels.Read)); 
+					((Node)node).addChildren(new Node(Labels.Read,la.line-1, la.col)); 
 					break;
 				}
 				case 1: case 3: case 6: case 23: case 24: case 25: {
@@ -644,7 +646,7 @@ public SymbolTable   tab;
 			Get();
 			Expect(6);
 			tab.setAsyncControl(true);
-			node = new Node(Labels.Print); 
+			node = new Node(Labels.Print,la.line, la.col); 
 			if (StartOf(3)) {
 				CompleteExpr(out type, out node1);
 				controlForProcedurs(node1);
@@ -748,6 +750,7 @@ public SymbolTable   tab;
 			obj.returnIsSet=true;
 			if(node1.label == Labels.FunCall){
 			robj =(Obj)node1.value;
+			if(robj.kind == Kinds.fundec)
 			tab.complexReturnTypeControl(obj.rtype,robj.rtype);
 			}
 			else if( obj.type != type )

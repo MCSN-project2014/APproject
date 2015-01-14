@@ -145,12 +145,20 @@ namespace APproject
 			return true;
 		}
 
-		public override Types type { 
-			get { if (_value is Obj) {
-					return ((Obj)_value).type;
-				} else
+		public override Types type {
+            get
+            {
+                if (_value is Obj)
+                    return ((Obj)_value).type;
+                else if (_value is string)
+                    return Types.url;
+                else if (_value is int)
+                    return Types.integer;
+                else if (_value is bool)
+                    return Types.boolean;
+                else
 					return Types.undef;
-				}
+			}
 		}
 	}
 

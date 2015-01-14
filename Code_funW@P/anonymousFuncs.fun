@@ -14,7 +14,8 @@ fun tick() fun() int{
 fun main(){
 	var tick1 fun = tick();
 	var tmp int = 0;
-	while tmp!= 10{
+	while tmp != 10{
+		println("Insert a number");
 		var x int = readln();
 		if tmp == 5{
 			println("halfway through");
@@ -24,6 +25,3 @@ fun main(){
 	println("It's over");
 }
 
-/** F# code generated:
-
-**/

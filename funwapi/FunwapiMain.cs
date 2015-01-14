@@ -22,9 +22,6 @@ namespace funwapi
                     }
                     Interpreter inter = new Interpreter (root);
                     inter.Start ();
-                }else
-                {
-                    Console.WriteLine("ERROR: Can't open file " + HelperOption.inputFileName);
                 }
             }
 		}

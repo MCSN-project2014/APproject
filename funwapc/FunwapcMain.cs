@@ -23,10 +23,6 @@ namespace  funwapc
                     FSCodeGen genFsharp = new FSCodeGen(HelperOption.outputFileName);
                     genFsharp.translate(root);
                 }
-                else
-                {
-                    Console.WriteLine("ERROR: Can't open file " + HelperOption.inputFileName);
-                }
             }
         }
            
