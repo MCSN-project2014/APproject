@@ -25,8 +25,9 @@ namespace APproject
                     return false;
                 }
             }
-            catch (FatalError)
+            catch (FatalError e)
             {
+                Console.WriteLine(e.Message);
                 return false;
             }
 		}
