@@ -271,7 +271,7 @@ Stat<out ASTNode node>															(. Types type,type1; string name,url; strin
 																						tab.CloseScope(); .)	
 
     | "println"'('																(.  tab.setAsyncControl(true);
-																					node = new Node(Labels.Print); .)
+																					node = new Node(Labels.Print,la.line, la.col); .)
 				  ( CompleteExpr<out type, out node1>							(.  controlForProcedurs(node1);
 																					((Node)node).addChildren(node1); .)
 				    |string													    (.  string s = t.val.Remove(0, 1); 
@@ -297,7 +297,8 @@ Return<out ASTNode node>														(. Types type; ASTNode node1; Obj obj,robj
 																							obj.returnIsSet=true;
 																						if(node1.label == Labels.FunCall){
 																							robj =(Obj)node1.value;
-																							tab.complexReturnTypeControl(obj.rtype,robj.rtype);
+																							if(robj.kind == Kinds.fundec)
+																								tab.complexReturnTypeControl(obj.rtype,robj.rtype);
 																						}
 																						else if( obj.type != type )
 																							SemErr("incompatible return type");
@@ -350,9 +351,9 @@ VarDecl<out ASTNode node>														(. string name,name1,url; ArrayList names
 																				   tab.setAsyncControl(true);
 																				   if(type != Types.integer)
 																					  SemErr("incompatible types"); 
-																				   node =  new Node (Labels.AssigDecl);
+																				   node = new Node (Labels.AssigDecl);
 																				   ((Node)node).addChildren(new Term (obj));
-																				   ((Node)node).addChildren(new Node(Labels.Read)); .)	
+																				   ((Node)node).addChildren(new Node(Labels.Read,la.line-1, la.col)); .)	
 
 					    | CompleteExpr<out type1, out node1>';'				    (. if(type != Types.fun)
 																						controlForProcedurs(node1);
