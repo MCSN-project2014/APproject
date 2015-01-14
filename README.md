@@ -1,127 +1,52 @@
 ![alt text](funwap_Logo/fun_logo-min.jpg)
 
 #funW@P - An Imperative-Functional Programming Language
+funw@ap is a little programming language, with function as first class citizen and transparent management of asynchronous operation executed local machine or in a different machine ([funw@p-server](https://github.com/MCSN-project2014/funwap-server)).
 
-##Developing Guide
-1. clone the project
-2. open the .sln to run the project into visual studio
-3. add in the project property on the section comand line argument `..\..\test\test.fun` or other test file
-4. run the project
-
-###Software to Download:
-* [Github Client](https://windows.github.com/)
-* [Visual Studio Community Edition 2013](http://go.microsoft.com/fwlink/?LinkId=517284)
-
-###Study Materials
-* Our Slides:
-  * [Slides Agile Teamwork](http://1drv.ms/1IUn2yB)
-  * [Slides of FunW@P – The Project (Part 1)](http://1drv.ms/1ySTo4I)
-  * [Text of the Exercise](http://1drv.ms/1IUnygb)
-* User Guides:
-  * [C# Programming Guide](http://msdn.microsoft.com/it-it/library/67ef8sbd.aspx)
-  * [Coco/r User Manual](http://www.ssw.uni-linz.ac.at/Coco/Doc/UserManual.pdf)
-  * [F# Language Reference](http://msdn.microsoft.com/en-us/library/dd233181.aspx)
-  * [Git Documentation](http://git-scm.com/doc)
-* Tutorials:
-  * [C# Tutorial list](http://msdn.microsoft.com/en-us/library/aa288436%28v=vs.71%29.aspx)
-  * [Coco/r Tutorial](http://structured-parsing.wikidot.com/coco-r-parser-with-internal-scanner-part-1)
-  * [F# Walkthrough](http://msdn.microsoft.com/en-us/library/dd233160.aspx)
-  * [Git Interactive Tutorial](https://try.github.io/levels/1/challenges/1)
-
-##The grammar
-####Token
+##How to use funw@p
+Funw@p is distributed with the interpreter `funwapi.exe` and the compiler `funwapc.exe`, you can run it in linux or windows command line.
+The two executable have the following option:
+ ```
+ funwapi [OPTIONS] <input_file.fun> [-o <output_file>]
+  OPTIONS:
+         -v|--verbose   ->    print extra information
+         -h|--help      ->    show help
 ```
-FUN 						= "fun"
-RET							= "return"
-COMMA 						= ","
-OBRA						= "("
-CBRA						= ")"
-VAR 						= "var"
-EQ							= "="
-SEMICOL						= ";"
-IF 							= "if"
-ELSE 						= "else"
-MAINT						= "main"
-PRINT						= "println"
-FOR 						= "for"
-BOOLT						= "bool"
-BOOLV 						= <<true|false>>
-INTT						= "int"
-ASYNC						= "async"
-ADD                         = "+"
-SUB                        	= "-"
-MUL                         = "*"
-DIV                         = "/"
-OCURL		                = "{"
-CCURL                       = "}"
-ISEQ						= "=="
-ISDIFF						= "!="
-LT 							= "<"
-LTE 						= "<="
-GT 							= ">"
-GTE 					    = ">="
-NOT							= "!"
-NUMBER                      = <<([1-9][0-9]*)|0>>
-IDEN			    		= <<[a-zA-Z][a-zA-Z0-9]*>>
-WHITESPACE                  = <<[ \t\n\x0B\f\r| \t\n\r]+>> %ignore%
+```
+funwapc [OPTIONS] <input_file.fun>
+  OPTIONS:
+         -v|--verbose   ->    print extra information
+         -h|--help      ->    show help
+```
+to use the primitive command `dasync{<url>, return <funCall>} you have to install and run a [funw@p-server](https://github.com/MCSN-project2014/funwap-server) on your pc or a remote machine.
+
+##Get funW@ap
+You can compile the two executible from source, downloading this repository or downloading the binary file from here [here](https://github.com/MCSN-project2014/APproject/releases)
+
+##Example
+A simple hello world
+```
+fun main(){
+ println("Hello World");
+}
 ```
 
-####Productions
+The declared function `fun test() fun(int)int` return a function `fun(int)int` that take as argument a int and return a int. You can also read from keyboard with the command `readln()`.
 ```
-Program = [FDecList] Main ; 
-FDecList = FDec [FDecList] ;
-FDec    =  "fun" Ide "(" [DParamList] ")" RType Block ;
+fun test() fun(int)int{
+ var tmp int = 0;
+ return fun(x int) int{
+   return tmp + x; 
+   }
+}
 
-DParamList = Ide Type [DParamList1] ;
-DParamList1 = "," Ide Type [DParamList1] ;
-
-
-Main = "fun" "main" "(" ")" Block ;
-Block = "{" [StmtList] "}"  ;
-
-
-RType = "bool" | "int" | "fun" "(" TypeList ")" RType ;
-Type  = "bool" | "int" | "fun" ;
-
-
-
-StmtList = Stmt [StmtList] | Decl ";" [StmtList] ;
-Decl = "var" Ide Type ;
-
-Stmt = "var" Ide Type  "=" AExp ";"
-       | Ide "=" AExp ";"
-       | "println" "(" Exp ")" ";"
-       | "if" Exp Block ["else" Block]
-       | "for" Ide "=" Exp ";" Exp ";" Ide "=" Exp Block
-       | "return" FExp ";" ;
-
-TypeList = Type [TypeList1];
-TypeList1 = "," Type [TypeList1];
-
-
-AExp  = FExp | "async" "{" "return" CFunc "}" ;
-FExp  = Exp  | "fun" "(" [DParamList] ")" RType Block;
-Exp   = Rel [Exp1];
-Exp1  = "==" Rel [Exp1] | "!=" Rel [Exp1];
- 
-Rel   = Expr [Reltail]  ;
-Reltail   = "<" Expr | "<=" Expr | ">=" Expr | ">" Expr;
-Expr  = Term [Expr1];
-Expr1  = "+" Term [Expr1]  | "-" Term [Expr1];
-
-Term  = Unary [Term1];
-Term1  = "*" Unary [Term1] | "/" Unary [Term1];
-
-Unary = "!" Unary| "-" Unary| Factor;
-
-Factor = Atom | "(" Exp ")" | CFunc ;
-
-
-Atom   = NUMBER | IDEN | BOOLV ;
-CFunc  = Ide "("[ParamList]")";
-
-ParamList = FExp [ParamList1] ;
-ParamList1 = "," FExp [ParamList1] ;
-
-Ide = IDEN;
+fun main(){
+ var f fun = test();
+ var read int = readln();
+ println(f(read));
+ println(f(2));
+}
 ```
+
+##Prerequisites
+- .NET 4.5 or Mono 3+
