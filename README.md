@@ -1,7 +1,6 @@
 ![alt text](funwap_Logo/fun_logo-min.jpg)
 
-#funW@P - An Imperative-Functional Programming Language
-funw@ap is a little programming language, with function as first class citizen and transparent management of asynchronous operation executed local machine or in a different machine ([funw@p-server](https://github.com/MCSN-project2014/funwap-server)).
+funw@ap is an imperative-functional programming language, with function as first class citizen and transparent management of asynchronous operation executed local machine or in a different machine ([funw@p-server](https://github.com/MCSN-project2014/funwap-server)).
 
 ##How to use funw@p
 Funw@p is distributed with the interpreter `funwapi.exe` and the compiler `funwapc.exe`, you can run it in linux or windows command line.
