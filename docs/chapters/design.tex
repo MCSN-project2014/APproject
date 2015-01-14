@@ -1,10 +1,12 @@
 \chapter{\label{chapter2} Designing the Language}
 
-The grammar design has been a complex, delicate and continuous task of the project, since it represents the true definition of a language in formal terms and it revealed to be of crucial importance for all the subsequent phases. Lots of on the fly adjustments and corrections leaded to the definition reported and discussed in the following section.
+The grammar design has been a complex, delicate and continuous task of the project, since it represents the true definition of a language in formal terms and it revealed to be of crucial importance for all the subsequent phases. Lots of on the fly adjustments and corrections leaded to the definition reported and discussed in the following section. 
+
+The Coco/R software -- that turned out to be a quite powerful tool -- was used to generate the tokenizer, the parser and the type checker \cite{cocor}.
 
 \section{BNF Grammar}
 
-The whole grammar is described by means of the Backus-Naur Form (BNF, \cite{bnf}), despite the fact that the Coco/R metasyntax is much closer to the Extended Backus-Naur Form (EBNF, \cite{ebnf}), since the authors retained it less readable.  We first introduce the used tokens, which are the following ones:\\
+The whole grammar is described by means of the Backus-Naur Form (BNF, \cite{bnf}), despite the fact that the Coco/R metasyntax is much closer to the Extended Backus-Naur Form (EBNF, \cite{ebnf}), since the authors considered it less readable.  We first introduce the used tokens, which are the following ones:\\
 
 \begin{lstlisting} [caption=The \fwap tokens.]
 TOKENS
