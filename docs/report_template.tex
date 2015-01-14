@@ -11,15 +11,16 @@
 \def\moderatorname{Gianluigi Ferrari - Antonio Cisternino}
 
 \lstset{
-basicstyle=\small\ttfamily,%
+basicstyle=\note\ttfamily,%
 keywordstyle=\color{blue},%\bfseries,%
 commentstyle=\color{green},%
 stringstyle=\color{red},%
 numberstyle=\tiny,%
+captionpos=b,
 stepnumber=5,%
 numbers=left,%
 language=C++,
-frameround=fttt
+frame=single
 }
 
 \newcommand{\fwap}{\emph{funW@P} }
@@ -54,8 +55,8 @@ Since an actual printed document may seem an old-fashioned tool to the modern re
 
 \include{chapters/design}  		% explains the design of the language
 \include{chapters/ast}			% expalins the AST
-\include{chapters/codegen}		% explains the f# code generator
 \include{chapters/interpreter}  % expalins the interpreter
+\include{chapters/codegen}		% explains the f# code generator
 \include{chapters/testing}  	% expalins  the testing
 \include{chapters/userguide}	% user guide manual 
 
