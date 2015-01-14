@@ -6,17 +6,22 @@
 <body>
   <div class="header">
     <h1>Try FunW@p<h1>
-  </div>
-  <div ng-app="" ng-controller="groupController" class="main">
-    <textarea ng-model="prog"></textarea>
-    <div ng-hide="hideButton">
-      <button type="button" ng-click="interpret()">Interpret</button>
-      <button type="button" ng-click="compile()">Compile</button>
     </div>
-    <textarea readonly ng-bind="result" ng-hide="hideButton"></textarea>
+    <div ng-app="" ng-controller="groupController" class="main">
+      <div id="parentTextBox">
+        <textarea ng-model="prog" id="textBox"></textarea>
+      </div>
+      <div ng-hide="hideButton">
+        <button type="button" ng-click="interpret()">Interpret</button>
+        <button type="button" ng-click="compile()">Compile</button>
+      </div>
+      <textarea readonly ng-bind="result" ng-hide="hideButton"></textarea>
     </br><img ng-src="./img/wait.gif" ng-show="hideButton"></img>
   </div>
-  <script src="./main.js"></script>
+
   <script src="./lib/angular.min.js"></script>
+  <script src="./lib/jquery-2.1.3.min.js"></script>
+  <script src="./main.js"></script>
+  <script src="./script.js"></script>
 </body>
-</html
+</html>

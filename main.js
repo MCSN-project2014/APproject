@@ -1,5 +1,5 @@
 function groupController($scope, $http){
-  $scope.prog = 'fun main(){\n println("Hello World!");\n}';
+  $scope.prog = 'fun main(){\n  println("Hello World!");\n}';
   $scope.result = '';
   $scope.hideButton = false;
 
@@ -9,7 +9,6 @@ function groupController($scope, $http){
   };
 
   $scope.interpret = function(){
-    console.log("send function");
     $scope.hideButton = true;
     $http.post('http://tryfunwap.sfcoding.com/interpret', $scope.prog).success(function(data){
       success(data);
@@ -17,7 +16,6 @@ function groupController($scope, $http){
   };
 
   $scope.compile = function(){
-    console.log("send function");
     $scope.hideButton = true;
     $http.post('http://tryfunwap.sfcoding.com/compile', $scope.prog).success(function(data){
       success(data);
