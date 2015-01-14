@@ -420,6 +420,7 @@ namespace APproject
         /// <param name="n">The Assignment node.</param>
         public void translateAssig(ASTNode n)
         {
+			bool Async = true;
             List<ASTNode> children = n.children;
 			switch (children[1].label)
             {
@@ -428,14 +429,16 @@ namespace APproject
 				break;
 			case Labels.Dsync:
                  //funCall, varAsync, url
-                createDAsync(children[1].children[1], (Obj)children[0].value, children[1].children[0].ToString());
+                createDAsync(children[1].children[1], (Obj)children[0].value, children[1].children[0]);
 				break;
 			default:
-				environment.addUpdateValue ((Obj)children [0].value, false);
+				Async = false;
+				//environment.addUpdateValue ((Obj)children [0].value, false);
 
 				safeWriteIndent (children [0] + " := ");
 				bang = true;
 				translateRecursive (children.ElementAt (1));
+				environment.addUpdateValue ((Obj)children [0].value, Async);
 				bang = false;
 				safeWrite ("\n");
 				break;
@@ -453,18 +456,16 @@ namespace APproject
         /// <param name="n">the declaration node</param>
         public void translateDecl(ASTNode n)
         {
-			foreach(ASTNode item in n.children)
-            {
-			    safeWriteIndent("let " + item + " = ref (" +(item.type == Types.integer ? "0" : "true") + ")\n");
-        	}
-
 			foreach (ASTNode item in n.children) {
+				initVariale (item);
 				var vartmp = (Obj)item.value;
-				if (vartmp.isUsedInAsync)
+				if (vartmp.isUsedInAsync || vartmp.isUsedInDasync)
 					createStructureAsync (vartmp);
-                if(vartmp.isUsedInDasync)
-                    createStructureAsync(vartmp);
 			}
+		}
+
+		private void initVariale(ASTNode var){
+			safeWriteIndent("let " + var + " = ref (" +(var.type == Types.integer ? "0" : "true") + ")\n");
 		}
 
         /// <summary>
@@ -537,7 +538,7 @@ namespace APproject
         /// <param name="funCall">FunCall node in the Dasync structure.</param>
         /// <param name="varDAsync">Variable to assign the returned dasync value.</param>
         /// <param name="url">String representing the url, where the function will be executed</param>
-		private void createDAsync (ASTNode funCall, Obj varDAsync, string url){
+		private void createDAsync (ASTNode funCall, Obj varDAsync, ASTNode url){
 			List<string> actual = createTmpParameter (funCall);
 
 			ASTNode funDec;
@@ -555,7 +556,7 @@ namespace APproject
                 safeWriteIndent("let tempJsonData = \"" +  data + "\"\n");
                 var nameTaskDasync = "_task_" + varDAsync.name;
                 var postAsyncType = (varDAsync.type==Types.integer? "getPostAsyncInt": "getPostAsyncBool");
-                safeWriteIndent(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( !" + url + ",tempJsonData ))\n");
+				safeWriteIndent(nameTaskDasync +" <- Async.StartAsTask( "+postAsyncType +"( " + (url.value is Obj ? "!"+url : "\""+url+"\"") + " ,tempJsonData ))\n");
 				//Console.WriteLine(data.Replace("\\\"","'"));
 
 			}
@@ -570,20 +571,27 @@ namespace APproject
         {
             List<ASTNode> children = n.children;
 			var tmpVar = (Obj)children [0].value;
-			if (tmpVar.isUsedInAsync){
+			if (tmpVar.isUsedInAsync || tmpVar.isUsedInDasync){
 				createStructureAsync (tmpVar);
 			}
 
-			if (children [1].label != Labels.Async) {
-				safeWriteIndent ("let "+children[0]+" = ref(");
+			switch (children [1].label){
+			case Labels.Async:
+				initVariale (children [0]);
+				createAsync (children [1].children [0], (Obj)children [0].value);
+				break;
+			case Labels.Dsync:
+				initVariale (children [0]);
+				createDAsync (children [1].children [1], (Obj)children [0].value, children [1].children [0]);
+				break;
+			default: 
+				safeWriteIndent ("let " + children [0] + " = ref(");
+				bang = true;
+				translateRecursive(children[1]);
+				bang = false;
+				safeWrite(")\n");
+				break;
 			}
-
-            bang = true;
-            translateRecursive(children[1]);
-            bang = false;
-
-			if (children[1].label != Labels.Async) safeWrite(")");
-			safeWrite("\n");
         }
 
         /// <summary>

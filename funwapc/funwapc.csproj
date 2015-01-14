@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/asyncTest.fun" />
+        <Command type="Execute" command="${TargetFile} ${SolutionDir}/APproject/Test/dasyncTest.fun" />
       </CustomCommands>
     </CustomCommands>
     <ConsolePause>false</ConsolePause>
