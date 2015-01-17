@@ -7,7 +7,12 @@
   <div class="header">
     <h1>Try<img id="logo" src="img/fun_logo.jpg"></img><h1>
   </div>
-  <div ng-app="" ng-controller="groupController" class="main">
+  <div ng-app="myApp" ng-controller="groupController" class="main">
+    <div class="share">
+      <button type="button" ng-click="genLink()">Share code</button>
+      <input id="shareUrl" ng-model="link" ng-hide="noLink"></input>
+    </div>
+
     <div id="parentTextBox">
       <textarea ng-model="prog" id="textBox"></textarea>
     </div>

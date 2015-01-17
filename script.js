@@ -11,4 +11,9 @@ $(document).ready(function(){
       document.getElementById("textBox").selectionEnd =  caretPos+2;
     }
   });
+
+  $("#shareUrl").on('click', function(e){
+    this.setSelectionRange(0, this.value.length);
+
+  })
 });

@@ -8,10 +8,26 @@ button{
   margin:3px;
 }
 
+.share input{
+  width: 400px;
+
+  -webkit-animation: open 1s; /* Chrome, Safari, Opera */
+  animation: open 1s;
+  -webkit-animation-timing-function: ease-out;
+  animation-timing-function: ease-out;
+  -webkit-animation-direction: alternate;
+  animation-direction: alternate;
+}
+
+@-webkit-keyframes open {
+    from {width: 0px;}
+    to {width: 400px;}
+}
 
 body{
   text-align:center;
 }
+
 .main{
   margin: 0 auto;
   display: table;

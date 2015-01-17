@@ -1,7 +1,27 @@
-function groupController($scope, $http){
+var myApp = angular.module('myApp',[]);
+
+myApp.config(function($locationProvider) {
+  $locationProvider.html5Mode(true).hashPrefix('!');
+});
+
+myApp.controller('groupController', ['$scope', '$http', '$location',
+function ($scope, $http, $location){
   $scope.prog = 'fun main(){\n  println("Hello World!");\n}';
   $scope.result = '';
   $scope.hideButton = false;
+
+  if ($location.search().code){
+      console.log($location.search().code);
+      $scope.prog = unescape($location.search().code);
+      $location.search('code',null);
+  }
+
+  $scope.link = '';
+  $scope.noLink = true;
+  $scope.genLink = function(){
+    $scope.link = $location.url()+'?code='+escape($scope.prog);
+    $scope.noLink = false;
+  }
 
   var success = function(data){
     $scope.result = data;
@@ -21,4 +41,4 @@ function groupController($scope, $http){
       success(data);
     });
   };
-}
+}]);
