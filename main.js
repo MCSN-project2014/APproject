@@ -19,7 +19,7 @@ function ($scope, $http, $location){
   $scope.link = '';
   $scope.noLink = true;
   $scope.genLink = function(){
-    $scope.link = $location.url()+'?code='+escape($scope.prog);
+    $scope.link = $location.absUrl()+'?code='+escape($scope.prog);
     $scope.noLink = false;
   }
 
