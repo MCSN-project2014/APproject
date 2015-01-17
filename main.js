@@ -1,3 +1,7 @@
+var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow");
+    editor.getSession().setTabSize(2);
+
 var myApp = angular.module('myApp',['ngAnimate']);
 
 myApp.config(function($locationProvider) {
@@ -6,23 +10,26 @@ myApp.config(function($locationProvider) {
 
 myApp.controller('groupController', ['$scope', '$http', '$location',
 function ($scope, $http, $location){
-  $scope.prog = 'fun main(){\n  println("Hello World!");\n}';
+  var doc = editor.getSession().getDocument();
   $scope.result = '';
   $scope.hideButton = false;
 
   if ($location.search().code){
-      console.log($location.search().code);
-      $scope.prog = unescape($location.search().code);
+      doc.setValue(unescape($location.search().code));
       $location.search('code',null);
-  }
+  }else
+    doc.setValue('fun main(){\n  println("Hello World!");\n}');
 
-  $scope.link1 = $location.absUrl()+'?code='+escape($scope.prog);
-  $scope.noLink = 0;
-  $scope.genLink = function(){
-    $scope.link1 = $location.absUrl()+'?code='+escape($scope.prog);
-    console.log($scope.prog);
-    console.log(escape($scope.prog))
+  var genUrl = function(){
+    return $location.absUrl()+'?code='+escape(doc.getValue());
   }
+  $scope.link1 = genUrl();
+  $scope.noLink = 0;
+
+  doc.on("change", function(){
+    $scope.link1 = genUrl();
+    $scope.$digest();
+  });
 
   var success = function(data){
     $scope.result = data;
@@ -31,14 +38,14 @@ function ($scope, $http, $location){
 
   $scope.interpret = function(){
     $scope.hideButton = true;
-    $http.post('http://tryfunwap.sfcoding.com/interpret', $scope.prog).success(function(data){
+    $http.post('http://tryfunwap.sfcoding.com/interpret', doc.getValue()).success(function(data){
       success(data);
     });
   };
 
   $scope.compile = function(){
     $scope.hideButton = true;
-    $http.post('http://tryfunwap.sfcoding.com/compile', $scope.prog).success(function(data){
+    $http.post('http://tryfunwap.sfcoding.com/compile', doc.getValue()).success(function(data){
       success(data);
     });
   };

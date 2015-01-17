@@ -4,6 +4,15 @@ textarea{
   height:200px
 }
 
+#editor {
+  position: relative;
+  text-align:left;
+  font-size: 11pt;
+  margin: 4px;
+  width:600px;
+  height:200px
+}
+
 button{
   margin:3px;
 }
