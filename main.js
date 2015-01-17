@@ -1,4 +1,4 @@
-var myApp = angular.module('myApp',[]);
+var myApp = angular.module('myApp',['ngAnimate']);
 
 myApp.config(function($locationProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
@@ -16,11 +16,12 @@ function ($scope, $http, $location){
       $location.search('code',null);
   }
 
-  $scope.link = '';
-  $scope.noLink = true;
+  $scope.link1 = $location.absUrl()+'?code='+escape($scope.prog);
+  $scope.noLink = 0;
   $scope.genLink = function(){
-    $scope.link = $location.absUrl()+'?code='+escape($scope.prog);
-    $scope.noLink = false;
+    $scope.link1 = $location.absUrl()+'?code='+escape($scope.prog);
+    console.log($scope.prog);
+    console.log(escape($scope.prog))
   }
 
   var success = function(data){

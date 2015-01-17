@@ -8,15 +8,22 @@ button{
   margin:3px;
 }
 
-.share input{
+.shareInput{
   width: 400px;
-
-  -webkit-animation: open 1s; /* Chrome, Safari, Opera */
-  animation: open 1s;
+  display:inline-block;
+  -webkit-animation: open 0.3s; /* Chrome, Safari, Opera */
+  animation: open 0.3s;
   -webkit-animation-timing-function: ease-out;
   animation-timing-function: ease-out;
-  -webkit-animation-direction: alternate;
-  animation-direction: alternate;
+}
+
+.shareInput.ng-hide-remove-active,.shareInput.ng-hide-add-active{
+  display:inline-block!important;
+}
+
+.shareInput.ng-hide-add, .shareInput.ng-hide-add-active{
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
 }
 
 @-webkit-keyframes open {

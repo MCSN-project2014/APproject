@@ -14,6 +14,5 @@ $(document).ready(function(){
 
   $("#shareUrl").on('click', function(e){
     this.setSelectionRange(0, this.value.length);
-
-  })
+  });
 });
