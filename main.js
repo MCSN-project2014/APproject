@@ -15,13 +15,13 @@ function ($scope, $http, $location){
   $scope.hideButton = false;
 
   if ($location.search().code){
-      doc.setValue(unescape($location.search().code));
-      $location.search('code',null);
+    doc.setValue(decodeURIComponent($location.search().code));
+    $location.search('code',null);
   }else
     doc.setValue('fun main(){\n  println("Hello World!");\n}');
 
   var genUrl = function(){
-    return $location.absUrl()+'?code='+escape(doc.getValue());
+    return $location.absUrl()+'?code='+encodeURIComponent(doc.getValue());
   }
   $scope.link1 = genUrl();
   $scope.noLink = 0;
